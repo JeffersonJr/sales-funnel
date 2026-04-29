@@ -22,10 +22,11 @@ import { motion } from "framer-motion";
 
 const navItems = [
   { name: "Negócios", href: "/", icon: LayoutDashboard },
-  { name: "Análise", href: "/analytics", icon: BarChart3 },
+  { name: "Empresas", href: "/companies", icon: Globe },
   { name: "Leads", href: "/leads", icon: Users },
   { name: "Documentos", href: "/documents", icon: FileText },
   { name: "Automações", href: "/automations", icon: Zap },
+  { name: "Análise", href: "/analytics", icon: BarChart3 },
   { name: "Configurações", href: "/settings", icon: Settings },
 ];
 
@@ -51,7 +52,7 @@ export function Sidebar() {
     >
       <div className="p-6 flex items-center justify-between w-full">
         {!isCollapsed && (
-          <span className="text-xl font-black tracking-tighter text-gray-900">Funnel.io</span>
+          <span className="text-xl font-black tracking-tighter text-gray-900">Leads.site</span>
         )}
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
@@ -114,22 +115,6 @@ export function Sidebar() {
         </div>
       </nav>
 
-      <div className="p-4 border-t border-gray-100 w-full bg-[#f8f9fa]">
-        <div className={cn(
-          "flex items-center gap-3",
-          isCollapsed ? "justify-center" : "px-3"
-        )}>
-          <div className="w-9 h-9 rounded-2xl bg-white flex-shrink-0 overflow-hidden border border-gray-100 shadow-sm">
-             <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Jefferson" alt="Avatar" />
-          </div>
-          {!isCollapsed && (
-            <div className="flex flex-col min-w-0">
-              <span className="text-sm font-black text-gray-900 truncate">Jefferson Jr</span>
-              <span className="text-[10px] font-bold text-blue-500 uppercase">Pro Plan</span>
-            </div>
-          )}
-        </div>
-      </div>
     </motion.aside>
   );
 }

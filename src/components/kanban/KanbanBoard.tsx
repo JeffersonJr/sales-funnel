@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useFunnel } from "@/context/FunnelContext";
 import {
   DndContext,
   DragOverlay,
@@ -20,12 +21,13 @@ import {
 } from "@dnd-kit/sortable";
 import { DealCard } from "./DealCard";
 import mockDb from "@/data/mock-db.json";
-import { Plus, Settings2, Trash2, X, Zap, Save, Check, Tag, DollarSign, User } from "lucide-react";
+import { Plus, Settings2, Trash2, X, Zap, Save, Check, Tag, DollarSign, User, Building2 } from "lucide-react";
 import { automationService } from "@/services/automation";
 import { DocumentTab } from "@/components/deals/DocumentTab";
 import { OnboardingModal } from "@/components/layout/OnboardingModal";
+import { ConfirmModal } from "@/components/common/ConfirmModal";
 import { motion, AnimatePresence } from "framer-motion";
-import { cn } from "@/lib/utils";
+import { cn, formatCurrency } from "@/lib/utils";
 import { toast } from "sonner";
 
 function KanbanColumn({ id, title, deals, onSelectedDeal, onDeleteStage, onUpdateStageTitle, onQuickAdd }: any) {
@@ -66,16 +68,21 @@ function KanbanColumn({ id, title, deals, onSelectedDeal, onDeleteStage, onUpdat
               className="text-xs font-black text-gray-900 uppercase tracking-widest bg-transparent border-b border-blue-500 outline-none w-full"
             />
           ) : (
-            <h2 
+          <h2 
               onClick={() => setIsEditingTitle(true)}
               className="text-xs font-black text-gray-900 uppercase tracking-widest cursor-text hover:text-blue-600 transition-colors truncate"
             >
               {title}
             </h2>
           )}
-          <span className="text-[10px] font-bold text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full shrink-0">
-            {deals.length}
-          </span>
+          <div className="flex flex-col items-start gap-0.5">
+            <span className="text-[10px] font-bold text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full shrink-0">
+              {deals.length}
+            </span>
+            <span className="text-[9px] font-black text-gray-400">
+              {formatCurrency(deals.reduce((sum: number, deal: any) => sum + (deal.value || 0), 0))}
+            </span>
+          </div>
         </div>
         <div className="flex gap-1 opacity-0 group-hover/col:opacity-100 transition-opacity shrink-0">
            <button onClick={() => setIsQuickAdding(true)} className="p-1 text-gray-400 hover:text-gray-900"><Plus size={14} /></button>
@@ -130,19 +137,46 @@ function KanbanColumn({ id, title, deals, onSelectedDeal, onDeleteStage, onUpdat
 }
 
 export function KanbanBoard() {
-  const [deals, setDeals] = useState<any[]>(mockDb.deals);
-  const [stages, setStages] = useState<any[]>(mockDb.stages);
-  const [templates, setTemplates] = useState<any[]>(mockDb.templates);
+  const { 
+    deals, setDeals, 
+    stages, setStages, 
+    templates, setTemplates,
+    users, setUsers,
+    availableTags, setAvailableTags
+  } = useFunnel();
+
   const [activeDeal, setActiveDeal] = useState<any | null>(null);
   const [selectedDeal, setSelectedDeal] = useState<any | null>(null);
   const [showNewDealModal, setShowNewDealModal] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [showConfirmBack, setShowConfirmBack] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  const logActivity = (deal: any, action: string, user: string = "Jefferson Jr") => {
+    const newLog = {
+      id: Date.now().toString(),
+      action,
+      user,
+      date: new Date().toISOString()
+    };
+    return {
+      ...deal,
+      activityLogs: [newLog, ...(deal.activityLogs || [])]
+    };
+  };
   
   const [form, setForm] = useState({
     title: "",
     company: "",
     value: "",
     source: "Manual",
-    tags: ""
+    tags: "",
+    industry: "Tecnologia & SaaS",
+    website: ""
   });
 
   const sensors = useSensors(
@@ -152,7 +186,7 @@ export function KanbanBoard() {
 
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
-    const deal = deals.find((d) => d.id === active.id);
+    const deal = deals.find((d: any) => d.id === active.id);
     if (deal) setActiveDeal(deal);
   };
 
@@ -165,21 +199,38 @@ export function KanbanBoard() {
 
     if (activeId === overId) return;
 
-    const activeDeal = deals.find(d => d.id === activeId);
+    const activeDeal = deals.find((d: any) => d.id === activeId);
     if (!activeDeal) return;
 
-    const overStageId = stages.find(s => s.id === overId)?.id || deals.find(d => d.id === overId)?.stage;
+    const overStageId = stages.find((s: any) => s.id === overId)?.id || deals.find((d: any) => d.id === overId)?.stage;
 
     if (overStageId && activeDeal.stage !== overStageId) {
-      setDeals(prev => prev.map(d => 
+      setDeals((prev: any[]) => prev.map((d: any) => 
         d.id === activeId ? { ...d, stage: overStageId as string, lastActivity: new Date().toISOString() } : d
       ));
       
-      toast.info(`Negócio movido para: ${stages.find(s => s.id === overStageId)?.title}`);
+      toast.info(`Negócio movido para: ${stages.find((s: any) => s.id === overStageId)?.title}`);
 
       if (overStageId === "proposal") {
-        automationService.handleStageChange(activeId.toString(), "proposal");
-        toast.success("Automação: Proposta gerada automaticamente!");
+        automationService.handleStageChange(activeId.toString(), "proposal").then(result => {
+          if (result?.type === "DOCUMENT_GENERATED") {
+             setDeals((prev: any[]) => prev.map((d: any) => {
+               if (d.id === activeId) {
+                 const withDoc = { 
+                   ...d, 
+                   documents: [result.document, ...(d.documents || [])] 
+                 };
+                 return logActivity(withDoc, `Documento "${result.document.name}" gerado automaticamente`);
+               }
+               return d;
+             }));
+             toast.success("Automação: Proposta gerada automaticamente!");
+          }
+        });
+      } else {
+        setDeals((prev: any[]) => prev.map((d: any) => 
+          d.id === activeId ? logActivity(d, `Mudou estágio para ${stages.find((s: any) => s.id === overStageId)?.title}`) : d
+        ));
       }
     }
 
@@ -204,7 +255,7 @@ export function KanbanBoard() {
       documents: [],
       profile: { name: "Empresa Pendente", industry: "Pendente", contacts: [] }
     };
-    setDeals([newDeal, ...deals]);
+    setDeals([logActivity(newDeal, "Negócio criado via adição rápida"), ...deals]);
   };
 
   const addStage = () => {
@@ -214,11 +265,11 @@ export function KanbanBoard() {
   };
 
   const updateStageTitle = (id: string, newTitle: string) => {
-    setStages(stages.map(s => s.id === id ? { ...s, title: newTitle } : s));
+    setStages(stages.map((s: any) => s.id === id ? { ...s, title: newTitle } : s));
   };
 
   const deleteStage = (id: string) => {
-    setStages(stages.filter(s => s.id !== id));
+    setStages(stages.filter((s: any) => s.id !== id));
     toast.error("Etapa removida");
   };
 
@@ -239,20 +290,25 @@ export function KanbanBoard() {
       notes: [],
       activities: [],
       documents: [],
-      profile: { name: form.company || "Empresa Pendente", industry: "Pendente", contacts: [] }
+      profile: { 
+        name: form.company || "Empresa Pendente", 
+        industry: form.industry || "Pendente", 
+        website: form.website || "",
+        contacts: [] 
+      }
     };
-    setDeals([newDeal, ...deals]);
+    setDeals([logActivity(newDeal, "Novo negócio criado manualmente"), ...deals]);
     setShowNewDealModal(false);
-    setForm({ title: "", company: "", value: "", source: "Manual", tags: "" });
+    setForm({ title: "", company: "", value: "", source: "Manual", tags: "", industry: "Tecnologia & SaaS", website: "" });
     toast.success("Novo negócio criado com sucesso!");
   };
 
   const updateTemplates = (newTemplates: any[]) => {
     setTemplates(newTemplates);
-    setDeals(prevDeals => prevDeals.map(deal => {
+    setDeals((prevDeals: any[]) => prevDeals.map((deal: any) => {
       const updatedChecklists = deal.checklists?.map((cl: any) => {
         if (cl.templateId) {
-          const template = newTemplates.find(t => t.id === cl.templateId);
+          const template = newTemplates.find((t: any) => t.id === cl.templateId);
           if (template) {
             return {
               ...cl,
@@ -281,41 +337,47 @@ export function KanbanBoard() {
              Ativo • {deals.length} Negócios
           </div>
         </div>
-        <div className="flex gap-3">
-          <button 
-            onClick={addStage}
-            className="bg-white border border-gray-100 text-gray-700 px-5 py-2.5 rounded-2xl text-xs font-black flex items-center gap-2 hover:bg-gray-50 transition-all shadow-sm"
-          >
-            <Settings2 size={16} />
-            Adicionar Coluna
-          </button>
-          <button 
-            onClick={() => setShowNewDealModal(true)}
-            className="bg-gray-900 text-white px-6 py-2.5 rounded-2xl text-xs font-black flex items-center gap-2 hover:bg-gray-800 transition-all shadow-xl shadow-gray-200"
-          >
-            <Plus size={18} />
-            Novo Lead
-          </button>
-        </div>
+        {!selectedDeal && (
+          <div className="flex gap-3">
+            <button 
+              onClick={addStage}
+              className="bg-white border border-gray-100 text-gray-700 px-5 py-2.5 rounded-2xl text-xs font-black flex items-center gap-2 hover:bg-gray-50 transition-all shadow-sm"
+            >
+              <Settings2 size={16} />
+              Adicionar Coluna
+            </button>
+            <button 
+              onClick={() => setShowNewDealModal(true)}
+              className="bg-gray-900 text-white px-6 py-2.5 rounded-2xl text-xs font-black flex items-center gap-2 hover:bg-gray-800 transition-all shadow-xl shadow-gray-200"
+            >
+              <Plus size={18} />
+              Novo Lead
+            </button>
+          </div>
+        )}
       </header>
 
       {selectedDeal ? (
         <div className="animate-in fade-in zoom-in-95 duration-300">
           <button 
-            onClick={() => setSelectedDeal(null)}
+            onClick={() => {
+              if (hasUnsavedChanges) {
+                setShowConfirmBack(true);
+              } else {
+                setSelectedDeal(null);
+              }
+            }}
             className="text-xs font-black text-gray-400 hover:text-gray-900 mb-6 flex items-center gap-2 uppercase tracking-widest px-2 group"
           >
             <span className="group-hover:-translate-x-1 transition-transform">←</span> Voltar ao Funil
           </button>
           <DocumentTab 
             deal={selectedDeal} 
-            stages={stages}
-            templates={templates}
-            onUpdateTemplates={updateTemplates}
-            onUpdate={(updated) => {
-              setDeals(prev => prev.map(d => d.id === updated.id ? updated : d));
+            onUpdate={(updated: any) => {
+              setDeals((prev: any[]) => prev.map((d: any) => d.id === updated.id ? updated : d));
               setSelectedDeal(updated);
             }} 
+            onUnsavedChanges={setHasUnsavedChanges}
           />
         </div>
       ) : (
@@ -326,12 +388,12 @@ export function KanbanBoard() {
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
           >
-            {stages.map((stage) => (
+            {stages.map((stage: any) => (
               <KanbanColumn 
                 key={stage.id} 
                 id={stage.id} 
                 title={stage.title} 
-                deals={deals.filter(d => d.stage === stage.id)}
+                deals={deals.filter((d: any) => d.stage === stage.id)}
                 onSelectedDeal={setSelectedDeal}
                 onDeleteStage={deleteStage}
                 onUpdateStageTitle={updateStageTitle}
@@ -421,7 +483,7 @@ export function KanbanBoard() {
                   </select>
                 </div>
 
-                <div>
+                 <div>
                   <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-2">
                     <Tag size={12} /> Tags (separadas por vírgula)
                   </label>
@@ -432,6 +494,38 @@ export function KanbanBoard() {
                     placeholder="VIP, Urgente, Demo"
                     className="w-full p-4 rounded-2xl border border-gray-100 bg-gray-50 text-sm font-bold focus:ring-2 focus:ring-gray-900/5 transition-all outline-none" 
                   />
+                </div>
+
+                <div className="col-span-2 p-6 bg-blue-50/30 rounded-3xl border border-blue-50/50 mt-4">
+                  <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-4 flex items-center gap-2">
+                    <Building2 size={12} /> Perfil da Empresa (Opcional)
+                  </p>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-[9px] font-bold text-gray-400 uppercase mb-2">Setor</label>
+                      <select 
+                        value={form.industry}
+                        onChange={(e) => setForm({...form, industry: e.target.value})}
+                        className="w-full p-3 rounded-xl border border-white bg-white text-xs font-bold outline-none"
+                      >
+                        <option>Tecnologia & SaaS</option>
+                        <option>Imobiliário</option>
+                        <option>Educação</option>
+                        <option>Varejo</option>
+                        <option>Outros</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-[9px] font-bold text-gray-400 uppercase mb-2">Website</label>
+                      <input 
+                        type="text"
+                        value={form.website}
+                        onChange={(e) => setForm({...form, website: e.target.value})}
+                        placeholder="www.empresa.com"
+                        className="w-full p-3 rounded-xl border border-white bg-white text-xs font-bold outline-none"
+                      />
+                    </div>
+                  </div>
                 </div>
 
                 <div className="col-span-2 pt-6">
@@ -447,6 +541,20 @@ export function KanbanBoard() {
           </div>
         )}
       </AnimatePresence>
+
+      <ConfirmModal 
+        isOpen={showConfirmBack}
+        onClose={() => setShowConfirmBack(false)}
+        onConfirm={() => {
+          setHasUnsavedChanges(false);
+          setSelectedDeal(null);
+        }}
+        title="Alterações não salvas"
+        message="Você tem alterações que não foram salvas. Deseja sair sem salvar?"
+        confirmText="Sair sem salvar"
+        cancelText="Continuar editando"
+        type="warning"
+      />
     </div>
   );
 }

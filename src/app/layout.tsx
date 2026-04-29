@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { Sidebar } from "@/components/layout/Sidebar";
+import { AppWrapper } from "@/components/layout/AppWrapper";
 import { PermissionsProvider } from "@/hooks/usePermissions";
+import { FunnelProvider } from "@/context/FunnelContext";
 import { Toaster } from "sonner";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Funnel.io | Sales Funnel Orchestrator",
+  title: "Leads.site | Sales Funnel Orchestrator",
   description: "Modern Sales Funnel & Automation Engine",
 };
 
@@ -18,16 +19,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full">
+    <html lang="en" className="h-full" suppressHydrationWarning>
       <body className={`${inter.className} h-full antialiased`}>
         <PermissionsProvider>
-          <div className="flex h-full bg-[#f9fafb]">
-            <Sidebar />
-            <main className="flex-1 overflow-auto">
+          <FunnelProvider>
+            <AppWrapper>
               {children}
-            </main>
-          </div>
-          <Toaster position="top-right" richColors />
+            </AppWrapper>
+            <Toaster position="top-right" richColors />
+          </FunnelProvider>
         </PermissionsProvider>
       </body>
     </html>

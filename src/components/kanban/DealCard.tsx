@@ -55,36 +55,38 @@ export function DealCard({ deal }: { deal: Deal }) {
       )}
     >
       <div className="flex justify-between items-start mb-2">
-        <h3 className="text-sm font-semibold text-gray-900 truncate flex-1">{deal.title}</h3>
-        <button className="text-gray-400 hover:text-gray-600">
-          <MoreHorizontal size={14} />
+        <h3 className="text-sm font-black text-gray-900 truncate flex-1 group-hover:text-blue-600 transition-colors">{deal.title}</h3>
+        <button className="text-gray-300 hover:text-gray-900 transition-colors">
+          <MoreHorizontal size={16} />
         </button>
       </div>
 
-      <p className="text-xs text-gray-500 mb-4">{deal.company}</p>
+      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-4">{deal.company}</p>
 
-      <div className="flex items-center gap-3 mb-4">
-        <div className="flex items-center gap-1 text-gray-700 bg-gray-100 px-2 py-0.5 rounded text-[10px] font-medium">
-          <DollarSign size={10} />
+      <div className="flex items-center gap-2 mb-4">
+        <div className="flex items-center gap-1 text-gray-900 bg-gray-50 px-2 py-1 rounded-lg text-xs font-black">
           {formatCurrency(deal.value)}
         </div>
         {isStale && (
-          <div className="flex items-center gap-1 text-red-600 bg-red-50 px-2 py-0.5 rounded text-[10px] font-medium">
+          <div className="flex items-center gap-1 text-red-500 bg-red-50 px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest">
             <AlertCircle size={10} />
-            Inativo
+            Estagnado
           </div>
         )}
       </div>
 
       <div className="flex items-center justify-between">
-        <div className="flex -space-x-1">
-          {deal.tags.slice(0, 2).map((tag) => (
-            <span key={tag} className="text-[10px] bg-gray-50 text-gray-400 px-1.5 py-0.5 rounded border border-gray-100">
+        <div className="flex flex-wrap gap-1">
+          {deal.tags?.slice(0, 3).map((tag) => (
+            <span 
+              key={tag} 
+              className="text-[9px] font-black uppercase tracking-widest bg-blue-50 text-blue-500 px-2 py-0.5 rounded-md border border-blue-100/50"
+            >
               {tag}
             </span>
           ))}
         </div>
-        <div className="flex items-center gap-1 text-gray-400 text-[10px]">
+        <div className="flex items-center gap-1 text-gray-300 text-[10px] font-bold">
           <Clock size={10} />
           <span>{daysInactive}d</span>
         </div>

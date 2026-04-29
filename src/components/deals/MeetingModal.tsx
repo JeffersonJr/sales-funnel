@@ -4,24 +4,61 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Calendar, Clock, Video, Coffee, MapPin, Users, Check, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Avatar } from "@/components/common/Avatar";
 
 interface MeetingModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSchedule: (meeting: any) => void;
   contacts: any[];
+  initialData?: any;
 }
 
-export function MeetingModal({ isOpen, onClose, onSchedule, contacts }: MeetingModalProps) {
+export function MeetingModal({ isOpen, onClose, onSchedule, contacts, initialData }: MeetingModalProps) {
   const [step, setStep] = useState(1);
-  const [form, setForm] = useState({
-    title: "",
-    date: "",
-    time: "",
-    type: "online",
-    description: "",
-    participants: [] as string[]
+  const [form, setForm] = useState(() => {
+    if (initialData) {
+      const [date, time] = initialData.date.split('T');
+      return {
+        title: initialData.title,
+        date: date,
+        time: time.substring(0, 5),
+        type: initialData.type,
+        description: initialData.description || "",
+        participants: initialData.participants || [],
+        isImportant: initialData.isImportant || false,
+        status: initialData.status || "pending"
+      };
+    }
+    return {
+      title: "",
+      date: "",
+      time: "",
+      type: "online",
+      description: "",
+      participants: [] as string[],
+      isImportant: false,
+      status: "pending"
+    };
   });
+
+  React.useEffect(() => {
+    if (initialData) {
+      const [date, time] = initialData.date.split('T');
+      setForm({
+        title: initialData.title,
+        date: date,
+        time: time.substring(0, 5),
+        type: initialData.type,
+        description: initialData.description || "",
+        participants: initialData.participants || [],
+        isImportant: initialData.isImportant || false,
+        status: initialData.status || "pending"
+      });
+    } else {
+      setForm({ title: "", date: "", time: "", type: "online", description: "", participants: [], isImportant: false, status: "pending" });
+    }
+  }, [initialData, isOpen]);
 
   const types = [
     { id: "online", label: "Reunião Online", icon: Video, color: "text-blue-500", bg: "bg-blue-50" },
@@ -32,17 +69,17 @@ export function MeetingModal({ isOpen, onClose, onSchedule, contacts }: MeetingM
   const handleSchedule = () => {
     if (!form.title || !form.date || !form.time) return;
     onSchedule({
-      id: Date.now().toString(),
+      id: initialData?.id || Date.now().toString(),
       title: form.title,
       date: `${form.date}T${form.time}:00Z`,
       type: form.type,
       participants: form.participants,
       description: form.description,
-      status: "pending"
+      isImportant: form.isImportant,
+      status: form.status
     });
     onClose();
     setStep(1);
-    setForm({ title: "", date: "", time: "", type: "online", description: "", participants: [] });
   };
 
   if (!isOpen) return null;
@@ -122,7 +159,43 @@ export function MeetingModal({ isOpen, onClose, onSchedule, contacts }: MeetingM
                     />
                   </div>
                 </div>
+                <div className="flex flex-col gap-6 pt-4">
+                  <label className="flex items-center gap-4 p-5 rounded-2xl border border-gray-100 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-all group/opt">
+                    <div className={cn("w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all", form.isImportant ? "bg-red-500 border-red-500" : "bg-white border-gray-200")}>
+                      {form.isImportant && <Check size={14} className="text-white" />}
+                    </div>
+                    <input 
+                      type="checkbox" 
+                      className="hidden"
+                      checked={form.isImportant}
+                      onChange={(e) => setForm({...form, isImportant: e.target.checked})}
+                    />
+                    <div className="flex flex-col">
+                      <span className="text-sm font-black text-gray-900">Atividade Importante</span>
+                      <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Priorizar no pipeline</span>
+                    </div>
+                  </label>
+
+                  <div className="space-y-3">
+                    <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest">Status da Atividade</label>
+                    <div className="flex gap-2">
+                       <button 
+                        onClick={() => setForm({...form, status: "pending"})}
+                        className={cn("flex-1 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm", form.status === 'pending' ? "bg-orange-500 text-white shadow-orange-100" : "bg-white text-gray-400 border border-gray-100")}
+                       >
+                         Pendente
+                       </button>
+                       <button 
+                        onClick={() => setForm({...form, status: "completed"})}
+                        className={cn("flex-1 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm", form.status === 'completed' ? "bg-green-500 text-white shadow-green-100" : "bg-white text-gray-400 border border-gray-100")}
+                       >
+                         Realizada
+                       </button>
+                    </div>
+                  </div>
+                </div>
               </motion.div>
+
             ) : (
               <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-8">
                 <div>
@@ -136,7 +209,7 @@ export function MeetingModal({ isOpen, onClose, onSchedule, contacts }: MeetingM
                           setForm({
                             ...form,
                             participants: exists 
-                              ? form.participants.filter(id => id !== contact.id) 
+                              ? form.participants.filter((id: string) => id !== contact.id) 
                               : [...form.participants, contact.id]
                           });
                         }}
@@ -148,9 +221,7 @@ export function MeetingModal({ isOpen, onClose, onSchedule, contacts }: MeetingM
                         )}
                       >
                         <div className="flex items-center gap-3">
-                           <div className="w-8 h-8 rounded-lg overflow-hidden border border-gray-200 bg-white">
-                              <img src={contact.avatar} alt="" />
-                           </div>
+                           <Avatar name={contact.name} size="sm" />
                            <span className="text-xs font-bold">{contact.name}</span>
                         </div>
                         {form.participants.includes(contact.id) && <Check size={16} />}

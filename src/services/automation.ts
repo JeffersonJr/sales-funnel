@@ -12,8 +12,12 @@ export const automationService = {
       console.log(`[AUTOMAÇÃO] Ativada para o negócio ${dealId}: Gerando Proposal_Draft.pdf`);
       return {
         type: "DOCUMENT_GENERATED",
-        name: "Proposal_Draft.pdf",
-        timestamp: new Date().toISOString(),
+        document: {
+          id: `doc-${Date.now()}`,
+          name: "Rascunho_de_Proposta_IA.pdf",
+          size: "1.2MB",
+          date: new Date().toISOString()
+        }
       };
     }
     return null;

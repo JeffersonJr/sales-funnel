@@ -61,7 +61,7 @@ export function OnboardingModal() {
               <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-8">
                 <Building2 size={32} />
               </div>
-              <h2 className="text-4xl font-black text-gray-900 mb-4 tracking-tight">Torne o Funnel.io seu</h2>
+              <h2 className="text-4xl font-black text-gray-900 mb-4 tracking-tight">Torne o Leads.site seu</h2>
               <p className="text-gray-500 font-medium mb-10 text-lg">Vamos personalizar sua experiência de acordo com seu setor.</p>
               
               <div className="grid grid-cols-2 gap-4 mb-10">

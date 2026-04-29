@@ -42,20 +42,36 @@ import mockDb from "@/data/mock-db.json";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { MeetingModal } from "./MeetingModal";
+import { ContactModal } from "./ContactModal";
+import { ConfirmModal } from "@/components/common/ConfirmModal";
+import { Avatar } from "@/components/common/Avatar";
+import { TagManagementModal } from "./TagManagementModal";
+import { useFunnel } from "@/context/FunnelContext";
 
 export function DocumentTab({ 
   deal, 
   onUpdate, 
-  stages, 
-  templates, 
-  onUpdateTemplates 
+  onUnsavedChanges 
 }: { 
   deal: any, 
   onUpdate: (deal: any) => void, 
-  stages: any[],
-  templates: any[],
-  onUpdateTemplates: (templates: any[]) => void
+  onUnsavedChanges?: (isDirty: boolean) => void
 }) {
+  const { 
+    users, 
+    setUsers, 
+    deals, 
+    setDeals, 
+    availableTags, 
+    setAvailableTags,
+    stages,
+    templates,
+    setTemplates
+  } = useFunnel();
+
+  const onUpdateTemplates = setTemplates;
+  const onUpdateTags = setAvailableTags;
+  const onUpdateUsers = setUsers;
   const [isGenerating, setIsGenerating] = useState(false);
   const [activeSubTab, setActiveSubTab] = useState<"details" | "profile" | "documents" | "activity">("details");
   const [newNote, setNewNote] = useState("");
@@ -63,6 +79,13 @@ export function DocumentTab({
   const [previewContent, setPreviewContent] = useState("");
   const [selectedPerson, setSelectedPerson] = useState<any | null>(null);
   const [showMeetingModal, setShowMeetingModal] = useState(false);
+  const [editingActivity, setEditingActivity] = useState<any | null>(null);
+  const [showContactModal, setShowContactModal] = useState(false);
+  const [showTagModal, setShowTagModal] = useState(false);
+  const [editingContact, setEditingContact] = useState<any | null>(null);
+  const [editingNote, setEditingNote] = useState<any | null>(null);
+  const [editingNoteText, setEditingNoteText] = useState("");
+  const [showConfirmDelete, setShowConfirmDelete] = useState<{ type: string, id: any, data?: any } | null>(null);
 
   // Edit State
   const [isEditingHeader, setIsEditingHeader] = useState(false);
@@ -70,8 +93,20 @@ export function DocumentTab({
     title: deal.title,
     company: deal.company,
     value: deal.value,
-    leadSource: deal.leadSource
+    leadSource: deal.leadSource,
+    owner: deal.owner || "Jefferson Jr"
   });
+
+  useEffect(() => {
+    const isDirty = 
+      editForm.title !== deal.title || 
+      editForm.company !== deal.company || 
+      editForm.value !== deal.value || 
+      editForm.leadSource !== deal.leadSource ||
+      editForm.owner !== (deal.owner || "Jefferson Jr");
+    
+    onUnsavedChanges?.(isDirty);
+  }, [editForm, deal, onUnsavedChanges]);
 
   const [editingItem, setEditingItem] = useState<{clId: string, index: number} | null>(null);
   const [editingItemText, setEditingItemText] = useState("");
@@ -113,8 +148,7 @@ export function DocumentTab({
   };
 
   const deleteChecklist = (id: string) => {
-    onUpdate({ ...deal, checklists: deal.checklists.filter((cl: any) => cl.id !== id) });
-    toast.error("Checklist removido");
+    setShowConfirmDelete({ type: 'checklist', id });
   };
 
   const saveAsTemplate = (checklist: any) => {
@@ -136,7 +170,7 @@ export function DocumentTab({
   };
 
   const applyTemplate = (templateId: string) => {
-    const template = templates.find(t => t.id === templateId);
+    const template = templates.find((t: any) => t.id === templateId);
     if (!template) return;
     
     const newCl = {
@@ -156,7 +190,7 @@ export function DocumentTab({
         const newItems = [...cl.items, newItem];
         
         if (cl.templateId) {
-          const newTemplates = templates.map(t => 
+          const newTemplates = templates.map((t: any) => 
             t.id === cl.templateId ? { ...t, checkpoints: newItems.map((it: any) => it.text) } : t
           );
           onUpdateTemplates(newTemplates);
@@ -179,7 +213,7 @@ export function DocumentTab({
       if (cl.id === checklistId) {
         const newItems = cl.items.filter((_: any, i: number) => i !== index);
         if (cl.templateId) {
-          const newTemplates = templates.map(t => 
+          const newTemplates = templates.map((t: any) => 
             t.id === cl.templateId ? { ...t, checkpoints: newItems.map((it: any) => it.text) } : t
           );
           onUpdateTemplates(newTemplates);
@@ -199,7 +233,7 @@ export function DocumentTab({
         );
         
         if (cl.templateId) {
-          const newTemplates = templates.map(t => 
+          const newTemplates = templates.map((t: any) => 
             t.id === cl.templateId ? { ...t, checkpoints: newItems.map((it: any) => it.text) } : t
           );
           onUpdateTemplates(newTemplates);
@@ -219,7 +253,8 @@ export function DocumentTab({
       title: editForm.title, 
       company: editForm.company, 
       value: parseFloat(editForm.value as any) || 0,
-      leadSource: editForm.leadSource
+      leadSource: editForm.leadSource,
+      owner: editForm.owner
     });
     setIsEditingHeader(false);
     toast.success("Negócio atualizado");
@@ -235,18 +270,94 @@ export function DocumentTab({
   };
 
   const handleScheduleActivity = (meeting: any) => {
-    const updatedActivities = [...(deal.activities || []), meeting];
+    const isEdit = deal.activities?.some((a: any) => a.id === meeting.id);
+    let updatedActivities;
+    if (isEdit) {
+      updatedActivities = deal.activities.map((a: any) => a.id === meeting.id ? meeting : a);
+      toast.success(`Atividade "${meeting.title}" atualizada!`);
+    } else {
+      updatedActivities = [...(deal.activities || []), meeting];
+      toast.success(`Atividade "${meeting.title}" agendada!`);
+    }
     onUpdate({ ...deal, activities: updatedActivities });
-    toast.success(`Atividade "${meeting.title}" agendada!`);
+    setEditingActivity(null);
+  };
+
+  const deleteActivity = (id: string) => {
+    const updatedActivities = deal.activities.filter((a: any) => a.id !== id);
+    onUpdate({ ...deal, activities: updatedActivities });
+    toast.error("Atividade excluída");
+  };
+
+  const toggleActivityStatus = (id: string) => {
+    const updatedActivities = deal.activities.map((a: any) => 
+      a.id === id ? { ...a, status: a.status === 'completed' ? 'pending' : 'completed' } : a
+    );
+    onUpdate({ ...deal, activities: updatedActivities });
+    toast.success("Status da atividade atualizado");
+  };
+
+  const handleSaveContact = (contact: any) => {
+    const isEdit = deal.profile.contacts?.some((c: any) => c.id === contact.id);
+    let updatedContacts;
+    if (isEdit) {
+      updatedContacts = deal.profile.contacts.map((c: any) => c.id === contact.id ? contact : c);
+      toast.success(`Contato "${contact.name}" atualizado!`);
+    } else {
+      updatedContacts = [...(deal.profile.contacts || []), contact];
+      toast.success(`Contato "${contact.name}" adicionado!`);
+    }
+    onUpdate({
+      ...deal,
+      profile: {
+        ...deal.profile,
+        contacts: updatedContacts
+      }
+    });
+    setEditingContact(null);
+    setShowContactModal(false);
   };
 
   return (
     <div className="max-w-6xl mx-auto mt-6 pb-20">
+      <ConfirmModal 
+        isOpen={!!showConfirmDelete}
+        onClose={() => setShowConfirmDelete(null)}
+        onConfirm={() => {
+          if (!showConfirmDelete) return;
+          if (showConfirmDelete.type === 'activity') deleteActivity(showConfirmDelete.id);
+          if (showConfirmDelete.type === 'note') onUpdate({ ...deal, notes: deal.notes.filter((n: any) => n.id !== showConfirmDelete.id) });
+          if (showConfirmDelete.type === 'contact') onUpdate({ ...deal, profile: { ...deal.profile, contacts: deal.profile.contacts.filter((c: any) => c.id !== showConfirmDelete.id) } });
+          if (showConfirmDelete.type === 'checklist') onUpdate({ ...deal, checklists: deal.checklists.filter((cl: any) => cl.id !== showConfirmDelete.id) });
+          setShowConfirmDelete(null);
+        }}
+        title={`Excluir ${showConfirmDelete?.type === 'contact' ? 'Contato' : showConfirmDelete?.type === 'activity' ? 'Atividade' : showConfirmDelete?.type === 'note' ? 'Nota' : 'Checklist'}`}
+        message="Esta ação não pode ser desfeita. Tem certeza?"
+      />
       <MeetingModal 
-        isOpen={showMeetingModal}
-        onClose={() => setShowMeetingModal(false)}
+        isOpen={showMeetingModal || !!editingActivity}
+        onClose={() => {
+          setShowMeetingModal(false);
+          setEditingActivity(null);
+        }}
         onSchedule={handleScheduleActivity}
         contacts={deal.profile.contacts || []}
+        initialData={editingActivity}
+      />
+      <ContactModal 
+        isOpen={showContactModal || !!editingContact}
+        onClose={() => {
+          setShowContactModal(false);
+          setEditingContact(null);
+        }}
+        onSave={handleSaveContact}
+        initialData={editingContact}
+      />
+      <TagManagementModal 
+        isOpen={showTagModal}
+        onClose={() => setShowTagModal(false)}
+        tags={availableTags}
+        onUpdateTags={onUpdateTags}
       />
       {/* Cabeçalho do Negócio */}
       <div className="bg-white p-8 rounded-t-3xl border border-gray-100 shadow-sm mb-1 relative group/header">
@@ -256,12 +367,21 @@ export function DocumentTab({
               <select 
                 value={deal.stage}
                 onChange={(e) => {
-                  onUpdate({ ...deal, stage: e.target.value });
-                  toast.info(`Estágio alterado para: ${stages.find(s => s.id === e.target.value)?.title}`);
+                  onUpdate({ 
+                    ...deal, 
+                    stage: e.target.value,
+                    activityLogs: [{
+                      id: Date.now().toString(),
+                      action: `Mudou estágio para: ${stages.find((s: any) => s.id === e.target.value)?.title}`,
+                      user: "Jefferson Jr",
+                      date: new Date().toISOString()
+                    }, ...(deal.activityLogs || [])]
+                  });
+                  toast.info(`Estágio alterado para: ${stages.find((s: any) => s.id === e.target.value)?.title}`);
                 }}
-                className="text-xs font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-3 py-1.5 rounded-lg border-none focus:ring-2 focus:ring-blue-100 cursor-pointer"
+                className="text-xs font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-3 pr-8 py-1.5 rounded-lg border-none focus:ring-2 focus:ring-blue-100 cursor-pointer appearance-none"
               >
-                {stages.map(s => (
+                {stages.map((s: any) => (
                   <option key={s.id} value={s.id}>{s.title}</option>
                 ))}
               </select>
@@ -358,8 +478,25 @@ export function DocumentTab({
           <div className="space-y-1 border-l border-gray-50 pl-6">
             <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Responsável</p>
             <div className="flex items-center gap-2">
-              <div className="w-5 h-5 rounded-full bg-gray-200" />
-              <p className="text-sm font-bold text-gray-700">Jefferson Jr</p>
+              {isEditingHeader ? (
+                <div className="flex items-center gap-2 bg-gray-50 rounded-xl px-2">
+                   <Avatar name={editForm.owner} size="sm" />
+                   <select 
+                    value={editForm.owner}
+                    onChange={(e) => setEditForm({...editForm, owner: e.target.value})}
+                    className="text-sm font-bold text-gray-700 bg-transparent py-2 outline-none"
+                   >
+                     {users.map((u: any) => (
+                       <option key={u.id} value={u.name}>{u.name}</option>
+                     ))}
+                   </select>
+                </div>
+              ) : (
+                <>
+                  <Avatar name={deal.owner || "Jefferson Jr"} size="sm" />
+                  <p className="text-sm font-bold text-gray-700">{deal.owner || "Jefferson Jr"}</p>
+                </>
+              )}
             </div>
           </div>
           <div className="space-y-2 border-l border-gray-50 pl-6">
@@ -405,6 +542,56 @@ export function DocumentTab({
           <div className="grid grid-cols-3 gap-16">
             <div className="col-span-2 space-y-12">
               <section>
+                <div className="flex items-center justify-between mb-8">
+                  <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest">Tags do Negócio</h3>
+                  <div className="flex gap-2">
+                    <button 
+                      onClick={() => setShowTagModal(true)}
+                      className="text-[10px] font-black text-blue-600 hover:underline"
+                    >
+                      Gerenciar Globais
+                    </button>
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-2 mb-10">
+                  {deal.tags?.map((tagName: string) => {
+                    const tagObj = availableTags.find((t: any) => t.name === tagName);
+                    return (
+                      <span 
+                        key={tagName} 
+                        style={{ backgroundColor: tagObj?.color || "#111827" }}
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-white rounded-full text-[10px] font-black uppercase tracking-widest group shadow-sm"
+                      >
+                        {tagName}
+                        <button 
+                          onClick={() => {
+                            onUpdate({ ...deal, tags: deal.tags.filter((t: string) => t !== tagName) });
+                          }}
+                          className="hover:text-red-200 transition-colors"
+                        >
+                          <X size={10} />
+                        </button>
+                      </span>
+                    );
+                  })}
+                  <div className="relative">
+                      <select 
+                        onChange={(e) => {
+                          if (e.target.value && !deal.tags?.includes(e.target.value)) {
+                            onUpdate({ ...deal, tags: [...(deal.tags || []), e.target.value] });
+                          }
+                          e.target.value = "";
+                        }}
+                        className="px-3 py-1.5 bg-gray-50 border border-gray-100 text-gray-400 rounded-full text-[10px] font-black uppercase tracking-widest outline-none cursor-pointer hover:bg-gray-100 transition-all"
+                      >
+                        <option value="">+ Adicionar Tag</option>
+                        {availableTags.filter((t: any) => !deal.tags?.includes(t.name)).map((t: any) => (
+                          <option key={t.id} value={t.name}>{t.name}</option>
+                        ))}
+                      </select>
+                  </div>
+                </div>
+
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-lg font-black text-gray-900 flex items-center gap-3">
                     Checklists de Execução
@@ -415,7 +602,7 @@ export function DocumentTab({
                       className="text-[10px] font-bold text-gray-400 bg-gray-50 px-3 py-1.5 rounded-lg border-none focus:ring-1 focus:ring-gray-200 outline-none"
                     >
                       <option value="">Aplicar Modelo...</option>
-                      {templates.map(t => (
+                      {templates.map((t: any) => (
                         <option key={t.id} value={t.id}>{t.name}</option>
                       ))}
                     </select>
@@ -523,7 +710,17 @@ export function DocumentTab({
                   <div className="flex justify-end mt-4">
                     <button onClick={() => {
                       if(newNote) {
-                        onUpdate({...deal, notes: [{id: Date.now(), text: newNote, author: "Jefferson Jr", date: new Date().toISOString()}, ...(deal.notes || [])]});
+                        const log = {
+                          id: Date.now().toString(),
+                          action: "Adicionou uma nova nota",
+                          user: "Jefferson Jr",
+                          date: new Date().toISOString()
+                        };
+                        onUpdate({
+                          ...deal, 
+                          notes: [{id: Date.now(), text: newNote, author: "Jefferson Jr", date: new Date().toISOString()}, ...(deal.notes || [])],
+                          activityLogs: [log, ...(deal.activityLogs || [])]
+                        });
                         setNewNote("");
                         toast.success("Nota salva");
                       }
@@ -532,12 +729,63 @@ export function DocumentTab({
                 </div>
                 <div className="space-y-4">
                   {deal.notes?.map((note: any) => (
-                    <div key={note.id} className="p-5 bg-white border border-gray-50 rounded-2xl shadow-sm">
+                    <div key={note.id} className="p-5 bg-white border border-gray-50 rounded-2xl shadow-sm group/note relative">
                       <div className="flex justify-between items-center mb-3">
-                        <span className="text-xs font-black text-gray-900">{note.author}</span>
-                        <span className="text-[10px] text-gray-400 font-medium">{format(parseISO(note.date), "dd MMM, HH:mm", { locale: ptBR })}</span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-black text-gray-900">{note.author}</span>
+                          {note.edited && <span className="text-[9px] text-gray-400 font-bold uppercase italic">(editada)</span>}
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <span className="text-[10px] text-gray-400 font-medium">{format(parseISO(note.date), "dd MMM, HH:mm", { locale: ptBR })}</span>
+                          <div className="flex gap-2 opacity-0 group-hover/note:opacity-100 transition-all">
+                            <button 
+                              onClick={() => {
+                                setEditingNote(note);
+                                setEditingNoteText(note.text);
+                              }}
+                              className="text-gray-300 hover:text-blue-500"
+                            >
+                              <Edit2 size={12} />
+                            </button>
+                            <button 
+                              onClick={() => {
+                                setShowConfirmDelete({ type: 'note', id: note.id });
+                              }}
+                              className="text-gray-300 hover:text-red-500"
+                            >
+                              <Trash2 size={12} />
+                            </button>
+                          </div>
+                        </div>
                       </div>
-                      <p className="text-sm text-gray-600 leading-relaxed">{note.text}</p>
+                      
+                      {editingNote?.id === note.id ? (
+                        <div className="space-y-3">
+                          <textarea 
+                            value={editingNoteText}
+                            onChange={(e) => setEditingNoteText(e.target.value)}
+                            className="w-full bg-gray-50 p-3 rounded-xl border border-blue-100 text-sm outline-none resize-none min-h-[80px]"
+                          />
+                          <div className="flex justify-end gap-2">
+                            <button onClick={() => setEditingNote(null)} className="text-[10px] font-bold text-gray-400">Cancelar</button>
+                            <button 
+                              onClick={() => {
+                                onUpdate({
+                                  ...deal,
+                                  notes: deal.notes.map((n: any) => n.id === note.id ? { ...n, text: editingNoteText, edited: true } : n)
+                                });
+                                setEditingNote(null);
+                                toast.success("Nota atualizada");
+                              }}
+                              className="text-[10px] font-bold text-blue-600"
+                            >
+                              Atualizar
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <p className="text-sm text-gray-600 leading-relaxed">{note.text}</p>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -571,15 +819,38 @@ export function DocumentTab({
               <section>
                 <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-6">Próximos Compromissos</h3>
                 <div className="space-y-4">
-                   {deal.activities?.map((act: any) => (
-                     <div key={act.id} className="p-4 bg-white border border-gray-100 rounded-2xl hover:border-gray-200 transition-all shadow-sm">
+                    {deal.activities?.map((act: any) => (
+                      <div key={act.id} className="p-4 bg-white border border-gray-100 rounded-2xl hover:border-gray-200 transition-all shadow-sm group/act">
                         <div className="flex justify-between items-start mb-2">
-                           <div className="p-1.5 rounded-lg bg-gray-50 text-gray-400">
-                              {act.type === 'online' && <Video size={14} />}
-                              {act.type === 'cafe' && <Coffee size={14} />}
-                              {act.type === 'presencial' && <MapPin size={14} />}
+                           <div className="flex items-center gap-2">
+                             <div className={cn("p-1.5 rounded-lg text-gray-400", act.isImportant ? "bg-red-50 text-red-500" : "bg-gray-50")}>
+                                {act.type === 'online' && <Video size={14} />}
+                                {act.type === 'cafe' && <Coffee size={14} />}
+                                {act.type === 'presencial' && <MapPin size={14} />}
+                             </div>
+                             {act.isImportant && <span className="text-[9px] font-black uppercase text-red-500">Urgente</span>}
                            </div>
-                           <span className="text-[9px] font-black uppercase text-orange-500 bg-orange-50 px-2 py-0.5 rounded-full">Pendente</span>
+                           <div className="flex items-center gap-2">
+                             <span className={cn(
+                               "text-[9px] font-black uppercase px-2 py-0.5 rounded-full cursor-pointer hover:opacity-80 transition-opacity",
+                               act.status === 'completed' ? "bg-green-50 text-green-600" : "bg-orange-50 text-orange-500"
+                             )}
+                             onClick={() => toggleActivityStatus(act.id)}
+                             >
+                               {act.status === 'completed' ? 'Realizada' : 'Pendente'}
+                             </span>
+                             <div className="flex gap-1 opacity-0 group-hover/act:opacity-100 transition-all">
+                                <button 
+                                  onClick={() => toggleActivityStatus(act.id)} 
+                                  className={cn("p-1 transition-all", act.status === 'completed' ? "text-green-500" : "text-gray-300 hover:text-green-500")}
+                                  title={act.status === 'completed' ? "Desmarcar como realizada" : "Marcar como realizada"}
+                                >
+                                  <CheckCircle2 size={12} />
+                                </button>
+                                <button onClick={() => setEditingActivity(act)} className="p-1 text-gray-300 hover:text-blue-500"><Edit2 size={12} /></button>
+                                <button onClick={() => setShowConfirmDelete({ type: 'activity', id: act.id })} className="p-1 text-gray-300 hover:text-red-500"><Trash2 size={12} /></button>
+                             </div>
+                           </div>
                         </div>
                         <p className="text-sm font-black text-gray-900 mb-1">{act.title}</p>
                         <p className="text-[10px] font-bold text-gray-400 flex items-center gap-1">
@@ -589,8 +860,8 @@ export function DocumentTab({
                         {act.description && (
                           <p className="text-[10px] text-gray-500 mt-3 bg-gray-50 p-2 rounded-lg italic">"{act.description}"</p>
                         )}
-                     </div>
-                   ))}
+                      </div>
+                    ))}
                    {deal.activities?.length === 0 && <p className="text-xs text-gray-400 italic text-center py-6">Nenhum agendamento.</p>}
                 </div>
               </section>
@@ -640,22 +911,47 @@ export function DocumentTab({
                </section>
 
                <section>
-                  <h3 className="text-lg font-black text-gray-900 mb-8">Contatos na Empresa</h3>
+                  <div className="flex justify-between items-center mb-8">
+                    <h3 className="text-lg font-black text-gray-900">Contatos na Empresa</h3>
+                    <button 
+                      onClick={() => setShowContactModal(true)}
+                      className="text-xs font-bold text-blue-600 bg-blue-50 px-3 py-1.5 rounded-lg flex items-center gap-1 hover:bg-blue-100 transition-colors"
+                    >
+                      <Plus size={14} /> Novo Contato
+                    </button>
+                  </div>
                   <div className="grid grid-cols-2 gap-4">
                     {deal.profile.contacts?.map((contact: any) => (
                       <div 
                         key={contact.id} 
-                        onClick={() => setSelectedPerson(contact)}
-                        className="p-5 bg-white border border-gray-100 rounded-2xl hover:border-gray-900/10 hover:shadow-xl hover:shadow-gray-100 transition-all cursor-pointer group"
+                        className="p-5 bg-white border border-gray-100 rounded-2xl hover:border-gray-900/10 hover:shadow-xl hover:shadow-gray-100 transition-all cursor-pointer group flex justify-between items-center"
                       >
-                         <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-2xl bg-gray-50 flex-shrink-0 overflow-hidden border border-gray-100">
-                               <img src={contact.avatar} alt={contact.name} />
-                            </div>
+                         <div className="flex items-center gap-4 flex-1" onClick={() => setSelectedPerson(contact)}>
+                            <Avatar name={contact.name} size="lg" />
                             <div className="min-w-0">
                                <p className="text-sm font-black text-gray-900 truncate group-hover:text-blue-600 transition-colors">{contact.name}</p>
                                <p className="text-xs font-bold text-gray-400">{contact.role}</p>
                             </div>
+                         </div>
+                         <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                            <button 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setEditingContact(contact);
+                              }}
+                              className="p-2 text-gray-300 hover:text-blue-500"
+                            >
+                              <Edit2 size={14} />
+                            </button>
+                            <button 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setShowConfirmDelete({ type: 'contact', id: contact.id });
+                              }}
+                              className="p-2 text-gray-300 hover:text-red-500"
+                            >
+                              <Trash2 size={14} />
+                            </button>
                          </div>
                       </div>
                     ))}
@@ -670,9 +966,7 @@ export function DocumentTab({
                 className="bg-gray-900 rounded-3xl p-8 text-white h-fit sticky top-24 shadow-2xl"
               >
                 <div className="flex justify-between items-start mb-8">
-                  <div className="w-16 h-16 rounded-2xl bg-white/10 p-0.5 border border-white/10">
-                    <img src={selectedPerson.avatar} className="rounded-2xl" alt="" />
-                  </div>
+                  <Avatar name={selectedPerson.name} size="xl" className="shadow-lg border-4 border-white/10" />
                   <button onClick={() => setSelectedPerson(null)} className="p-2 hover:bg-white/10 rounded-xl transition-colors">
                     <X size={20} />
                   </button>
@@ -681,17 +975,80 @@ export function DocumentTab({
                 <p className="text-sm font-bold text-gray-400 mb-8">{selectedPerson.role} @ {deal.company}</p>
                 
                 <div className="space-y-6">
-                  <div className="space-y-2">
-                    <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">E-mail</p>
-                    <p className="text-sm font-bold">{selectedPerson.email}</p>
+                  <div className="space-y-3">
+                    <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">E-mails</p>
+                    {(selectedPerson.emails?.length > 0 ? selectedPerson.emails : [selectedPerson.email]).map((e: string, i: number) => e && (
+                      <div key={i} className="flex items-center justify-between group/email">
+                        <p className="text-sm font-bold flex items-center gap-2">
+                           <Mail size={12} className="text-gray-600" /> {e}
+                        </p>
+                        <button 
+                          onClick={() => window.location.href = `mailto:${e}?subject=Sobre o projeto ${deal.title}`}
+                          className="text-[10px] text-blue-400 opacity-0 group-hover/email:opacity-100 transition-opacity"
+                        >
+                          Enviar
+                        </button>
+                      </div>
+                    ))}
                   </div>
-                  <div className="space-y-2">
-                    <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Telefone</p>
-                    <p className="text-sm font-bold">{selectedPerson.phone}</p>
+                  <div className="space-y-3">
+                    <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Telefones</p>
+                    {(selectedPerson.phones?.length > 0 ? selectedPerson.phones : [selectedPerson.phone]).map((p: string, i: number) => p && (
+                      <div key={i} className="flex items-center justify-between group/phone">
+                        <p className="text-sm font-bold flex items-center gap-2">
+                           <Phone size={12} className="text-gray-600" /> {p}
+                        </p>
+                        <button 
+                          onClick={() => {
+                            const message = encodeURIComponent(`Olá ${selectedPerson.name}, aqui é o Jefferson Jr. Gostaria de falar sobre o projeto ${deal.title}.`);
+                            const phoneClean = p.replace(/\D/g, '');
+                            window.open(`https://wa.me/${phoneClean}?text=${message}`, '_blank');
+                          }}
+                          className="text-[10px] text-green-400 opacity-0 group-hover/phone:opacity-100 transition-opacity"
+                        >
+                          WhatsApp
+                        </button>
+                      </div>
+                    ))}
                   </div>
                   <div className="pt-6 border-t border-white/5 space-y-3">
-                    <button onClick={() => toast.success("Enviando WhatsApp...")} className="w-full bg-white text-gray-900 py-3 rounded-xl text-xs font-black hover:bg-gray-100 transition-all">Enviar WhatsApp</button>
-                    <button className="w-full bg-white/10 text-white py-3 rounded-xl text-xs font-black hover:bg-white/20 transition-all">Ver no LinkedIn</button>
+                    <button 
+                      onClick={() => {
+                        const message = encodeURIComponent(`Olá ${selectedPerson.name}, aqui é o Jefferson Jr. Gostaria de falar sobre o projeto ${deal.title}.`);
+                        const phone = selectedPerson.phone.replace(/\D/g, '');
+                        window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
+                        
+                        onUpdate({
+                          ...deal,
+                          activityLogs: [{
+                            id: Date.now().toString(),
+                            action: `Enviou WhatsApp para ${selectedPerson.name}`,
+                            user: "Jefferson Jr",
+                            date: new Date().toISOString()
+                          }, ...(deal.activityLogs || [])]
+                        });
+                      }} 
+                      className="w-full bg-white text-gray-900 py-3 rounded-xl text-xs font-black hover:bg-gray-100 transition-all"
+                    >
+                      Enviar WhatsApp
+                    </button>
+                    <button 
+                      onClick={() => {
+                        window.location.href = `mailto:${selectedPerson.email}?subject=Sobre o projeto ${deal.title}`;
+                        onUpdate({
+                          ...deal,
+                          activityLogs: [{
+                            id: Date.now().toString(),
+                            action: `Enviou E-mail para ${selectedPerson.name}`,
+                            user: "Jefferson Jr",
+                            date: new Date().toISOString()
+                          }, ...(deal.activityLogs || [])]
+                        });
+                      }}
+                      className="w-full bg-white/10 text-white py-3 rounded-xl text-xs font-black hover:bg-white/20 transition-all"
+                    >
+                      Enviar E-mail
+                    </button>
                   </div>
                 </div>
               </motion.div>
@@ -730,22 +1087,53 @@ export function DocumentTab({
         )}
 
         {activeSubTab === "activity" && (
-           <div className="space-y-8 relative before:absolute before:left-[15px] before:top-2 before:bottom-2 before:w-0.5 before:bg-gray-50">
-              {[
-                { time: "2 horas atrás", user: "Jefferson Jr", action: "Mudou estágio para Negociação", color: "bg-blue-500" },
-                { time: "1 dia atrás", user: "Jefferson Jr", action: "Nota adicionada: 'Cliente gostou do demo'", color: "bg-orange-500" },
-                { time: "3 dias atrás", user: "Sistema", action: "Lead identificado via LinkedIn", color: "bg-green-500" },
-              ].map((log, i) => (
-                <div key={i} className="flex gap-6 relative">
-                  <div className={cn("w-8 h-8 rounded-full border-4 border-white shadow-sm flex items-center justify-center flex-shrink-0 z-10", log.color)}>
-                     <div className="w-2 h-2 rounded-full bg-white" />
+            <div className="space-y-6 relative before:absolute before:left-[19px] before:top-2 before:bottom-2 before:w-0.5 before:bg-gray-100">
+              {deal.activityLogs?.map((log: any, i: number) => {
+                const isStatusChange = log.action.includes("estágio");
+                const isNote = log.action.includes("nota");
+                const isDoc = log.action.includes("Documento");
+                const isEmail = log.action.includes("E-mail");
+                const isWhatsApp = log.action.includes("WhatsApp");
+                
+                return (
+                  <div key={log.id} className="flex gap-6 relative group">
+                    <div className={cn(
+                      "w-10 h-10 rounded-2xl border-4 border-white shadow-md flex items-center justify-center flex-shrink-0 z-10 transition-transform group-hover:scale-110",
+                      i === 0 ? "bg-gray-900 text-white" : "bg-white text-gray-400"
+                    )}>
+                       {isStatusChange && <RefreshCw size={14} />}
+                       {isNote && <MessageSquare size={14} />}
+                       {isDoc && <FileText size={14} />}
+                       {isEmail && <Mail size={14} />}
+                       {isWhatsApp && <Zap size={14} />}
+                       {!isStatusChange && !isNote && !isDoc && !isEmail && !isWhatsApp && <Clock size={14} />}
+                    </div>
+                    <div className="flex-1 bg-gray-50/50 p-5 rounded-2xl border border-gray-100 group-hover:bg-white group-hover:shadow-xl group-hover:shadow-gray-100 transition-all">
+                      <div className="flex justify-between items-start mb-2">
+                        <p className="text-sm text-gray-900 font-black leading-tight">{log.action}</p>
+                        <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest whitespace-nowrap ml-4">
+                          {format(parseISO(log.date), "dd MMM, HH:mm", { locale: ptBR })}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 mt-3">
+                         <div className="w-4 h-4 rounded-full bg-gray-200" />
+                         <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                           {log.user}
+                         </p>
+                      </div>
+                    </div>
                   </div>
-                  <div className="pt-1">
-                    <p className="text-sm text-gray-900 font-black">{log.action}</p>
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{log.user} • {log.time}</p>
-                  </div>
+                );
+              })}
+              {(!deal.activityLogs || deal.activityLogs.length === 0) && (
+                <div className="text-center py-20 bg-gray-50/50 rounded-[3rem] border border-dashed border-gray-100">
+                   <div className="w-20 h-20 bg-white rounded-[2rem] flex items-center justify-center mx-auto mb-6 shadow-sm">
+                     <History size={32} className="text-gray-200" />
+                   </div>
+                   <p className="text-sm font-black text-gray-900 mb-1">Nenhuma atividade</p>
+                   <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">O histórico do negócio aparecerá aqui</p>
                 </div>
-              ))}
+              )}
            </div>
         )}
       </div>
@@ -777,7 +1165,7 @@ export function DocumentTab({
               <div className="flex-1 overflow-auto bg-gray-100 p-12">
                  <div className="bg-white mx-auto max-w-[800px] min-h-[1000px] shadow-2xl p-20 font-serif">
                     <div className="flex justify-between items-start mb-20">
-                       <h1 className="text-3xl font-bold tracking-tighter">Funnel.io</h1>
+                       <h1 className="text-3xl font-bold tracking-tighter">Leads.site</h1>
                        <div className="text-right text-xs text-gray-400 uppercase font-sans font-bold">
                           <p>Data: <span suppressHydrationWarning>{format(new Date(), "dd/MM/yyyy")}</span></p>
                           <p>Ref: PROP-{deal.id}-2026</p>
