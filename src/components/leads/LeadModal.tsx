@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, User, Mail, Phone, Briefcase, Building2, Save } from "lucide-react";
+import { maskPhone } from "@/lib/utils";
 
 interface LeadModalProps {
   isOpen: boolean;
@@ -84,7 +85,7 @@ export function LeadModal({ isOpen, onClose, onSave, initialData }: LeadModalPro
                     <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={18} />
                     <input 
                       value={form.phone}
-                      onChange={(e) => setForm({...form, phone: e.target.value})}
+                      onChange={(e) => setForm({...form, phone: maskPhone(e.target.value)})}
                       className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-4 pl-12 pr-4 text-sm font-bold focus:ring-2 focus:ring-gray-900/5 outline-none transition-all"
                       placeholder="(11) 99999-9999"
                     />

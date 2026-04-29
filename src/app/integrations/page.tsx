@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { 
   MessageCircle, 
-  Instagram, 
+  Camera, 
   Globe, 
   Zap, 
   ChevronRight,
@@ -40,7 +40,7 @@ export default function IntegrationsPage() {
       id: "instagram",
       name: "Instagram",
       description: "Responda Directs e automatize comentários usando o poder do Leads.site.",
-      icon: Instagram,
+      icon: Camera,
       color: "text-pink-500",
       bg: "bg-pink-50",
       href: "/integrations/instagram",

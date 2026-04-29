@@ -34,7 +34,7 @@ import {
   Coffee,
   MapPin
 } from "lucide-react";
-import { cn, formatCurrency } from "@/lib/utils";
+import { cn, formatCurrency, maskCurrency, parseCurrency } from "@/lib/utils";
 import { docGenerator } from "@/services/doc-generator";
 import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -252,7 +252,7 @@ export function DocumentTab({
       ...deal, 
       title: editForm.title, 
       company: editForm.company, 
-      value: parseFloat(editForm.value as any) || 0,
+      value: typeof editForm.value === 'string' ? parseCurrency(editForm.value) : editForm.value,
       leadSource: editForm.leadSource,
       owner: editForm.owner
     });
@@ -445,10 +445,10 @@ export function DocumentTab({
             <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Valor do Negócio</p>
             {isEditingHeader ? (
               <input 
-                type="number"
+                type="text"
                 value={editForm.value}
-                onChange={(e) => setEditForm({...editForm, value: parseFloat(e.target.value)})}
-                className="text-xl font-black text-gray-900 bg-gray-50 w-full rounded p-1"
+                onChange={(e) => setEditForm({...editForm, value: maskCurrency(e.target.value)})}
+                className="text-xl font-black text-gray-900 bg-gray-50 w-full rounded p-1 outline-none"
               />
             ) : (
               <p className="text-xl font-black text-gray-900">{formatCurrency(deal.value)}</p>

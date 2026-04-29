@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, User, Briefcase, Mail, Phone, Plus, Trash2, Check } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, maskPhone } from "@/lib/utils";
 
 interface ContactModalProps {
   isOpen: boolean;
@@ -51,11 +51,7 @@ export function ContactModal({ isOpen, onClose, onSave, initialData }: ContactMo
   const handleFieldChange = (type: 'emails' | 'phones', index: number, value: string) => {
     const newFields = [...form[type]];
     if (type === 'phones') {
-      // Basic Brazilian Phone Mask: (99) 99999-9999
-      const x = value.replace(/\D/g, '').match(/(\d{0,2})(\d{0,5})(\d{0,4})/);
-      if (x) {
-        value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
-      }
+      value = maskPhone(value);
     }
     newFields[index] = value;
     setForm({ ...form, [type]: newFields });

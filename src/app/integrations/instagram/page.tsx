@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Instagram, ArrowLeft } from "lucide-react";
+import { Camera, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
 export default function InstagramIntegrationPage() {
@@ -16,7 +16,7 @@ export default function InstagramIntegrationPage() {
       </div>
       <div className="bg-white p-20 rounded-[3rem] border border-gray-100 shadow-xl text-center">
          <div className="w-24 h-24 bg-pink-50 text-pink-500 rounded-[2rem] flex items-center justify-center mb-8 mx-auto">
-            <Instagram size={48} />
+            <Camera size={48} />
          </div>
          <h2 className="text-2xl font-black text-gray-900 mb-4">Conecte seu Perfil Business</h2>
          <p className="text-gray-500 max-w-md mx-auto mb-10">Capture leads via Direct e automatize suas respostas com nossa IA.</p>

@@ -27,7 +27,7 @@ import { DocumentTab } from "@/components/deals/DocumentTab";
 import { OnboardingModal } from "@/components/layout/OnboardingModal";
 import { ConfirmModal } from "@/components/common/ConfirmModal";
 import { motion, AnimatePresence } from "framer-motion";
-import { cn, formatCurrency } from "@/lib/utils";
+import { cn, formatCurrency, maskCurrency, parseCurrency } from "@/lib/utils";
 import { toast } from "sonner";
 
 function KanbanColumn({ id, title, deals, onSelectedDeal, onDeleteStage, onUpdateStageTitle, onQuickAdd }: any) {
@@ -279,7 +279,7 @@ export function KanbanBoard() {
       id: `d${Date.now()}`,
       title: form.title,
       company: form.company || "Empresa Pendente",
-      value: parseFloat(form.value) || 0,
+      value: parseCurrency(form.value) || 0,
       stage: stages[0].id,
       createdAt: new Date().toISOString(),
       lastActivity: new Date().toISOString(),
@@ -458,9 +458,9 @@ export function KanbanBoard() {
                     <DollarSign size={12} /> Valor Estimado
                   </label>
                   <input 
-                    type="number" 
+                    type="text" 
                     value={form.value}
-                    onChange={(e) => setForm({...form, value: e.target.value})}
+                    onChange={(e) => setForm({...form, value: maskCurrency(e.target.value)})}
                     placeholder="R$ 0,00"
                     className="w-full p-4 rounded-2xl border border-gray-100 bg-gray-50 text-sm font-bold focus:ring-2 focus:ring-gray-900/5 transition-all outline-none" 
                   />

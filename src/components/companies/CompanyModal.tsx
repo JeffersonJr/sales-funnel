@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Building2, Globe, MapPin, Save, FileText, Info } from "lucide-react";
+import { X, Building2, Globe, MapPin, Save, FileText, Info, Hash } from "lucide-react";
+import { maskCEP } from "@/lib/utils";
 
 interface CompanyModalProps {
   isOpen: boolean;
@@ -16,15 +17,23 @@ export function CompanyModal({ isOpen, onClose, onSave, initialData }: CompanyMo
     name: "",
     industry: "",
     website: "",
+    cep: "",
     address: "",
     description: "",
   });
 
   useEffect(() => {
     if (initialData) {
-      setForm(initialData);
+      setForm({
+        name: initialData.name || "",
+        industry: initialData.industry || "",
+        website: initialData.website || "",
+        cep: initialData.cep || "",
+        address: initialData.address || "",
+        description: initialData.description || "",
+      });
     } else {
-      setForm({ name: "", industry: "", website: "", address: "", description: "" });
+      setForm({ name: "", industry: "", website: "", cep: "", address: "", description: "" });
     }
   }, [initialData, isOpen]);
 
@@ -91,7 +100,20 @@ export function CompanyModal({ isOpen, onClose, onSave, initialData }: CompanyMo
                   </div>
                 </div>
 
-                <div className="col-span-2">
+                <div className="col-span-1">
+                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">CEP</label>
+                  <div className="relative">
+                    <Hash className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={18} />
+                    <input 
+                      value={form.cep}
+                      onChange={(e) => setForm({...form, cep: maskCEP(e.target.value)})}
+                      className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-4 pl-12 pr-4 text-sm font-bold focus:ring-2 focus:ring-gray-900/5 outline-none transition-all"
+                      placeholder="00000-000"
+                    />
+                  </div>
+                </div>
+
+                <div className="col-span-1">
                   <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Endereço</label>
                   <div className="relative">
                     <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={18} />
