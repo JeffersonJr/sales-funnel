@@ -20,16 +20,19 @@ import {
 } from "@dnd-kit/sortable";
 import { DealCard } from "./DealCard";
 import mockDb from "@/data/mock-db.json";
-import { Plus, Settings2, Trash2, X, Zap } from "lucide-react";
+import { Plus, Settings2, Trash2, X, Zap, Save, Check, Tag, DollarSign, User } from "lucide-react";
 import { automationService } from "@/services/automation";
 import { DocumentTab } from "@/components/deals/DocumentTab";
 import { OnboardingModal } from "@/components/layout/OnboardingModal";
 import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "@/lib/utils";
 
-function KanbanColumn({ id, title, deals, onSelectedDeal, onDeleteStage, onQuickAdd }: any) {
+function KanbanColumn({ id, title, deals, onSelectedDeal, onDeleteStage, onUpdateStageTitle, onQuickAdd }: any) {
   const { setNodeRef } = useDroppable({ id });
   const [isQuickAdding, setIsQuickAdding] = useState(false);
   const [quickTitle, setQuickTitle] = useState("");
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [newTitle, setNewTitle] = useState(title);
 
   const handleQuickAdd = (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,19 +43,38 @@ function KanbanColumn({ id, title, deals, onSelectedDeal, onDeleteStage, onQuick
     }
   };
 
+  const handleTitleSubmit = () => {
+    onUpdateStageTitle(id, newTitle);
+    setIsEditingTitle(false);
+  };
+
   return (
     <div ref={setNodeRef} className="kanban-column flex flex-col group/col w-[320px] shrink-0">
       <div className="flex justify-between items-center mb-4 px-2">
-        <div className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-blue-500" />
-          <h2 className="text-xs font-black text-gray-900 uppercase tracking-widest">
-            {title}
-          </h2>
-          <span className="text-[10px] font-bold text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">
+        <div className="flex items-center gap-2 flex-1 mr-2">
+          <div className="w-2 h-2 rounded-full bg-blue-500 shrink-0" />
+          {isEditingTitle ? (
+            <input 
+              autoFocus
+              value={newTitle}
+              onChange={(e) => setNewTitle(e.target.value)}
+              onBlur={handleTitleSubmit}
+              onKeyDown={(e) => e.key === "Enter" && handleTitleSubmit()}
+              className="text-xs font-black text-gray-900 uppercase tracking-widest bg-transparent border-b border-blue-500 outline-none w-full"
+            />
+          ) : (
+            <h2 
+              onClick={() => setIsEditingTitle(true)}
+              className="text-xs font-black text-gray-900 uppercase tracking-widest cursor-text hover:text-blue-600 transition-colors truncate"
+            >
+              {title}
+            </h2>
+          )}
+          <span className="text-[10px] font-bold text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full shrink-0">
             {deals.length}
           </span>
         </div>
-        <div className="flex gap-1 opacity-0 group-hover/col:opacity-100 transition-opacity">
+        <div className="flex gap-1 opacity-0 group-hover/col:opacity-100 transition-opacity shrink-0">
            <button onClick={() => setIsQuickAdding(true)} className="p-1 text-gray-400 hover:text-gray-900"><Plus size={14} /></button>
            <button onClick={() => onDeleteStage(id)} className="p-1 text-gray-400 hover:text-red-500"><Trash2 size={12} /></button>
         </div>
@@ -107,11 +129,18 @@ function KanbanColumn({ id, title, deals, onSelectedDeal, onDeleteStage, onQuick
 export function KanbanBoard() {
   const [deals, setDeals] = useState<any[]>(mockDb.deals);
   const [stages, setStages] = useState<any[]>(mockDb.stages);
+  const [templates, setTemplates] = useState<any[]>(mockDb.templates);
   const [activeDeal, setActiveDeal] = useState<any | null>(null);
   const [selectedDeal, setSelectedDeal] = useState<any | null>(null);
   const [showNewDealModal, setShowNewDealModal] = useState(false);
-  const [newDealTitle, setNewDealTitle] = useState("");
-  const [newDealCompany, setNewDealCompany] = useState("");
+  
+  const [form, setForm] = useState({
+    title: "",
+    company: "",
+    value: "",
+    source: "Manual",
+    tags: ""
+  });
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -173,16 +202,67 @@ export function KanbanBoard() {
   };
 
   const addStage = () => {
-    const title = prompt("Nome da nova etapa:");
-    if (title) {
-      setStages([...stages, { id: title.toLowerCase().replace(/ /g, "-"), title }]);
-    }
+    const title = "Nova Coluna";
+    setStages([...stages, { id: `stage-${Date.now()}`, title }]);
+  };
+
+  const updateStageTitle = (id: string, newTitle: string) => {
+    setStages(stages.map(s => s.id === id ? { ...s, title: newTitle } : s));
   };
 
   const deleteStage = (id: string) => {
     if (confirm("Excluir esta etapa?")) {
       setStages(stages.filter(s => s.id !== id));
     }
+  };
+
+  const handleCreateDeal = () => {
+    if (!form.title) return;
+    const newDeal = {
+      id: `d${Date.now()}`,
+      title: form.title,
+      company: form.company || "Empresa Pendente",
+      value: parseFloat(form.value) || 0,
+      stage: stages[0].id,
+      createdAt: new Date().toISOString(),
+      lastActivity: new Date().toISOString(),
+      tags: form.tags.split(",").map(t => t.trim()).filter(t => t),
+      leadSource: form.source,
+      entryDate: new Date().toISOString(),
+      checklists: [],
+      notes: [],
+      activities: [],
+      documents: [],
+      profile: { name: form.company || "Empresa Pendente", industry: "Pendente", contacts: [] }
+    };
+    setDeals([newDeal, ...deals]);
+    setShowNewDealModal(false);
+    setForm({ title: "", company: "", value: "", source: "Manual", tags: "" });
+  };
+
+  const updateTemplates = (newTemplates: any[]) => {
+    setTemplates(newTemplates);
+    // Propagate changes to deals that use these templates
+    setDeals(prevDeals => prevDeals.map(deal => {
+      const updatedChecklists = deal.checklists?.map((cl: any) => {
+        if (cl.templateId) {
+          const template = newTemplates.find(t => t.id === cl.templateId);
+          if (template) {
+            // Merge existing completion status with new template items
+            return {
+              ...cl,
+              name: template.name,
+              items: template.checkpoints.map((cp: string) => ({
+                text: cp,
+                checked: cl.items.find((it: any) => it.text === cp)?.checked || false
+              }))
+            };
+          }
+        }
+        return cl;
+      });
+      return { ...deal, checklists: updatedChecklists };
+    }));
   };
 
   return (
@@ -202,7 +282,7 @@ export function KanbanBoard() {
             className="bg-white border border-gray-100 text-gray-600 px-5 py-2.5 rounded-2xl text-xs font-black flex items-center gap-2 hover:bg-gray-50 transition-all shadow-sm"
           >
             <Settings2 size={16} />
-            Configurar Funil
+            Adicionar Coluna
           </button>
           <button 
             onClick={() => setShowNewDealModal(true)}
@@ -225,6 +305,8 @@ export function KanbanBoard() {
           <DocumentTab 
             deal={selectedDeal} 
             stages={stages}
+            templates={templates}
+            onUpdateTemplates={updateTemplates}
             onUpdate={(updated) => {
               setDeals(prev => prev.map(d => d.id === updated.id ? updated : d));
               setSelectedDeal(updated);
@@ -247,6 +329,7 @@ export function KanbanBoard() {
                 deals={deals.filter(d => d.stage === stage.id)}
                 onSelectedDeal={setSelectedDeal}
                 onDeleteStage={deleteStage}
+                onUpdateStageTitle={updateStageTitle}
                 onQuickAdd={handleQuickAdd}
               />
             ))}
@@ -257,7 +340,7 @@ export function KanbanBoard() {
         </div>
       )}
 
-      {/* Modal Estilo Kommo para Novo Deal */}
+      {/* Enhanced Creation Form */}
       <AnimatePresence>
         {showNewDealModal && (
           <div className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -265,47 +348,94 @@ export function KanbanBoard() {
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="bg-white rounded-[2.5rem] p-10 w-full max-w-lg shadow-2xl border border-gray-100"
+              className="bg-white rounded-[2.5rem] p-10 w-full max-w-xl shadow-2xl border border-gray-100"
             >
               <div className="flex justify-between items-center mb-10">
-                <h2 className="text-2xl font-black text-gray-900">Novo Lead</h2>
+                <div>
+                  <h2 className="text-2xl font-black text-gray-900">Novo Negócio</h2>
+                  <p className="text-xs text-gray-400 font-bold uppercase mt-1">Preencha os detalhes da oportunidade</p>
+                </div>
                 <button onClick={() => setShowNewDealModal(false)} className="p-2 hover:bg-gray-50 rounded-2xl text-gray-400 transition-colors">
                   <X size={24} />
                 </button>
               </div>
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Nome do Lead</label>
+
+              <div className="grid grid-cols-2 gap-6">
+                <div className="col-span-2">
+                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                    <User size={12} /> Nome do Negócio
+                  </label>
                   <input 
                     type="text" 
-                    value={newDealTitle}
-                    onChange={(e) => setNewDealTitle(e.target.value)}
-                    placeholder="Quem é o seu novo cliente?"
+                    value={form.title}
+                    onChange={(e) => setForm({...form, title: e.target.value})}
+                    placeholder="Ex: Consultoria de Marketing"
                     className="w-full p-4 rounded-2xl border border-gray-100 bg-gray-50 text-sm font-bold focus:ring-2 focus:ring-gray-900/5 transition-all outline-none" 
                   />
                 </div>
+                
                 <div>
-                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Empresa</label>
+                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                    <Settings2 size={12} /> Empresa
+                  </label>
                   <input 
                     type="text" 
-                    value={newDealCompany}
-                    onChange={(e) => setNewDealCompany(e.target.value)}
-                    placeholder="Onde eles trabalham?"
+                    value={form.company}
+                    onChange={(e) => setForm({...form, company: e.target.value})}
+                    placeholder="Ex: Acme Corp"
                     className="w-full p-4 rounded-2xl border border-gray-100 bg-gray-50 text-sm font-bold focus:ring-2 focus:ring-gray-900/5 transition-all outline-none" 
                   />
                 </div>
-                <div className="pt-6">
-                  <button 
-                    onClick={() => {
-                      if(newDealTitle) {
-                        handleQuickAdd(stages[0].id, newDealTitle);
-                        setShowNewDealModal(false);
-                        setNewDealTitle("");
-                      }
-                    }}
-                    className="w-full bg-gray-900 text-white py-4 rounded-2xl text-sm font-black hover:bg-gray-800 transition-all shadow-xl shadow-gray-200"
+
+                <div>
+                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                    <DollarSign size={12} /> Valor Estimado
+                  </label>
+                  <input 
+                    type="number" 
+                    value={form.value}
+                    onChange={(e) => setForm({...form, value: e.target.value})}
+                    placeholder="R$ 0,00"
+                    className="w-full p-4 rounded-2xl border border-gray-100 bg-gray-50 text-sm font-bold focus:ring-2 focus:ring-gray-900/5 transition-all outline-none" 
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                    <Zap size={12} /> Origem do Lead
+                  </label>
+                  <select 
+                    value={form.source}
+                    onChange={(e) => setForm({...form, source: e.target.value})}
+                    className="w-full p-4 rounded-2xl border border-gray-100 bg-gray-50 text-sm font-bold focus:ring-2 focus:ring-gray-900/5 transition-all outline-none appearance-none"
                   >
-                    Adicionar ao Funil
+                    <option>Manual</option>
+                    <option>LinkedIn</option>
+                    <option>Website</option>
+                    <option>Indicação</option>
+                    <option>Instagram</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                    <Tag size={12} /> Tags (separadas por vírgula)
+                  </label>
+                  <input 
+                    type="text" 
+                    value={form.tags}
+                    onChange={(e) => setForm({...form, tags: e.target.value})}
+                    placeholder="VIP, Urgente, Demo"
+                    className="w-full p-4 rounded-2xl border border-gray-100 bg-gray-50 text-sm font-bold focus:ring-2 focus:ring-gray-900/5 transition-all outline-none" 
+                  />
+                </div>
+
+                <div className="col-span-2 pt-6">
+                  <button 
+                    onClick={handleCreateDeal}
+                    className="w-full bg-gray-900 text-white py-4 rounded-2xl text-sm font-black hover:bg-gray-800 transition-all shadow-xl shadow-gray-200 flex items-center justify-center gap-2"
+                  >
+                    <Check size={18} /> Criar Negócio no Funil
                   </button>
                 </div>
               </div>

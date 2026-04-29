@@ -3,6 +3,7 @@
     {
       "id": "u1",
       "name": "Jefferson Jr",
+      "email": "contato@jeffersonjunior.com.br",
       "role": "Administrador",
       "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Jefferson"
     }

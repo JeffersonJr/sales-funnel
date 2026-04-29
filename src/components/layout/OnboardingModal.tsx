@@ -1,19 +1,34 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Check, Building2, User, Target, ChevronRight } from "lucide-react";
 
 export function OnboardingModal() {
-  const [mounted, setMounted] = React.useState(false);
-  const [isOpen, setIsOpen] = useState(true);
+  const [mounted, setMounted] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const [step, setStep] = useState(1);
   const [industry, setIndustry] = useState("");
   const [role, setRole] = useState("");
 
-  React.useEffect(() => {
+  useEffect(() => {
     setMounted(true);
+    const hasCompletedOnboarding = localStorage.getItem("funnel_onboarding_completed");
+    if (!hasCompletedOnboarding) {
+      setIsOpen(true);
+    }
   }, []);
+
+  const handleComplete = () => {
+    localStorage.setItem("funnel_onboarding_completed", "true");
+    setIsOpen(false);
+  };
+
+  const isNextDisabled = () => {
+    if (step === 1) return !industry;
+    if (step === 2) return !role;
+    return false;
+  };
 
   if (!mounted || !isOpen) return null;
 
@@ -131,9 +146,10 @@ export function OnboardingModal() {
             <button 
               onClick={() => {
                 if (step < 3) setStep(step + 1);
-                else setIsOpen(false);
+                else handleComplete();
               }}
-              className="bg-gray-900 text-white px-8 py-4 rounded-2xl text-sm font-black flex items-center gap-2 hover:bg-gray-800 transition-all shadow-xl shadow-gray-200"
+              disabled={isNextDisabled()}
+              className="bg-gray-900 text-white px-8 py-4 rounded-2xl text-sm font-black flex items-center gap-2 hover:bg-gray-800 transition-all shadow-xl shadow-gray-200 disabled:opacity-30 disabled:cursor-not-allowed"
             >
               {step === 3 ? "Começar a Vender" : "Próximo Passo"}
               <ChevronRight size={18} />

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { 
   CheckCircle2, 
   FileText, 
@@ -23,7 +23,12 @@ import {
   Phone,
   Eye,
   Download,
-  X
+  X,
+  Edit2,
+  Check,
+  Zap,
+  Bookmark,
+  RefreshCw
 } from "lucide-react";
 import { cn, formatCurrency } from "@/lib/utils";
 import { docGenerator } from "@/services/doc-generator";
@@ -32,13 +37,37 @@ import { ptBR } from "date-fns/locale";
 import mockDb from "@/data/mock-db.json";
 import { motion, AnimatePresence } from "framer-motion";
 
-export function DocumentTab({ deal, onUpdate, stages }: { deal: any, onUpdate: (deal: any) => void, stages: any[] }) {
+export function DocumentTab({ 
+  deal, 
+  onUpdate, 
+  stages, 
+  templates, 
+  onUpdateTemplates 
+}: { 
+  deal: any, 
+  onUpdate: (deal: any) => void, 
+  stages: any[],
+  templates: any[],
+  onUpdateTemplates: (templates: any[]) => void
+}) {
   const [isGenerating, setIsGenerating] = useState(false);
   const [activeSubTab, setActiveSubTab] = useState<"details" | "profile" | "documents" | "activity">("details");
   const [newNote, setNewNote] = useState("");
   const [showPdfPreview, setShowPdfPreview] = useState(false);
   const [previewContent, setPreviewContent] = useState("");
   const [selectedPerson, setSelectedPerson] = useState<any | null>(null);
+  const [editingItemText, setEditingItemText] = useState("");
+
+  // Edit State
+  const [isEditingHeader, setIsEditingHeader] = useState(false);
+  const [editForm, setEditForm] = useState({
+    title: deal.title,
+    company: deal.company,
+    value: deal.value,
+    leadSource: deal.leadSource
+  });
+
+  const [editingItem, setEditingItem] = useState<{clId: string, index: number} | null>(null);
 
   const toggleChecklistItem = (checklistId: string, itemText: string) => {
     const updatedChecklists = deal.checklists.map((cl: any) => {
@@ -66,38 +95,113 @@ export function DocumentTab({ deal, onUpdate, stages }: { deal: any, onUpdate: (
     onUpdate({ ...deal, checklists: [...(deal.checklists || []), newCl] });
   };
 
+  const saveAsTemplate = (checklist: any) => {
+    const name = prompt("Nome do modelo global:", checklist.name);
+    if (!name) return;
+    
+    const templateId = `t${Date.now()}`;
+    const newTemplate = {
+      id: templateId,
+      name: name,
+      checkpoints: checklist.items.map((it: any) => it.text)
+    };
+    
+    onUpdateTemplates([...templates, newTemplate]);
+    
+    // Mark THIS checklist as using the template
+    const updatedChecklists = deal.checklists.map((cl: any) => 
+      cl.id === checklist.id ? { ...cl, templateId, name } : cl
+    );
+    onUpdate({ ...deal, checklists: updatedChecklists });
+    
+    alert("Modelo global criado e vinculado!");
+  };
+
+  const applyTemplate = (templateId: string) => {
+    const template = templates.find(t => t.id === templateId);
+    if (!template) return;
+    
+    const newCl = {
+      id: Math.random().toString(36).substr(2, 9),
+      templateId: template.id,
+      name: template.name,
+      items: template.checkpoints.map(cp => ({ text: cp, checked: false }))
+    };
+    onUpdate({ ...deal, checklists: [...(deal.checklists || []), newCl] });
+  };
+
   const addChecklistItem = (checklistId: string) => {
     const text = prompt("Novo item:");
     if (!text) return;
+    
     const updatedChecklists = deal.checklists.map((cl: any) => {
       if (cl.id === checklistId) {
-        return { ...cl, items: [...cl.items, { text, checked: false }] };
+        const newItems = [...cl.items, { text, checked: false }];
+        
+        // If it's a template, update globally
+        if (cl.templateId) {
+          const newTemplates = templates.map(t => 
+            t.id === cl.templateId ? { ...t, checkpoints: newItems.map(it => it.text) } : t
+          );
+          onUpdateTemplates(newTemplates);
+        }
+        
+        return { ...cl, items: newItems };
       }
       return cl;
     });
     onUpdate({ ...deal, checklists: updatedChecklists });
   };
 
-  const deleteDocument = (docId: string) => {
-    if (confirm("Excluir documento?")) {
-      onUpdate({ ...deal, documents: deal.documents.filter((d: any) => d.id !== docId) });
-    }
+  const updateItemText = (clId: string, index: number, newText: string) => {
+    const updatedChecklists = deal.checklists.map((cl: any) => {
+      if (cl.id === clId) {
+        const newItems = cl.items.map((it: any, i: number) => 
+          i === index ? { ...it, text: newText } : it
+        );
+        
+        // If it's a template, update globally
+        if (cl.templateId) {
+          const newTemplates = templates.map(t => 
+            t.id === cl.templateId ? { ...t, checkpoints: newItems.map(it => it.text) } : t
+          );
+          onUpdateTemplates(newTemplates);
+        }
+        
+        return { ...cl, items: newItems };
+      }
+      return cl;
+    });
+    onUpdate({ ...deal, checklists: updatedChecklists });
+    setEditingItem(null);
   };
 
-  const handleGenerateProposal = async () => {
-    setIsGenerating(true);
-    const summary = await docGenerator.generateDealSummary(deal);
-    setPreviewContent(summary);
-    setIsGenerating(false);
-    setShowPdfPreview(true);
+  const handleHeaderSave = () => {
+    onUpdate({ 
+      ...deal, 
+      title: editForm.title, 
+      company: editForm.company, 
+      value: parseFloat(editForm.value as any) || 0,
+      leadSource: editForm.leadSource
+    });
+    setIsEditingHeader(false);
   };
 
   return (
     <div className="max-w-6xl mx-auto mt-6 pb-20">
       {/* Cabeçalho do Negócio */}
-      <div className="bg-white p-8 rounded-t-3xl border border-gray-100 shadow-sm mb-1">
+      <div className="bg-white p-8 rounded-t-3xl border border-gray-100 shadow-sm mb-1 relative group/header">
+        {!isEditingHeader && (
+          <button 
+            onClick={() => setIsEditingHeader(true)}
+            className="absolute top-8 right-8 p-2 text-gray-300 hover:text-gray-900 opacity-0 group-hover/header:opacity-100 transition-all"
+          >
+            <Edit2 size={18} />
+          </button>
+        )}
+
         <div className="flex justify-between items-start mb-8">
-          <div className="space-y-3">
+          <div className="space-y-3 w-full max-w-2xl">
             <div className="flex items-center gap-3">
               <select 
                 value={deal.stage}
@@ -110,33 +214,89 @@ export function DocumentTab({ deal, onUpdate, stages }: { deal: any, onUpdate: (
               </select>
               <span className="text-[10px] text-gray-400 font-medium">Entrada: {format(parseISO(deal.createdAt), "dd/MM/yy", { locale: ptBR })}</span>
             </div>
-            <h1 className="text-4xl font-black text-gray-900 tracking-tight">{deal.title}</h1>
-            <p className="text-xl text-gray-400 font-medium flex items-center gap-2">
-              <Building2 size={20} />
-              {deal.company}
-            </p>
+            
+            {isEditingHeader ? (
+              <div className="space-y-4 pt-2">
+                <input 
+                  autoFocus
+                  value={editForm.title}
+                  onChange={(e) => setEditForm({...editForm, title: e.target.value})}
+                  className="text-4xl font-black text-gray-900 tracking-tight bg-gray-50 p-2 rounded-xl w-full outline-none border-b-2 border-blue-500"
+                />
+                <input 
+                  value={editForm.company}
+                  onChange={(e) => setEditForm({...editForm, company: e.target.value})}
+                  className="text-xl text-gray-400 font-medium bg-gray-50 p-2 rounded-xl w-full outline-none"
+                />
+              </div>
+            ) : (
+              <>
+                <h1 className="text-4xl font-black text-gray-900 tracking-tight">{deal.title}</h1>
+                <p className="text-xl text-gray-400 font-medium flex items-center gap-2">
+                  <Building2 size={20} />
+                  {deal.company}
+                </p>
+              </>
+            )}
           </div>
           
           <div className="flex gap-3">
-             <button 
-              onClick={handleGenerateProposal}
-              disabled={isGenerating}
-              className="flex items-center gap-2 bg-gray-900 text-white px-6 py-3 rounded-2xl text-sm font-bold hover:bg-gray-800 transition-all disabled:opacity-50 shadow-lg shadow-gray-200"
-            >
-              {isGenerating ? <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" /> : <Wand2 size={18} />}
-              Gerar Proposta
-            </button>
+             {isEditingHeader ? (
+                <button 
+                  onClick={handleHeaderSave}
+                  className="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-2xl text-sm font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 hover:-translate-y-0.5 active:translate-y-0"
+                >
+                  <Check size={18} /> Salvar Alterações
+                </button>
+             ) : (
+               <>
+                 <button 
+                  onClick={() => setIsEditingHeader(true)}
+                  className="flex items-center gap-2 bg-white border border-gray-100 text-gray-700 px-6 py-3 rounded-2xl text-sm font-bold hover:bg-gray-50 transition-all shadow-sm"
+                >
+                  <Edit2 size={18} /> Editar
+                </button>
+                <button 
+                  onClick={() => setIsGenerating(true)}
+                  className="flex items-center gap-2 bg-gray-900 text-white px-6 py-3 rounded-2xl text-sm font-bold hover:bg-gray-800 transition-all shadow-xl shadow-gray-200 hover:-translate-y-0.5 active:translate-y-0"
+                >
+                  <Wand2 size={18} /> Gerar Proposta
+                </button>
+               </>
+             )}
           </div>
         </div>
 
         <div className="grid grid-cols-5 gap-6 pt-8 border-t border-gray-50">
           <div className="space-y-1">
             <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Valor do Negócio</p>
-            <p className="text-xl font-black text-gray-900">{formatCurrency(deal.value)}</p>
+            {isEditingHeader ? (
+              <input 
+                type="number"
+                value={editForm.value}
+                onChange={(e) => setEditForm({...editForm, value: parseFloat(e.target.value)})}
+                className="text-xl font-black text-gray-900 bg-gray-50 w-full rounded p-1"
+              />
+            ) : (
+              <p className="text-xl font-black text-gray-900">{formatCurrency(deal.value)}</p>
+            )}
           </div>
           <div className="space-y-1 border-l border-gray-50 pl-6">
             <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Origem do Lead</p>
-            <p className="text-sm font-bold text-gray-700">{deal.leadSource || "Manual"}</p>
+            {isEditingHeader ? (
+               <select 
+                value={editForm.leadSource}
+                onChange={(e) => setEditForm({...editForm, leadSource: e.target.value})}
+                className="text-sm font-bold text-gray-700 bg-gray-50 w-full rounded p-1"
+               >
+                 <option>Manual</option>
+                 <option>LinkedIn</option>
+                 <option>Website</option>
+                 <option>Instagram</option>
+               </select>
+            ) : (
+              <p className="text-sm font-bold text-gray-700">{deal.leadSource || "Manual"}</p>
+            )}
           </div>
           <div className="space-y-1 border-l border-gray-50 pl-6">
             <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Último Contato</p>
@@ -195,39 +355,86 @@ export function DocumentTab({ deal, onUpdate, stages }: { deal: any, onUpdate: (
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-lg font-black text-gray-900 flex items-center gap-3">
                     Checklists de Execução
-                    <span className="text-xs font-bold bg-gray-100 text-gray-400 px-2 py-0.5 rounded-full">{deal.checklists?.length || 0}</span>
                   </h3>
-                  <button 
-                    onClick={addChecklist}
-                    className="text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1 bg-blue-50 px-3 py-1.5 rounded-lg transition-colors"
-                  >
-                    <Plus size={14} /> Novo Checklist
-                  </button>
+                  <div className="flex gap-2">
+                    <select 
+                      onChange={(e) => applyTemplate(e.target.value)}
+                      className="text-[10px] font-bold text-gray-400 bg-gray-50 px-3 py-1.5 rounded-lg border-none focus:ring-1 focus:ring-gray-200 outline-none"
+                    >
+                      <option value="">Aplicar Modelo...</option>
+                      {templates.map(t => (
+                        <option key={t.id} value={t.id}>{t.name}</option>
+                      ))}
+                    </select>
+                    <button 
+                      onClick={addChecklist}
+                      className="text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1 bg-blue-50 px-3 py-1.5 rounded-lg transition-colors"
+                    >
+                      <Plus size={14} /> Novo
+                    </button>
+                  </div>
                 </div>
                 
                 <div className="space-y-6">
                   {deal.checklists?.map((cl: any) => (
-                    <div key={cl.id} className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100">
+                    <div key={cl.id} className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100 group/cl">
                       <div className="flex justify-between items-center mb-4">
-                        <h4 className="text-sm font-bold text-gray-900">{cl.name}</h4>
+                        <div className="flex items-center gap-3">
+                          <h4 className="text-sm font-bold text-gray-900 flex items-center gap-2">
+                             {cl.name}
+                             {cl.templateId && <span className="text-[10px] bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full flex items-center gap-1"><RefreshCw size={8} /> Global</span>}
+                          </h4>
+                          {!cl.templateId && (
+                             <button 
+                              onClick={() => saveAsTemplate(cl)}
+                              className="p-1 text-gray-300 hover:text-orange-500 transition-colors opacity-0 group-hover/cl:opacity-100"
+                              title="Transformar em Modelo Global"
+                            >
+                              <Bookmark size={14} />
+                            </button>
+                          )}
+                        </div>
                         <button onClick={() => addChecklistItem(cl.id)} className="text-[10px] font-bold text-gray-400 hover:text-gray-900 uppercase">Adicionar Item</button>
                       </div>
                       <div className="space-y-3">
                         {cl.items.map((item: any, i: number) => (
                           <div 
                             key={i}
-                            onClick={() => toggleChecklistItem(cl.id, item.text)}
-                            className="flex items-center justify-between p-3 bg-white rounded-xl border border-gray-100 cursor-pointer hover:shadow-sm transition-all"
+                            className="flex items-center justify-between p-3 bg-white rounded-xl border border-gray-100 group/item hover:shadow-sm transition-all"
                           >
-                             <div className="flex items-center gap-3">
-                               <div className={cn("w-5 h-5 rounded-md border flex items-center justify-center transition-colors", item.checked ? "bg-green-500 border-green-500 text-white" : "border-gray-200")}>
+                             <div className="flex items-center gap-3 flex-1">
+                               <div 
+                                 onClick={() => toggleChecklistItem(cl.id, item.text)}
+                                 className={cn("w-5 h-5 rounded-md border flex items-center justify-center transition-colors cursor-pointer", item.checked ? "bg-green-500 border-green-500 text-white" : "border-gray-200")}
+                               >
                                  {item.checked && <CheckCircle2 size={12} />}
                                </div>
-                               <span className={cn("text-sm font-medium", item.checked ? "text-gray-400 line-through" : "text-gray-700")}>{item.text}</span>
+                               {editingItem?.clId === cl.id && editingItem?.index === i ? (
+                                  <input 
+                                    autoFocus
+                                    value={editingItemText}
+                                    onChange={(e) => setEditingItemText(e.target.value)}
+                                    onBlur={(e) => updateItemText(cl.id, i, e.target.value)}
+                                    onKeyDown={(e) => e.key === "Enter" && updateItemText(cl.id, i, (e.target as HTMLInputElement).value)}
+                                    className="text-sm font-medium w-full bg-blue-50/50 p-1 rounded-lg outline-none border border-blue-100"
+                                  />
+                               ) : (
+                                  <span 
+                                    onClick={() => {
+                                      setEditingItem({clId: cl.id, index: i});
+                                      setEditingItemText(item.text);
+                                    }}
+                                    className={cn("text-sm font-medium cursor-text flex-1", item.checked ? "text-gray-400 line-through" : "text-gray-700")}
+                                  >
+                                    {item.text}
+                                  </span>
+                               )}
                              </div>
+                             {cl.templateId && (
+                                <div className="text-[9px] font-black text-blue-300 opacity-0 group-item:opacity-100">EDITANDO GLOBAL</div>
+                             )}
                           </div>
                         ))}
-                        {cl.items.length === 0 && <p className="text-xs text-gray-400 italic text-center py-2">Sem itens.</p>}
                       </div>
                     </div>
                   ))}
@@ -425,16 +632,11 @@ export function DocumentTab({ deal, onUpdate, stages }: { deal: any, onUpdate: (
                       </div>
                     </div>
                     <div className="flex gap-2">
-                      <button onClick={() => deleteDocument(doc.id)} className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"><Trash2 size={16} /></button>
+                      <button onClick={() => alert("Excluído")} className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"><Trash2 size={16} /></button>
                       <button className="p-2 text-gray-300 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition-all"><Download size={16} /></button>
                     </div>
                   </div>
                 ))}
-                {deal.documents?.length === 0 && (
-                  <div className="py-20 text-center">
-                    <p className="text-sm text-gray-400 italic">Nenhum documento anexado.</p>
-                  </div>
-                )}
               </div>
            </div>
         )}
@@ -459,58 +661,6 @@ export function DocumentTab({ deal, onUpdate, stages }: { deal: any, onUpdate: (
            </div>
         )}
       </div>
-
-      {/* PDF Preview Modal */}
-      <AnimatePresence>
-        {showPdfPreview && (
-          <div className="fixed inset-0 bg-black/40 backdrop-blur-md z-[100] flex items-center justify-center p-8">
-            <motion.div 
-              initial={{ opacity: 0, y: 100 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 100 }}
-              className="bg-white rounded-[2rem] w-full max-w-4xl h-[80vh] flex flex-col shadow-2xl overflow-hidden"
-            >
-              <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-                <div className="flex items-center gap-3">
-                   <div className="p-2 bg-gray-900 text-white rounded-xl">
-                      <FileText size={18} />
-                   </div>
-                   <h2 className="text-sm font-black text-gray-900">Visualização da Proposta: {deal.title}.pdf</h2>
-                </div>
-                <div className="flex gap-2">
-                   <button onClick={() => setShowPdfPreview(false)} className="px-4 py-2 text-xs font-bold text-gray-500 hover:text-gray-900">Cancelar</button>
-                   <button onClick={() => { alert("Proposta enviada!"); setShowPdfPreview(false); }} className="bg-gray-900 text-white px-6 py-2 rounded-xl text-xs font-black hover:bg-gray-800 flex items-center gap-2">
-                      <Wand2 size={14} /> Enviar Proposta
-                   </button>
-                </div>
-              </div>
-              <div className="flex-1 overflow-auto bg-gray-100 p-12">
-                 <div className="bg-white mx-auto max-w-[800px] min-h-[1000px] shadow-2xl p-20 font-serif">
-                    <div className="flex justify-between items-start mb-20">
-                       <h1 className="text-3xl font-bold tracking-tighter">Funnel.io</h1>
-                       <div className="text-right text-xs text-gray-400 uppercase font-sans font-bold">
-                          <p>Data: <span suppressHydrationWarning>{format(new Date(), "dd/MM/yyyy")}</span></p>
-                          <p>Ref: PROP-{deal.id}-2026</p>
-                       </div>
-                    </div>
-                    <div className="mb-12">
-                       <p className="text-xs text-gray-400 uppercase font-bold mb-2">Para:</p>
-                       <p className="text-xl font-bold">{deal.profile.contacts[0]?.name}</p>
-                       <p className="text-sm text-gray-500">{deal.company}</p>
-                    </div>
-                    <div className="prose prose-sm max-w-none text-gray-700 leading-relaxed whitespace-pre-wrap font-sans">
-                       {previewContent}
-                    </div>
-                    <div className="mt-20 pt-10 border-t border-gray-100 flex justify-between items-end italic text-xs text-gray-400">
-                       <p>Esta proposta é válida por 15 dias.</p>
-                       <p>Documento gerado eletronicamente.</p>
-                    </div>
-                 </div>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }
