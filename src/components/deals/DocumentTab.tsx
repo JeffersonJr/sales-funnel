@@ -28,7 +28,11 @@ import {
   Check,
   Zap,
   Bookmark,
-  RefreshCw
+  RefreshCw,
+  MoreVertical,
+  Video,
+  Coffee,
+  MapPin
 } from "lucide-react";
 import { cn, formatCurrency } from "@/lib/utils";
 import { docGenerator } from "@/services/doc-generator";
@@ -36,6 +40,8 @@ import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import mockDb from "@/data/mock-db.json";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
+import { MeetingModal } from "./MeetingModal";
 
 export function DocumentTab({ 
   deal, 
@@ -56,7 +62,7 @@ export function DocumentTab({
   const [showPdfPreview, setShowPdfPreview] = useState(false);
   const [previewContent, setPreviewContent] = useState("");
   const [selectedPerson, setSelectedPerson] = useState<any | null>(null);
-  const [editingItemText, setEditingItemText] = useState("");
+  const [showMeetingModal, setShowMeetingModal] = useState(false);
 
   // Edit State
   const [isEditingHeader, setIsEditingHeader] = useState(false);
@@ -68,6 +74,8 @@ export function DocumentTab({
   });
 
   const [editingItem, setEditingItem] = useState<{clId: string, index: number} | null>(null);
+  const [editingItemText, setEditingItemText] = useState("");
+  const [editingChecklistTitleId, setEditingChecklistTitleId] = useState<string | null>(null);
 
   const toggleChecklistItem = (checklistId: string, itemText: string) => {
     const updatedChecklists = deal.checklists.map((cl: any) => {
@@ -85,36 +93,46 @@ export function DocumentTab({
   };
 
   const addChecklist = () => {
-    const name = prompt("Nome do novo checklist:");
-    if (!name) return;
+    const newId = Math.random().toString(36).substr(2, 9);
     const newCl = {
-      id: Math.random().toString(36).substr(2, 9),
-      name,
+      id: newId,
+      name: "Novo Checklist",
       items: []
     };
     onUpdate({ ...deal, checklists: [...(deal.checklists || []), newCl] });
+    setEditingChecklistTitleId(newId);
+    toast.success("Checklist adicionado");
+  };
+
+  const updateChecklistTitle = (id: string, newName: string) => {
+    const updatedChecklists = deal.checklists.map((cl: any) => 
+      cl.id === id ? { ...cl, name: newName || "Checklist sem nome" } : cl
+    );
+    onUpdate({ ...deal, checklists: updatedChecklists });
+    setEditingChecklistTitleId(null);
+  };
+
+  const deleteChecklist = (id: string) => {
+    onUpdate({ ...deal, checklists: deal.checklists.filter((cl: any) => cl.id !== id) });
+    toast.error("Checklist removido");
   };
 
   const saveAsTemplate = (checklist: any) => {
-    const name = prompt("Nome do modelo global:", checklist.name);
-    if (!name) return;
-    
     const templateId = `t${Date.now()}`;
     const newTemplate = {
       id: templateId,
-      name: name,
+      name: checklist.name,
       checkpoints: checklist.items.map((it: any) => it.text)
     };
     
     onUpdateTemplates([...templates, newTemplate]);
     
-    // Mark THIS checklist as using the template
     const updatedChecklists = deal.checklists.map((cl: any) => 
-      cl.id === checklist.id ? { ...cl, templateId, name } : cl
+      cl.id === checklist.id ? { ...cl, templateId } : cl
     );
     onUpdate({ ...deal, checklists: updatedChecklists });
     
-    alert("Modelo global criado e vinculado!");
+    toast.success("Modelo global criado com sucesso!");
   };
 
   const applyTemplate = (templateId: string) => {
@@ -125,27 +143,47 @@ export function DocumentTab({
       id: Math.random().toString(36).substr(2, 9),
       templateId: template.id,
       name: template.name,
-      items: template.checkpoints.map(cp => ({ text: cp, checked: false }))
+      items: template.checkpoints.map((cp: string) => ({ text: cp, checked: false }))
     };
     onUpdate({ ...deal, checklists: [...(deal.checklists || []), newCl] });
+    toast.success(`Modelo "${template.name}" aplicado`);
   };
 
   const addChecklistItem = (checklistId: string) => {
-    const text = prompt("Novo item:");
-    if (!text) return;
-    
     const updatedChecklists = deal.checklists.map((cl: any) => {
       if (cl.id === checklistId) {
-        const newItems = [...cl.items, { text, checked: false }];
+        const newItem = { text: "Novo Item", checked: false };
+        const newItems = [...cl.items, newItem];
         
-        // If it's a template, update globally
         if (cl.templateId) {
           const newTemplates = templates.map(t => 
-            t.id === cl.templateId ? { ...t, checkpoints: newItems.map(it => it.text) } : t
+            t.id === cl.templateId ? { ...t, checkpoints: newItems.map((it: any) => it.text) } : t
           );
           onUpdateTemplates(newTemplates);
         }
         
+        return { ...cl, items: newItems };
+      }
+      return cl;
+    });
+    onUpdate({ ...deal, checklists: updatedChecklists });
+    
+    // Set to editing mode for the newly added item
+    const cl = updatedChecklists.find((c: any) => c.id === checklistId);
+    setEditingItem({ clId: checklistId, index: cl.items.length - 1 });
+    setEditingItemText("Novo Item");
+  };
+
+  const deleteChecklistItem = (checklistId: string, index: number) => {
+    const updatedChecklists = deal.checklists.map((cl: any) => {
+      if (cl.id === checklistId) {
+        const newItems = cl.items.filter((_: any, i: number) => i !== index);
+        if (cl.templateId) {
+          const newTemplates = templates.map(t => 
+            t.id === cl.templateId ? { ...t, checkpoints: newItems.map((it: any) => it.text) } : t
+          );
+          onUpdateTemplates(newTemplates);
+        }
         return { ...cl, items: newItems };
       }
       return cl;
@@ -157,13 +195,12 @@ export function DocumentTab({
     const updatedChecklists = deal.checklists.map((cl: any) => {
       if (cl.id === clId) {
         const newItems = cl.items.map((it: any, i: number) => 
-          i === index ? { ...it, text: newText } : it
+          i === index ? { ...it, text: newText || "Item sem nome" } : it
         );
         
-        // If it's a template, update globally
         if (cl.templateId) {
           const newTemplates = templates.map(t => 
-            t.id === cl.templateId ? { ...t, checkpoints: newItems.map(it => it.text) } : t
+            t.id === cl.templateId ? { ...t, checkpoints: newItems.map((it: any) => it.text) } : t
           );
           onUpdateTemplates(newTemplates);
         }
@@ -185,27 +222,43 @@ export function DocumentTab({
       leadSource: editForm.leadSource
     });
     setIsEditingHeader(false);
+    toast.success("Negócio atualizado");
+  };
+
+  const handleGenerateProposal = async () => {
+    setIsGenerating(true);
+    const summary = await docGenerator.generateDealSummary(deal);
+    setPreviewContent(summary);
+    setIsGenerating(false);
+    setShowPdfPreview(true);
+    toast.success("Proposta gerada pela IA");
+  };
+
+  const handleScheduleActivity = (meeting: any) => {
+    const updatedActivities = [...(deal.activities || []), meeting];
+    onUpdate({ ...deal, activities: updatedActivities });
+    toast.success(`Atividade "${meeting.title}" agendada!`);
   };
 
   return (
     <div className="max-w-6xl mx-auto mt-6 pb-20">
+      <MeetingModal 
+        isOpen={showMeetingModal}
+        onClose={() => setShowMeetingModal(false)}
+        onSchedule={handleScheduleActivity}
+        contacts={deal.profile.contacts || []}
+      />
       {/* Cabeçalho do Negócio */}
       <div className="bg-white p-8 rounded-t-3xl border border-gray-100 shadow-sm mb-1 relative group/header">
-        {!isEditingHeader && (
-          <button 
-            onClick={() => setIsEditingHeader(true)}
-            className="absolute top-8 right-8 p-2 text-gray-300 hover:text-gray-900 opacity-0 group-hover/header:opacity-100 transition-all"
-          >
-            <Edit2 size={18} />
-          </button>
-        )}
-
         <div className="flex justify-between items-start mb-8">
           <div className="space-y-3 w-full max-w-2xl">
             <div className="flex items-center gap-3">
               <select 
                 value={deal.stage}
-                onChange={(e) => onUpdate({ ...deal, stage: e.target.value })}
+                onChange={(e) => {
+                  onUpdate({ ...deal, stage: e.target.value });
+                  toast.info(`Estágio alterado para: ${stages.find(s => s.id === e.target.value)?.title}`);
+                }}
                 className="text-xs font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-3 py-1.5 rounded-lg border-none focus:ring-2 focus:ring-blue-100 cursor-pointer"
               >
                 {stages.map(s => (
@@ -257,7 +310,7 @@ export function DocumentTab({
                   <Edit2 size={18} /> Editar
                 </button>
                 <button 
-                  onClick={() => setIsGenerating(true)}
+                  onClick={handleGenerateProposal}
                   className="flex items-center gap-2 bg-gray-900 text-white px-6 py-3 rounded-2xl text-sm font-bold hover:bg-gray-800 transition-all shadow-xl shadow-gray-200 hover:-translate-y-0.5 active:translate-y-0"
                 >
                   <Wand2 size={18} /> Gerar Proposta
@@ -370,7 +423,7 @@ export function DocumentTab({
                       onClick={addChecklist}
                       className="text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1 bg-blue-50 px-3 py-1.5 rounded-lg transition-colors"
                     >
-                      <Plus size={14} /> Novo
+                      <Plus size={14} /> Novo Checklist
                     </button>
                   </div>
                 </div>
@@ -380,10 +433,23 @@ export function DocumentTab({
                     <div key={cl.id} className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100 group/cl">
                       <div className="flex justify-between items-center mb-4">
                         <div className="flex items-center gap-3">
-                          <h4 className="text-sm font-bold text-gray-900 flex items-center gap-2">
-                             {cl.name}
-                             {cl.templateId && <span className="text-[10px] bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full flex items-center gap-1"><RefreshCw size={8} /> Global</span>}
-                          </h4>
+                          {editingChecklistTitleId === cl.id ? (
+                            <input 
+                              autoFocus
+                              defaultValue={cl.name}
+                              onBlur={(e) => updateChecklistTitle(cl.id, e.target.value)}
+                              onKeyDown={(e) => e.key === "Enter" && updateChecklistTitle(cl.id, (e.target as HTMLInputElement).value)}
+                              className="text-sm font-black text-gray-900 bg-transparent border-b border-blue-500 outline-none"
+                            />
+                          ) : (
+                            <h4 
+                              onClick={() => setEditingChecklistTitleId(cl.id)}
+                              className="text-sm font-bold text-gray-900 flex items-center gap-2 cursor-text hover:text-blue-600 transition-colors"
+                            >
+                               {cl.name}
+                               {cl.templateId && <span className="text-[10px] bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full flex items-center gap-1 font-black"><RefreshCw size={8} /> GLOBAL</span>}
+                            </h4>
+                          )}
                           {!cl.templateId && (
                              <button 
                               onClick={() => saveAsTemplate(cl)}
@@ -394,7 +460,10 @@ export function DocumentTab({
                             </button>
                           )}
                         </div>
-                        <button onClick={() => addChecklistItem(cl.id)} className="text-[10px] font-bold text-gray-400 hover:text-gray-900 uppercase">Adicionar Item</button>
+                        <div className="flex items-center gap-2 opacity-0 group-hover/cl:opacity-100 transition-all">
+                          <button onClick={() => addChecklistItem(cl.id)} className="text-[10px] font-bold text-gray-400 hover:text-gray-900 uppercase">Adicionar Item</button>
+                          <button onClick={() => deleteChecklist(cl.id)} className="text-gray-300 hover:text-red-500"><Trash2 size={14} /></button>
+                        </div>
                       </div>
                       <div className="space-y-3">
                         {cl.items.map((item: any, i: number) => (
@@ -430,9 +499,10 @@ export function DocumentTab({
                                   </span>
                                )}
                              </div>
-                             {cl.templateId && (
-                                <div className="text-[9px] font-black text-blue-300 opacity-0 group-item:opacity-100">EDITANDO GLOBAL</div>
-                             )}
+                             <div className="flex items-center gap-2 opacity-0 group-item:opacity-100 transition-all">
+                                {cl.templateId && <div className="text-[9px] font-black text-blue-300 mr-2">EDITANDO GLOBAL</div>}
+                                <button onClick={() => deleteChecklistItem(cl.id, i)} className="text-gray-200 hover:text-red-500"><X size={14} /></button>
+                             </div>
                           </div>
                         ))}
                       </div>
@@ -455,6 +525,7 @@ export function DocumentTab({
                       if(newNote) {
                         onUpdate({...deal, notes: [{id: Date.now(), text: newNote, author: "Jefferson Jr", date: new Date().toISOString()}, ...(deal.notes || [])]});
                         setNewNote("");
+                        toast.success("Nota salva");
                       }
                     }} className="bg-gray-900 text-white px-6 py-2.5 rounded-xl text-xs font-bold hover:bg-gray-800 shadow-md">Salvar Nota</button>
                   </div>
@@ -477,14 +548,17 @@ export function DocumentTab({
                <section>
                 <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-6">Ações Estratégicas</h3>
                 <div className="grid grid-cols-1 gap-3">
-                  <button onClick={() => alert("Agendamento aberto!")} className="w-full text-left p-4 rounded-2xl border border-gray-100 text-sm font-bold text-gray-700 hover:bg-gray-50 hover:border-gray-200 transition-all flex items-center justify-between group">
+                  <button 
+                    onClick={() => setShowMeetingModal(true)} 
+                    className="w-full text-left p-4 rounded-2xl border border-gray-100 text-sm font-bold text-gray-700 hover:bg-gray-50 hover:border-gray-200 transition-all flex items-center justify-between group"
+                  >
                     <div className="flex items-center gap-3">
                       <Calendar size={18} className="text-orange-400" />
-                      Agendar Reunião
+                      Agendar Atividade
                     </div>
                     <ChevronRight size={14} className="text-gray-300 group-hover:translate-x-1 transition-transform" />
                   </button>
-                  <button className="w-full text-left p-4 rounded-2xl border border-gray-100 text-sm font-bold text-gray-700 hover:bg-gray-50 hover:border-gray-200 transition-all flex items-center justify-between group">
+                  <button onClick={() => toast.info("Interface de e-mail em desenvolvimento")} className="w-full text-left p-4 rounded-2xl border border-gray-100 text-sm font-bold text-gray-700 hover:bg-gray-50 hover:border-gray-200 transition-all flex items-center justify-between group">
                     <div className="flex items-center gap-3">
                       <Mail size={18} className="text-blue-400" />
                       Enviar E-mail
@@ -496,11 +570,25 @@ export function DocumentTab({
 
               <section>
                 <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-6">Próximos Compromissos</h3>
-                <div className="space-y-3">
+                <div className="space-y-4">
                    {deal.activities?.map((act: any) => (
-                     <div key={act.id} className="p-4 bg-orange-50/50 border border-orange-100 rounded-2xl">
-                        <p className="text-sm font-black text-orange-700 mb-1">{act.title}</p>
-                        <p className="text-[10px] font-bold text-orange-600/70">{format(parseISO(act.date), "eeee, dd 'de' MMMM 'às' HH:mm", { locale: ptBR })}</p>
+                     <div key={act.id} className="p-4 bg-white border border-gray-100 rounded-2xl hover:border-gray-200 transition-all shadow-sm">
+                        <div className="flex justify-between items-start mb-2">
+                           <div className="p-1.5 rounded-lg bg-gray-50 text-gray-400">
+                              {act.type === 'online' && <Video size={14} />}
+                              {act.type === 'cafe' && <Coffee size={14} />}
+                              {act.type === 'presencial' && <MapPin size={14} />}
+                           </div>
+                           <span className="text-[9px] font-black uppercase text-orange-500 bg-orange-50 px-2 py-0.5 rounded-full">Pendente</span>
+                        </div>
+                        <p className="text-sm font-black text-gray-900 mb-1">{act.title}</p>
+                        <p className="text-[10px] font-bold text-gray-400 flex items-center gap-1">
+                           <Clock size={10} />
+                           {format(parseISO(act.date), "eeee, dd 'de' MMMM 'às' HH:mm", { locale: ptBR })}
+                        </p>
+                        {act.description && (
+                          <p className="text-[10px] text-gray-500 mt-3 bg-gray-50 p-2 rounded-lg italic">"{act.description}"</p>
+                        )}
                      </div>
                    ))}
                    {deal.activities?.length === 0 && <p className="text-xs text-gray-400 italic text-center py-6">Nenhum agendamento.</p>}
@@ -602,7 +690,7 @@ export function DocumentTab({
                     <p className="text-sm font-bold">{selectedPerson.phone}</p>
                   </div>
                   <div className="pt-6 border-t border-white/5 space-y-3">
-                    <button className="w-full bg-white text-gray-900 py-3 rounded-xl text-xs font-black hover:bg-gray-100 transition-all">Enviar WhatsApp</button>
+                    <button onClick={() => toast.success("Enviando WhatsApp...")} className="w-full bg-white text-gray-900 py-3 rounded-xl text-xs font-black hover:bg-gray-100 transition-all">Enviar WhatsApp</button>
                     <button className="w-full bg-white/10 text-white py-3 rounded-xl text-xs font-black hover:bg-white/20 transition-all">Ver no LinkedIn</button>
                   </div>
                 </div>
@@ -632,7 +720,7 @@ export function DocumentTab({
                       </div>
                     </div>
                     <div className="flex gap-2">
-                      <button onClick={() => alert("Excluído")} className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"><Trash2 size={16} /></button>
+                      <button onClick={() => toast.error("Excluído")} className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"><Trash2 size={16} /></button>
                       <button className="p-2 text-gray-300 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition-all"><Download size={16} /></button>
                     </div>
                   </div>
@@ -661,6 +749,58 @@ export function DocumentTab({
            </div>
         )}
       </div>
+
+      {/* PDF Preview Modal */}
+      <AnimatePresence>
+        {showPdfPreview && (
+          <div className="fixed inset-0 bg-black/40 backdrop-blur-md z-[100] flex items-center justify-center p-8">
+            <motion.div 
+              initial={{ opacity: 0, y: 100 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 100 }}
+              className="bg-white rounded-[2rem] w-full max-w-4xl h-[80vh] flex flex-col shadow-2xl overflow-hidden"
+            >
+              <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                <div className="flex items-center gap-3">
+                   <div className="p-2 bg-gray-900 text-white rounded-xl">
+                      <FileText size={18} />
+                   </div>
+                   <h2 className="text-sm font-black text-gray-900">Visualização da Proposta: {deal.title}.pdf</h2>
+                </div>
+                <div className="flex gap-2">
+                   <button onClick={() => setShowPdfPreview(false)} className="px-4 py-2 text-xs font-bold text-gray-500 hover:text-gray-900">Cancelar</button>
+                   <button onClick={() => { toast.success("Proposta enviada!"); setShowPdfPreview(false); }} className="bg-gray-900 text-white px-6 py-2 rounded-xl text-xs font-black hover:bg-gray-800 flex items-center gap-2">
+                      <Wand2 size={14} /> Enviar Proposta
+                   </button>
+                </div>
+              </div>
+              <div className="flex-1 overflow-auto bg-gray-100 p-12">
+                 <div className="bg-white mx-auto max-w-[800px] min-h-[1000px] shadow-2xl p-20 font-serif">
+                    <div className="flex justify-between items-start mb-20">
+                       <h1 className="text-3xl font-bold tracking-tighter">Funnel.io</h1>
+                       <div className="text-right text-xs text-gray-400 uppercase font-sans font-bold">
+                          <p>Data: <span suppressHydrationWarning>{format(new Date(), "dd/MM/yyyy")}</span></p>
+                          <p>Ref: PROP-{deal.id}-2026</p>
+                       </div>
+                    </div>
+                    <div className="mb-12">
+                       <p className="text-xs text-gray-400 uppercase font-bold mb-2">Para:</p>
+                       <p className="text-xl font-bold">{deal.profile.contacts[0]?.name}</p>
+                       <p className="text-sm text-gray-500">{deal.company}</p>
+                    </div>
+                    <div className="prose prose-sm max-w-none text-gray-700 leading-relaxed whitespace-pre-wrap font-sans">
+                       {previewContent}
+                    </div>
+                    <div className="mt-20 pt-10 border-t border-gray-100 flex justify-between items-end italic text-xs text-gray-400">
+                       <p>Esta proposta é válida por 15 dias.</p>
+                       <p>Documento gerado eletronicamente.</p>
+                    </div>
+                 </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Sidebar } from "@/components/layout/Sidebar";
+import { PermissionsProvider } from "@/hooks/usePermissions";
+import { Toaster } from "sonner";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -9,8 +11,6 @@ export const metadata: Metadata = {
   title: "Funnel.io | Sales Funnel Orchestrator",
   description: "Modern Sales Funnel & Automation Engine",
 };
-
-import { PermissionsProvider } from "@/hooks/usePermissions";
 
 export default function RootLayout({
   children,
@@ -27,6 +27,7 @@ export default function RootLayout({
               {children}
             </main>
           </div>
+          <Toaster position="top-right" richColors />
         </PermissionsProvider>
       </body>
     </html>

@@ -26,6 +26,7 @@ import { DocumentTab } from "@/components/deals/DocumentTab";
 import { OnboardingModal } from "@/components/layout/OnboardingModal";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 function KanbanColumn({ id, title, deals, onSelectedDeal, onDeleteStage, onUpdateStageTitle, onQuickAdd }: any) {
   const { setNodeRef } = useDroppable({ id });
@@ -40,12 +41,14 @@ function KanbanColumn({ id, title, deals, onSelectedDeal, onDeleteStage, onUpdat
       onQuickAdd(id, quickTitle);
       setQuickTitle("");
       setIsQuickAdding(false);
+      toast.success("Negócio adicionado");
     }
   };
 
   const handleTitleSubmit = () => {
     onUpdateStageTitle(id, newTitle);
     setIsEditingTitle(false);
+    toast.info(`Etapa renomeada para: ${newTitle}`);
   };
 
   return (
@@ -172,8 +175,11 @@ export function KanbanBoard() {
         d.id === activeId ? { ...d, stage: overStageId as string, lastActivity: new Date().toISOString() } : d
       ));
       
+      toast.info(`Negócio movido para: ${stages.find(s => s.id === overStageId)?.title}`);
+
       if (overStageId === "proposal") {
         automationService.handleStageChange(activeId.toString(), "proposal");
+        toast.success("Automação: Proposta gerada automaticamente!");
       }
     }
 
@@ -202,8 +208,9 @@ export function KanbanBoard() {
   };
 
   const addStage = () => {
-    const title = "Nova Coluna";
+    const title = "Nova Etapa";
     setStages([...stages, { id: `stage-${Date.now()}`, title }]);
+    toast.success("Nova etapa adicionada ao funil");
   };
 
   const updateStageTitle = (id: string, newTitle: string) => {
@@ -211,9 +218,8 @@ export function KanbanBoard() {
   };
 
   const deleteStage = (id: string) => {
-    if (confirm("Excluir esta etapa?")) {
-      setStages(stages.filter(s => s.id !== id));
-    }
+    setStages(stages.filter(s => s.id !== id));
+    toast.error("Etapa removida");
   };
 
   const handleCreateDeal = () => {
@@ -238,17 +244,16 @@ export function KanbanBoard() {
     setDeals([newDeal, ...deals]);
     setShowNewDealModal(false);
     setForm({ title: "", company: "", value: "", source: "Manual", tags: "" });
+    toast.success("Novo negócio criado com sucesso!");
   };
 
   const updateTemplates = (newTemplates: any[]) => {
     setTemplates(newTemplates);
-    // Propagate changes to deals that use these templates
     setDeals(prevDeals => prevDeals.map(deal => {
       const updatedChecklists = deal.checklists?.map((cl: any) => {
         if (cl.templateId) {
           const template = newTemplates.find(t => t.id === cl.templateId);
           if (template) {
-            // Merge existing completion status with new template items
             return {
               ...cl,
               name: template.name,
@@ -279,7 +284,7 @@ export function KanbanBoard() {
         <div className="flex gap-3">
           <button 
             onClick={addStage}
-            className="bg-white border border-gray-100 text-gray-600 px-5 py-2.5 rounded-2xl text-xs font-black flex items-center gap-2 hover:bg-gray-50 transition-all shadow-sm"
+            className="bg-white border border-gray-100 text-gray-700 px-5 py-2.5 rounded-2xl text-xs font-black flex items-center gap-2 hover:bg-gray-50 transition-all shadow-sm"
           >
             <Settings2 size={16} />
             Adicionar Coluna
@@ -298,9 +303,9 @@ export function KanbanBoard() {
         <div className="animate-in fade-in zoom-in-95 duration-300">
           <button 
             onClick={() => setSelectedDeal(null)}
-            className="text-xs font-black text-gray-400 hover:text-gray-900 mb-6 flex items-center gap-2 uppercase tracking-widest px-2"
+            className="text-xs font-black text-gray-400 hover:text-gray-900 mb-6 flex items-center gap-2 uppercase tracking-widest px-2 group"
           >
-            ← Voltar ao Funil
+            <span className="group-hover:-translate-x-1 transition-transform">←</span> Voltar ao Funil
           </button>
           <DocumentTab 
             deal={selectedDeal} 
@@ -340,7 +345,6 @@ export function KanbanBoard() {
         </div>
       )}
 
-      {/* Enhanced Creation Form */}
       <AnimatePresence>
         {showNewDealModal && (
           <div className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
