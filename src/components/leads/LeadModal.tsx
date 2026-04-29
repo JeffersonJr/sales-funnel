@@ -2,8 +2,10 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, User, Mail, Phone, Briefcase, Building2, Save } from "lucide-react";
+import { X, User, Mail, Phone, Briefcase, Building2, Save, Edit2 } from "lucide-react";
 import { maskPhone } from "@/lib/utils";
+import { useFunnel } from "@/context/FunnelContext";
+import { toast } from "sonner";
 
 interface LeadModalProps {
   isOpen: boolean;
@@ -19,13 +21,19 @@ export function LeadModal({ isOpen, onClose, onSave, initialData }: LeadModalPro
     phone: "",
     role: "",
     company: "",
+    companyId: "",
   });
+
+  const { companies, setCompanies } = useFunnel();
+  const [showQuickAddCompany, setShowQuickAddCompany] = useState(false);
+  const [editingCompanyId, setEditingCompanyId] = useState<string | null>(null);
+  const [quickCompany, setQuickCompany] = useState({ name: "", industry: "", website: "" });
 
   useEffect(() => {
     if (initialData) {
       setForm(initialData);
     } else {
-      setForm({ name: "", email: "", phone: "", role: "", company: "" });
+      setForm({ name: "", email: "", phone: "", role: "", company: "", companyId: "" });
     }
   }, [initialData, isOpen]);
 
@@ -108,15 +116,144 @@ export function LeadModal({ isOpen, onClose, onSave, initialData }: LeadModalPro
                 <div className="col-span-1">
                   <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Empresa</label>
                   <div className="relative">
-                    <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={18} />
+                    <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-300" size={16} />
+                    <div className="flex gap-1.5">
+                      <select 
+                        value={form.companyId || ""}
+                        onChange={(e) => {
+                          const selected = companies.find((c: any) => c.id === e.target.value);
+                          setForm({
+                            ...form, 
+                            companyId: e.target.value,
+                            company: selected ? selected.name : ""
+                          });
+                          if (e.target.value === "new") {
+                            setEditingCompanyId(null);
+                            setQuickCompany({ name: "", industry: "", website: "" });
+                            setShowQuickAddCompany(true);
+                          } else {
+                            setShowQuickAddCompany(false);
+                          }
+                        }}
+                        className="flex-1 bg-gray-50 border border-gray-100 rounded-2xl py-4 pl-9 pr-2 text-[13px] font-bold focus:ring-2 focus:ring-gray-900/5 outline-none transition-all appearance-none"
+                      >
+                        <option value="">Nenhuma / Outra</option>
+                        {companies.map((c: any) => (
+                          <option key={c.id} value={c.id}>{c.name}</option>
+                        ))}
+                        <option value="new">+ Nova Empresa</option>
+                      </select>
+                      {form.companyId && form.companyId !== "new" && (
+                        <button 
+                          type="button"
+                          onClick={() => {
+                            const comp = companies.find((c: any) => c.id === form.companyId);
+                            if (comp) {
+                              setQuickCompany({ name: comp.name, industry: comp.industry || "", website: comp.website || "" });
+                              setEditingCompanyId(comp.id);
+                              setShowQuickAddCompany(true);
+                            }
+                          }}
+                          className="p-3 bg-gray-50 border border-gray-100 rounded-2xl text-gray-400 hover:text-gray-900 transition-all"
+                        >
+                          <Edit2 size={16} />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <AnimatePresence>
+                  {showQuickAddCompany && (
+                    <motion.div 
+                      initial={{ height: 0, opacity: 0, y: -10 }}
+                      animate={{ height: "auto", opacity: 1, y: 0 }}
+                      exit={{ height: 0, opacity: 0, y: -10 }}
+                      className="col-span-2 mt-2 p-6 bg-gradient-to-br from-purple-50/80 to-blue-50/80 backdrop-blur-md border border-purple-100 rounded-[2rem] space-y-4 overflow-hidden shadow-inner"
+                    >
+                      <div className="flex justify-between items-center">
+                        <p className="text-[10px] font-black text-purple-600 uppercase tracking-widest">
+                          {editingCompanyId ? "Editando Empresa" : "Novo Cadastro de Empresa"}
+                        </p>
+                        <button 
+                          onClick={() => setShowQuickAddCompany(false)}
+                          className="text-[10px] font-black text-gray-400 hover:text-gray-600"
+                        >
+                          Fechar
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="col-span-2 space-y-1.5">
+                          <label className="text-[9px] font-black text-purple-400 uppercase tracking-widest ml-1">Nome da Empresa</label>
+                          <input 
+                            value={quickCompany.name}
+                            onChange={(e) => setQuickCompany({...quickCompany, name: e.target.value})}
+                            placeholder="Ex: TechCorp"
+                            className="w-full bg-white border border-purple-100 rounded-2xl px-4 py-3 text-sm font-bold outline-none"
+                          />
+                        </div>
+                        <div className="space-y-1.5">
+                          <label className="text-[9px] font-black text-purple-400 uppercase tracking-widest ml-1">Indústria</label>
+                          <input 
+                            value={quickCompany.industry}
+                            onChange={(e) => setQuickCompany({...quickCompany, industry: e.target.value})}
+                            placeholder="Ex: SaaS"
+                            className="w-full bg-white border border-purple-100 rounded-2xl px-4 py-3 text-sm font-bold outline-none"
+                          />
+                        </div>
+                        <div className="space-y-1.5">
+                          <label className="text-[9px] font-black text-purple-400 uppercase tracking-widest ml-1">Website</label>
+                          <input 
+                            value={quickCompany.website}
+                            onChange={(e) => setQuickCompany({...quickCompany, website: e.target.value})}
+                            placeholder="Ex: techcorp.com"
+                            className="w-full bg-white border border-purple-100 rounded-2xl px-4 py-3 text-sm font-bold outline-none"
+                          />
+                        </div>
+                      </div>
+                      <button 
+                        type="button"
+                        onClick={() => {
+                          if (!quickCompany.name) return;
+                          
+                          if (editingCompanyId) {
+                            setCompanies(companies.map((c: any) => c.id === editingCompanyId ? { ...c, ...quickCompany } : c));
+                            setForm({ ...form, company: quickCompany.name });
+                            toast.success("Empresa atualizada!");
+                          } else {
+                            const newCompId = `c${Date.now()}`;
+                            const newComp = {
+                              id: newCompId,
+                              ...quickCompany,
+                              createdAt: new Date().toISOString()
+                            };
+                            setCompanies([...companies, newComp]);
+                            setForm({ ...form, companyId: newCompId, company: quickCompany.name });
+                            toast.success("Empresa criada!");
+                          }
+                          
+                          setShowQuickAddCompany(false);
+                          setQuickCompany({ name: "", industry: "", website: "" });
+                          setEditingCompanyId(null);
+                        }}
+                        className="w-full bg-purple-600 text-white py-4 rounded-2xl text-xs font-black shadow-xl shadow-purple-200 hover:bg-purple-700 transition-all active:scale-95"
+                      >
+                        {editingCompanyId ? "Salvar Alterações" : "Salvar e Vincular"}
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {(!form.companyId && !showQuickAddCompany) && (
+                  <div className="col-span-2">
                     <input 
                       value={form.company}
                       onChange={(e) => setForm({...form, company: e.target.value})}
-                      className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-4 pl-12 pr-4 text-sm font-bold focus:ring-2 focus:ring-gray-900/5 outline-none transition-all"
-                      placeholder="Nome da empresa"
+                      className="w-full mt-2 bg-gray-50 border border-gray-100 rounded-2xl py-3 px-4 text-xs font-bold outline-none"
+                      placeholder="Ou digite o nome da empresa"
                     />
                   </div>
-                </div>
+                )}
               </div>
             </div>
 

@@ -51,10 +51,12 @@ import { useFunnel } from "@/context/FunnelContext";
 export function DocumentTab({ 
   deal, 
   onUpdate, 
+  onDelete,
   onUnsavedChanges 
 }: { 
   deal: any, 
   onUpdate: (deal: any) => void, 
+  onDelete?: (id: string) => void,
   onUnsavedChanges?: (isDirty: boolean) => void
 }) {
   const { 
@@ -68,6 +70,8 @@ export function DocumentTab({
     templates,
     setTemplates
   } = useFunnel();
+
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const onUpdateTemplates = setTemplates;
   const onUpdateTags = setAvailableTags;
@@ -318,6 +322,26 @@ export function DocumentTab({
     setShowContactModal(false);
   };
 
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const newDoc = {
+        id: `doc-${Date.now()}`,
+        name: file.name,
+        size: `${(file.size / 1024 / 1024).toFixed(1)}MB`,
+        date: new Date().toISOString()
+      };
+      onUpdate({ ...deal, documents: [...(deal.documents || []), newDoc] });
+      toast.success(`Documento "${file.name}" enviado com sucesso!`);
+    }
+  };
+
+  const deleteDocument = (id: string) => {
+    const updatedDocs = deal.documents.filter((d: any) => d.id !== id);
+    onUpdate({ ...deal, documents: updatedDocs });
+    toast.error("Documento removido");
+  };
+
   return (
     <div className="max-w-6xl mx-auto mt-6 pb-20">
       <ConfirmModal 
@@ -434,6 +458,12 @@ export function DocumentTab({
                   className="flex items-center gap-2 bg-gray-900 text-white px-6 py-3 rounded-2xl text-sm font-bold hover:bg-gray-800 transition-all shadow-xl shadow-gray-200 hover:-translate-y-0.5 active:translate-y-0"
                 >
                   <Wand2 size={18} /> Gerar Proposta
+                </button>
+                <button 
+                  onClick={() => onDelete?.(deal.id)}
+                  className="flex items-center gap-2 bg-red-50 text-red-500 px-6 py-3 rounded-2xl text-sm font-bold hover:bg-red-100 transition-all"
+                >
+                  <Trash2 size={18} /> Excluir
                 </button>
                </>
              )}
@@ -584,9 +614,9 @@ export function DocumentTab({
                         }}
                         className="px-3 py-1.5 bg-gray-50 border border-gray-100 text-gray-400 rounded-full text-[10px] font-black uppercase tracking-widest outline-none cursor-pointer hover:bg-gray-100 transition-all"
                       >
-                        <option value="">+ Adicionar Tag</option>
-                        {availableTags.filter((t: any) => !deal.tags?.includes(t.name)).map((t: any) => (
-                          <option key={t.id} value={t.name}>{t.name}</option>
+                        <option key="default" value="">+ Adicionar Tag</option>
+                        {availableTags.filter((t: any) => !deal.tags?.includes(t.name)).map((t: any, idx: number) => (
+                          <option key={t.id || `tag-${idx}`} value={t.name}>{t.name}</option>
                         ))}
                       </select>
                   </div>
@@ -601,9 +631,9 @@ export function DocumentTab({
                       onChange={(e) => applyTemplate(e.target.value)}
                       className="text-[10px] font-bold text-gray-400 bg-gray-50 px-3 py-1.5 rounded-lg border-none focus:ring-1 focus:ring-gray-200 outline-none"
                     >
-                      <option value="">Aplicar Modelo...</option>
-                      {templates.map((t: any) => (
-                        <option key={t.id} value={t.id}>{t.name}</option>
+                      <option key="default-template" value="">Aplicar Modelo...</option>
+                      {templates.map((t: any, idx: number) => (
+                        <option key={t.id || `temp-${idx}`} value={t.id}>{t.name}</option>
                       ))}
                     </select>
                     <button 
@@ -1060,7 +1090,16 @@ export function DocumentTab({
            <div className="space-y-6">
               <div className="flex justify-between items-center mb-4">
                  <h3 className="text-lg font-black text-gray-900">Arquivo de Documentos</h3>
-                 <button className="bg-gray-50 text-gray-600 px-4 py-2 rounded-xl text-xs font-bold hover:bg-gray-100 transition-all flex items-center gap-2">
+                 <input 
+                    type="file" 
+                    ref={fileInputRef} 
+                    className="hidden" 
+                    onChange={handleFileUpload}
+                  />
+                  <button 
+                    onClick={() => fileInputRef.current?.click()}
+                    className="bg-gray-50 text-gray-600 px-4 py-2 rounded-xl text-xs font-bold hover:bg-gray-100 transition-all flex items-center gap-2"
+                  >
                    <Plus size={14} /> Enviar Arquivo
                  </button>
               </div>
@@ -1077,7 +1116,7 @@ export function DocumentTab({
                       </div>
                     </div>
                     <div className="flex gap-2">
-                      <button onClick={() => toast.error("Excluído")} className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"><Trash2 size={16} /></button>
+                      <button onClick={() => deleteDocument(doc.id)} className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"><Trash2 size={16} /></button>
                       <button className="p-2 text-gray-300 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition-all"><Download size={16} /></button>
                     </div>
                   </div>

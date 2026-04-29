@@ -56,6 +56,10 @@
       "stage": "lead",
       "createdAt": "2026-04-25T10:00:00Z",
       "tags": ["Valor Alto", "Nuvem"],
+      "documents": [
+        { "id": "doc1", "name": "Proposta_Comercial.pdf", "size": "1.2MB", "date": "2026-04-25T10:00:00Z" },
+        { "id": "doc2", "name": "Contrato_Assinado.pdf", "size": "2.4MB", "date": "2026-04-27T10:00:00Z" }
+      ],
       "profile": { "id": "comp1", "name": "TechCorp Solutions", "contacts": [{ "id": "p1", "name": "Ana Silva", "role": "CTO" }] }
     },
     {
@@ -66,6 +70,9 @@
       "stage": "lead",
       "createdAt": "2026-04-26T09:00:00Z",
       "tags": ["Crítico", "Hardware"],
+      "documents": [
+        { "id": "doc3", "name": "Especificações_Hardware.xlsx", "size": "0.8MB", "date": "2026-04-26T09:00:00Z" }
+      ],
       "profile": { "id": "comp6", "name": "Skyline Infra", "contacts": [{ "id": "p7", "name": "Marco Tulio", "role": "Head de Infra" }] }
     },
     {
@@ -147,6 +154,50 @@
       "createdAt": "2026-04-11T12:00:00Z",
       "tags": ["Educação"],
       "profile": { "id": "comp10", "name": "Sales Academy", "contacts": [{ "id": "p11", "name": "Joaquim Neto", "role": "Treinador Master" }] }
+    },
+    {
+      "id": "dbowie",
+      "title": "Campanha Interstellar",
+      "company": "Starman Inc.",
+      "value": 80000,
+      "stage": "discovery",
+      "createdAt": "2026-04-29T10:00:00Z",
+      "lastActivity": "2026-04-29T10:00:00Z",
+      "tags": ["Glam Rock", "Visuals"],
+      "profile": { "id": "comp_bowie", "name": "Starman Inc.", "contacts": [{ "id": "p_bowie", "name": "David Bowie", "role": "Creative Lead" }] }
+    },
+    {
+      "id": "elvis",
+      "title": "Rock & Roll Revival",
+      "company": "Graceland Records",
+      "value": 120000,
+      "stage": "negotiation",
+      "createdAt": "2026-04-29T11:00:00Z",
+      "lastActivity": "2026-04-29T11:00:00Z",
+      "tags": ["Legendary", "Live"],
+      "profile": { "id": "comp_elvis", "name": "Graceland Records", "contacts": [{ "id": "p_elvis", "name": "Elvis Presley", "role": "King of Rock" }] }
+    },
+    {
+      "id": "vader",
+      "title": "Consultoria Estrela da Morte",
+      "company": "Império Galáctico",
+      "value": 5000000,
+      "stage": "proposal",
+      "createdAt": "2026-04-29T12:00:00Z",
+      "lastActivity": "2026-04-29T12:00:00Z",
+      "tags": ["Dark Side", "Infra"],
+      "profile": { "id": "comp_vader", "name": "Império Galáctico", "contacts": [{ "id": "p_vader", "name": "Anakin Skywalker", "role": "General" }] }
+    },
+    {
+      "id": "mj",
+      "title": "Michael Jackson",
+      "company": "BILLY JEAN INC",
+      "value": 1500000,
+      "stage": "lead",
+      "createdAt": "2026-04-29T14:00:00Z",
+      "lastActivity": "2026-04-29T14:00:00Z",
+      "tags": ["VIP", "REI DO POP"],
+      "profile": { "id": "comp_mj", "name": "BILLY JEAN INC", "contacts": [{ "id": "p_mj", "name": "Michael Jackson", "role": "Artist" }] }
     }
   ]
 }

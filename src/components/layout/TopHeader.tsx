@@ -6,9 +6,11 @@ import Link from "next/link";
 import { ChevronDown, Bell, Users, Settings, LogOut } from "lucide-react";
 import { UserManagementModal } from "./UserManagementModal";
 import { useFunnel } from "@/context/FunnelContext";
+import { useAuth } from "@/context/AuthContext";
 
 export function TopHeader() {
-  const { users, setUsers, deals, setDeals, user, logout } = useFunnel();
+  const { users, setUsers, deals, setDeals } = useFunnel();
+  const { user, logout } = useAuth();
   const [showUserModal, setShowUserModal] = React.useState(false);
 
   return (

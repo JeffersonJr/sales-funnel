@@ -10,10 +10,17 @@ import {
   Plus, 
   Trash2, 
   Edit2, 
-  Shield, 
-  Check, 
-  X,
-  Palette
+  Palette,
+  Lock,
+  Type,
+  Monitor,
+  Moon,
+  Sun,
+  ShieldCheck,
+  Smartphone,
+  Shield,
+  Check,
+  X
 } from "lucide-react";
 import { Avatar } from "@/components/common/Avatar";
 import { cn } from "@/lib/utils";
@@ -32,7 +39,7 @@ export default function SettingsPage() {
   } = useFunnel();
 
   const [mounted, setMounted] = useState(false);
-  const [activeTab, setActiveTab] = useState<"users" | "groups" | "tags" | "funnel">("users");
+  const [activeTab, setActiveTab] = useState<"users" | "groups" | "tags" | "funnel" | "security" | "appearance">("users");
   const [showUserModal, setShowUserModal] = useState(false);
   const [editingUser, setEditingUser] = useState<any | null>(null);
 
@@ -85,6 +92,8 @@ export default function SettingsPage() {
             { id: "groups", label: "Grupos & Equipes", icon: Users2 },
             { id: "tags", label: "Tags & Etiquetas", icon: TagIcon },
             { id: "funnel", label: "Etapas do Funil", icon: Layout },
+            { id: "security", label: "Segurança & 2FA", icon: Lock },
+            { id: "appearance", label: "Aparência & Tema", icon: Palette },
           ].map((tab) => (
             <button
               key={tab.id}
@@ -279,6 +288,86 @@ export default function SettingsPage() {
                     </div>
                   </div>
                 ))}
+              </div>
+            </motion.div>
+          )}
+
+          {activeTab === "security" && (
+            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-8">
+              <h2 className="text-xl font-black text-gray-900">Segurança da Conta</h2>
+              
+              <div className="grid gap-6">
+                <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm flex items-center justify-between">
+                  <div className="flex items-center gap-6">
+                    <div className="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center">
+                      <Smartphone size={24} />
+                    </div>
+                    <div>
+                      <p className="text-sm font-black text-gray-900">Autenticação de Dois Fatores (2FA)</p>
+                      <p className="text-xs font-bold text-gray-400 mt-1">Proteja sua conta com uma camada extra de segurança</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-[10px] font-black uppercase text-gray-400">Desativado</span>
+                    <button className="w-12 h-6 bg-gray-200 rounded-full relative transition-all">
+                      <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow-sm" />
+                    </button>
+                  </div>
+                </div>
+
+                <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm flex items-center justify-between">
+                  <div className="flex items-center gap-6">
+                    <div className="w-14 h-14 bg-orange-50 text-orange-600 rounded-2xl flex items-center justify-center">
+                      <Lock size={24} />
+                    </div>
+                    <div>
+                      <p className="text-sm font-black text-gray-900">Senha de Acesso</p>
+                      <p className="text-xs font-bold text-gray-400 mt-1">Última alteração há 3 meses</p>
+                    </div>
+                  </div>
+                  <button className="px-6 py-3 bg-gray-900 text-white rounded-xl text-xs font-bold hover:bg-gray-800 transition-all">
+                    Alterar Senha
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {activeTab === "appearance" && (
+            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-8">
+              <h2 className="text-xl font-black text-gray-900">Personalização de Interface</h2>
+              
+              <div className="space-y-12">
+                <section>
+                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-6 ml-1">Tema do Sistema</p>
+                  <div className="grid grid-cols-3 gap-6">
+                    {[
+                      { id: 'light', label: 'Claro', icon: Sun },
+                      { id: 'dark', label: 'Escuro', icon: Moon },
+                      { id: 'system', label: 'Sistema', icon: Monitor },
+                    ].map(theme => (
+                      <button key={theme.id} className="p-6 bg-white border border-gray-100 rounded-[2rem] flex flex-col items-center gap-4 hover:border-gray-900/10 hover:shadow-xl hover:shadow-gray-100 transition-all group">
+                         <div className="w-12 h-12 bg-gray-50 text-gray-400 rounded-xl flex items-center justify-center group-hover:bg-gray-900 group-hover:text-white transition-all">
+                           <theme.icon size={24} />
+                         </div>
+                         <span className="text-xs font-black text-gray-900 uppercase tracking-widest">{theme.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </section>
+
+                <section>
+                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-6 ml-1">Tamanho da Fonte</p>
+                  <div className="bg-gray-50 p-8 rounded-[2.5rem] border border-gray-100">
+                    <div className="flex justify-between items-center max-w-md mx-auto">
+                      <span className="text-xs font-bold text-gray-400">Pequeno</span>
+                      <div className="flex-1 mx-8 h-1 bg-gray-200 rounded-full relative">
+                        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 bg-gray-900 rounded-full border-4 border-white shadow-lg cursor-pointer" />
+                      </div>
+                      <span className="text-sm font-bold text-gray-900">Grande</span>
+                    </div>
+                  </div>
+                </section>
               </div>
             </motion.div>
           )}

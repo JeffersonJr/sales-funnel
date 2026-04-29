@@ -37,9 +37,13 @@ const integrationItems = [
   { name: "Salesbot", href: "/integrations/salesbot", icon: Bot, color: "text-purple-500" },
 ];
 
+import { useAuth } from "@/context/AuthContext";
+import { LogOut } from "lucide-react";
+
 export function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const pathname = usePathname();
+  const { user, logout } = useAuth();
 
   return (
     <motion.aside
@@ -124,6 +128,33 @@ export function Sidebar() {
         </div>
       </nav>
 
+      {/* User Section */}
+      <div className="p-4 border-t border-gray-100 w-full">
+        <div className={cn(
+          "flex items-center gap-3 p-3 rounded-2xl bg-white border border-gray-50 shadow-sm transition-all",
+          isCollapsed ? "justify-center" : "justify-between"
+        )}>
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-full bg-blue-100 border-2 border-white shadow-sm overflow-hidden flex-shrink-0">
+              <img src={user?.avatar} alt={user?.name} className="w-full h-full object-cover" />
+            </div>
+            {!isCollapsed && (
+              <div className="min-w-0">
+                <p className="text-xs font-black text-gray-900 truncate">{user?.name}</p>
+                <p className="text-[10px] font-bold text-gray-400 truncate">{user?.role}</p>
+              </div>
+            )}
+          </div>
+          {!isCollapsed && (
+            <button 
+              onClick={logout}
+              className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+            >
+              <LogOut size={16} />
+            </button>
+          )}
+        </div>
+      </div>
     </motion.aside>
   );
 }

@@ -18,10 +18,11 @@ import {
   SortableContext,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
+  horizontalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { DealCard } from "./DealCard";
 import mockDb from "@/data/mock-db.json";
-import { Plus, Settings2, Trash2, X, Zap, Save, Check, Tag, DollarSign, User, Building2 } from "lucide-react";
+import { Plus, Settings2, Trash2, X, Zap, Save, Check, Tag, DollarSign, User, Building2, RefreshCw } from "lucide-react";
 import { automationService } from "@/services/automation";
 import { DocumentTab } from "@/components/deals/DocumentTab";
 import { OnboardingModal } from "@/components/layout/OnboardingModal";
@@ -30,7 +31,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { cn, formatCurrency, maskCurrency, parseCurrency } from "@/lib/utils";
 import { toast } from "sonner";
 
-function KanbanColumn({ id, title, deals, onSelectedDeal, onDeleteStage, onUpdateStageTitle, onQuickAdd }: any) {
+function KanbanColumn({ id, title, deals, onSelectedDeal, onDeleteStage, onUpdateStageTitle, onQuickAdd, onDeleteDeal, onUpdateDealStage }: any) {
   const { setNodeRef } = useDroppable({ id });
   const [isQuickAdding, setIsQuickAdding] = useState(false);
   const [quickTitle, setQuickTitle] = useState("");
@@ -117,8 +118,12 @@ function KanbanColumn({ id, title, deals, onSelectedDeal, onDeleteStage, onUpdat
           strategy={verticalListSortingStrategy}
         >
           {deals.map((deal: any) => (
-            <div key={deal.id} onClick={() => onSelectedDeal(deal)}>
-              <DealCard deal={deal} />
+            <div key={deal.id} onClick={() => onSelectedDeal(deal)} className="relative group/deal">
+              <DealCard 
+                deal={deal} 
+                onDelete={() => onDeleteDeal(deal.id)} 
+                onUpdateStage={onUpdateDealStage}
+              />
             </div>
           ))}
         </SortableContext>
@@ -150,6 +155,8 @@ export function KanbanBoard() {
   const [showNewDealModal, setShowNewDealModal] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [showConfirmBack, setShowConfirmBack] = useState(false);
+  const [showConfirmDeleteDeal, setShowConfirmDeleteDeal] = useState<string | null>(null);
+  const [showConfirmDeleteStage, setShowConfirmDeleteStage] = useState<string | null>(null);
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -269,8 +276,43 @@ export function KanbanBoard() {
   };
 
   const deleteStage = (id: string) => {
-    setStages(stages.filter((s: any) => s.id !== id));
+    const stage = stages.find((s: any) => s.id === id);
+    const stageDeals = deals.filter((d: any) => d.stage === id);
+    
+    if (stageDeals.length > 0) {
+      toast.error(`Não é possível excluir: existem ${stageDeals.length} negócios nesta etapa.`);
+      return;
+    }
+
+    setShowConfirmDeleteStage(id);
+  };
+
+  const confirmDeleteStage = () => {
+    if (!showConfirmDeleteStage) return;
+    setStages(stages.filter((s: any) => s.id !== showConfirmDeleteStage));
+    setShowConfirmDeleteStage(null);
     toast.error("Etapa removida");
+  };
+  
+  const handleDeleteDeal = (id: string) => {
+    setShowConfirmDeleteDeal(id);
+  };
+
+  const handleUpdateDeal = (updated: any) => {
+    setDeals(deals.map((d: any) => d.id === updated.id ? updated : d));
+    setSelectedDeal(updated);
+  };
+
+  const handleUpdateDealStage = (id: string, newStage: string) => {
+    setDeals(deals.map((d: any) => d.id === id ? { ...d, stage: newStage } : d));
+  };
+
+  const confirmDeleteDeal = () => {
+    if (!showConfirmDeleteDeal) return;
+    setDeals(deals.filter((d: any) => d.id !== showConfirmDeleteDeal));
+    setShowConfirmDeleteDeal(null);
+    setSelectedDeal(null);
+    toast.error("Negócio removido permanentemente");
   };
 
   const handleCreateDeal = () => {
@@ -326,6 +368,13 @@ export function KanbanBoard() {
     }));
   };
 
+  const handleResetData = () => {
+    if (confirm("Isso irá apagar todas as suas alterações e carregar os dados padrão (incluindo Michael Jackson). Deseja continuar?")) {
+      localStorage.clear();
+      window.location.reload();
+    }
+  };
+
   return (
     <div className="p-8 h-full flex flex-col bg-[#fcfcfc]">
       <OnboardingModal />
@@ -339,6 +388,14 @@ export function KanbanBoard() {
         </div>
         {!selectedDeal && (
           <div className="flex gap-3">
+            <button 
+              onClick={handleResetData}
+              className="bg-white border border-gray-100 text-gray-400 px-5 py-2.5 rounded-2xl text-xs font-black flex items-center gap-2 hover:bg-red-50 hover:text-red-500 transition-all shadow-sm"
+              title="Resetar dados para o padrão"
+            >
+              <RefreshCw size={16} />
+              Resetar
+            </button>
             <button 
               onClick={addStage}
               className="bg-white border border-gray-100 text-gray-700 px-5 py-2.5 rounded-2xl text-xs font-black flex items-center gap-2 hover:bg-gray-50 transition-all shadow-sm"
@@ -373,37 +430,56 @@ export function KanbanBoard() {
           </button>
           <DocumentTab 
             deal={selectedDeal} 
-            onUpdate={(updated: any) => {
-              setDeals((prev: any[]) => prev.map((d: any) => d.id === updated.id ? updated : d));
-              setSelectedDeal(updated);
-            }} 
+            onUpdate={handleUpdateDeal} 
+            onDelete={handleDeleteDeal}
             onUnsavedChanges={setHasUnsavedChanges}
           />
         </div>
       ) : (
-        <div className="flex gap-6 flex-1 overflow-x-auto pb-8 items-start scrollbar-hide px-2">
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCorners}
-            onDragStart={handleDragStart}
-            onDragEnd={handleDragEnd}
-          >
-            {stages.map((stage: any) => (
-              <KanbanColumn 
-                key={stage.id} 
-                id={stage.id} 
-                title={stage.title} 
-                deals={deals.filter((d: any) => d.stage === stage.id)}
-                onSelectedDeal={setSelectedDeal}
-                onDeleteStage={deleteStage}
-                onUpdateStageTitle={updateStageTitle}
-                onQuickAdd={handleQuickAdd}
-              />
-            ))}
-            <DragOverlay dropAnimation={null}>
-              {activeDeal ? <DealCard deal={activeDeal} /> : null}
-            </DragOverlay>
-          </DndContext>
+        <div className="flex-1 overflow-x-auto overflow-y-hidden scrollbar-hide -mx-8 px-8">
+          <div className="flex gap-6 h-full min-w-full pb-4 items-start w-fit">
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCorners}
+              onDragStart={handleDragStart}
+              onDragEnd={handleDragEnd}
+            >
+              <SortableContext 
+                items={stages.map((s: any) => s.id)} 
+                strategy={horizontalListSortingStrategy}
+              >
+                {stages.map((stage: any) => (
+                  <KanbanColumn 
+                    key={stage.id} 
+                    stage={stage} 
+                    deals={deals.filter((d: any) => d.stage === stage.id)}
+                    onSelectedDeal={setSelectedDeal}
+                    onAddDeal={() => {
+                      const title = prompt("Título do negócio:");
+                      if (title) handleQuickAdd(stage.id, title);
+                    }}
+                    onUpdateStageTitle={updateStageTitle}
+                    onDeleteStage={deleteStage}
+                  />
+                ))}
+              </SortableContext>
+
+              <DragOverlay>
+                {activeDeal ? (
+                  <div className="opacity-80 rotate-3 scale-105 pointer-events-none">
+                    <DealCard deal={activeDeal} />
+                  </div>
+                ) : null}
+              </DragOverlay>
+            </DndContext>
+            
+            <button 
+              onClick={addStage}
+              className="w-80 shrink-0 h-24 border-2 border-dashed border-gray-100 rounded-[2.5rem] flex items-center justify-center text-gray-300 hover:border-gray-200 hover:text-gray-400 transition-all group"
+            >
+              <Plus size={24} className="group-hover:scale-110 transition-transform" />
+            </button>
+          </div>
         </div>
       )}
 
@@ -554,6 +630,24 @@ export function KanbanBoard() {
         confirmText="Sair sem salvar"
         cancelText="Continuar editando"
         type="warning"
+      />
+
+      <ConfirmModal 
+        isOpen={!!showConfirmDeleteDeal}
+        onClose={() => setShowConfirmDeleteDeal(null)}
+        onConfirm={confirmDeleteDeal}
+        title="Excluir Negócio"
+        message="Tem certeza que deseja excluir este negócio permanentemente? Esta ação não pode ser desfeita."
+        confirmText="Sim, excluir"
+        cancelText="Cancelar"
+        type="danger"
+      />
+      <ConfirmModal 
+        isOpen={!!showConfirmDeleteStage}
+        onClose={() => setShowConfirmDeleteStage(null)}
+        onConfirm={confirmDeleteStage}
+        title="Excluir Etapa?"
+        message="Tem certeza que deseja remover esta etapa do seu funil de vendas?"
       />
     </div>
   );

@@ -64,7 +64,7 @@ export default function DocumentsPage() {
         {[
           { label: "Armazenamento", value: "2.4 GB / 10 GB", icon: HardDrive, color: "text-blue-500", bg: "bg-blue-50" },
           { label: "Total de Arquivos", value: allDocuments.length, icon: FileIcon, color: "text-purple-500", bg: "bg-purple-50" },
-          { label: "Sincronizados", value: "Tudo em dia", icon: Clock, color: "text-green-500", bg: "bg-green-50" },
+          { label: "Propostas Geradas", value: allDocuments.filter((d: any) => d.name.toLowerCase().includes('proposta')).length, icon: Clock, color: "text-green-500", bg: "bg-green-50" },
         ].map((stat) => (
           <div key={stat.label} className="bg-white p-6 rounded-[2.5rem] border border-gray-100 flex items-center gap-6 shadow-sm">
             <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center", stat.bg)}>

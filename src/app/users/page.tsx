@@ -37,6 +37,11 @@ export default function UsersPage() {
     u.email.toLowerCase().includes(search.toLowerCase())
   );
 
+  const toggleUserStatus = (id: string) => {
+    setUsers(users.map((u: any) => u.id === id ? { ...u, active: u.active === false ? true : false } : u));
+    toast.success("Status do usuário atualizado!");
+  };
+
   return (
     <div className="p-10 max-w-7xl mx-auto">
       <div className="flex justify-between items-end mb-12">
@@ -95,13 +100,25 @@ export default function UsersPage() {
                     </div>
                   </td>
                   <td className="px-8 py-6">
-                    <div className="flex items-center gap-2 text-green-500">
-                      <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-                      <span className="text-[10px] font-black uppercase tracking-widest">Ativo</span>
+                    <div className="flex items-center gap-2">
+                      <div className={cn("w-1.5 h-1.5 rounded-full", u.active !== false ? "bg-green-500 animate-pulse" : "bg-gray-300")} />
+                      <span className={cn("text-[10px] font-black uppercase tracking-widest", u.active !== false ? "text-green-500" : "text-gray-400")}>
+                        {u.active !== false ? "Ativo" : "Inativo"}
+                      </span>
                     </div>
                   </td>
                   <td className="px-8 py-6 text-right">
                     <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                      <button 
+                        onClick={() => toggleUserStatus(u.id)}
+                        className={cn(
+                          "p-2.5 rounded-xl transition-all",
+                          u.active !== false ? "text-orange-300 hover:text-orange-600 hover:bg-orange-50" : "text-green-300 hover:text-green-600 hover:bg-green-50"
+                        )}
+                        title={u.active !== false ? "Desativar Usuário" : "Ativar Usuário"}
+                      >
+                        {u.active !== false ? <X size={18} /> : <Check size={18} />}
+                      </button>
                       <button 
                         onClick={() => { setEditingUser(u); setShowModal(true); }}
                         className="p-2.5 text-gray-300 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all"

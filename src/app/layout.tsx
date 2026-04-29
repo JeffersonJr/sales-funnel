@@ -6,6 +6,8 @@ import { PermissionsProvider } from "@/hooks/usePermissions";
 import { FunnelProvider } from "@/context/FunnelContext";
 import { Toaster } from "sonner";
 
+import { AuthProvider } from "@/context/AuthContext";
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -21,14 +23,16 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full" suppressHydrationWarning>
       <body className={`${inter.className} h-full antialiased`} suppressHydrationWarning>
-        <PermissionsProvider>
-          <FunnelProvider>
-            <AppWrapper>
-              {children}
-            </AppWrapper>
-            <Toaster position="top-right" richColors />
-          </FunnelProvider>
-        </PermissionsProvider>
+        <AuthProvider>
+          <PermissionsProvider>
+            <FunnelProvider>
+              <AppWrapper>
+                {children}
+              </AppWrapper>
+              <Toaster position="top-right" richColors />
+            </FunnelProvider>
+          </PermissionsProvider>
+        </AuthProvider>
       </body>
     </html>
   );

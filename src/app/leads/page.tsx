@@ -77,21 +77,21 @@ export default function LeadsPage() {
   return (
     <div className="p-8 max-w-7xl mx-auto">
       <div className="flex justify-between items-end mb-12">
-        <div>
-          <h1 className="text-4xl font-black text-gray-900 tracking-tight">Contatos & Leads</h1>
-          <p className="text-gray-400 font-medium mt-2">Gerencie sua base de contatos e identifique oportunidades</p>
+        <div className="flex-1">
+          <h1 className="text-3xl md:text-4xl font-black text-gray-900 tracking-tight">Contatos & Leads</h1>
+          <p className="text-gray-400 font-medium mt-1 text-sm md:text-base">Gerencie sua base de contatos</p>
         </div>
         <button 
           onClick={() => setShowModal(true)}
-          className="bg-gray-900 text-white px-8 py-4 rounded-2xl font-black text-sm shadow-xl shadow-gray-200 flex items-center gap-2 hover:bg-gray-800 transition-all hover:scale-[1.02] active:scale-[0.98]"
+          className="bg-gray-900 text-white p-4 md:px-8 md:py-4 rounded-2xl font-black text-sm shadow-xl shadow-gray-200 flex items-center gap-2 hover:bg-gray-800 transition-all"
         >
-          <Plus size={20} /> Novo Contato
+          <Plus size={20} /> <span className="hidden md:inline">Novo Contato</span>
         </button>
       </div>
 
       <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-50 overflow-hidden">
-        <div className="p-6 border-b border-gray-50 bg-gray-50/30 flex items-center gap-4">
-          <div className="relative flex-1 max-w-md">
+        <div className="p-6 border-b border-gray-50 bg-gray-50/30 flex flex-col md:flex-row items-stretch md:items-center gap-4">
+          <div className="relative flex-1">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={18} />
             <input 
               value={search}
@@ -100,12 +100,50 @@ export default function LeadsPage() {
               className="w-full bg-white border border-gray-100 rounded-xl py-3 pl-12 pr-4 text-sm font-bold focus:ring-2 focus:ring-gray-900/5 outline-none transition-all"
             />
           </div>
-          <button className="p-3 text-gray-400 hover:bg-white rounded-xl transition-all border border-transparent hover:border-gray-100">
-            <Filter size={20} />
-          </button>
+          <div className="flex gap-2">
+            <button className="flex-1 md:flex-none p-3 text-gray-400 hover:bg-white rounded-xl transition-all border border-transparent hover:border-gray-100 flex items-center justify-center">
+              <Filter size={20} />
+            </button>
+          </div>
         </div>
 
-        <div className="overflow-x-auto">
+        <div className="md:hidden p-4 space-y-4">
+          {filteredLeads.map((lead: any) => (
+            <div 
+              key={lead.id} 
+              onClick={() => setSelectedLead(lead)}
+              className="bg-gray-50/50 p-6 rounded-[2rem] border border-gray-100 space-y-4 active:scale-95 transition-all"
+            >
+              <div className="flex justify-between items-start">
+                <div className="flex items-center gap-4">
+                  <Avatar name={lead.name} size="md" />
+                  <div>
+                    <p className="text-sm font-black text-gray-900">{lead.name}</p>
+                    <p className="text-[10px] font-bold text-blue-500 uppercase tracking-widest">{lead.role}</p>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                   <button 
+                     onClick={(e) => { e.stopPropagation(); setEditingLead(lead); setShowModal(true); }}
+                     className="p-2 text-gray-400"
+                   >
+                     <Edit2 size={16} />
+                   </button>
+                </div>
+              </div>
+              <div className="space-y-2 pt-2 border-t border-gray-100">
+                <div className="flex items-center gap-2 text-xs font-bold text-gray-400">
+                  <Building2 size={12} /> {lead.company}
+                </div>
+                <div className="flex items-center gap-2 text-xs font-bold text-gray-400">
+                  <Mail size={12} /> {lead.email}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-gray-50/50">
@@ -186,7 +224,7 @@ export default function LeadsPage() {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 30, stiffness: 300 }}
-              className="fixed top-0 right-0 h-full w-[500px] bg-white shadow-2xl z-[110] flex flex-col"
+              className="fixed top-0 right-0 h-full w-full md:w-[500px] bg-white shadow-2xl z-[110] flex flex-col"
             >
               <div className="p-8 border-b border-gray-50 flex justify-between items-center bg-gray-50/30">
                 <h2 className="text-xl font-black text-gray-900">Perfil do Lead</h2>
