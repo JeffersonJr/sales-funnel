@@ -1,0 +1,88 @@
+{
+  "users": [
+    {
+      "id": "u1",
+      "name": "Jefferson Jr",
+      "role": "Administrador",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Jefferson"
+    }
+  ],
+  "stages": [
+    { "id": "lead", "title": "Lead" },
+    { "id": "discovery", "title": "Descoberta" },
+    { "id": "proposal", "title": "Proposta" },
+    { "id": "negotiation", "title": "Negociação" },
+    { "id": "closed", "title": "Fechado" }
+  ],
+  "templates": [
+    {
+      "id": "t1",
+      "name": "Padrão SaaS Enterprise",
+      "checkpoints": ["Revisão Técnica", "Aprovação de Orçamento", "Revisão Jurídica"]
+    },
+    {
+      "id": "t2",
+      "name": "Onboarding Cliente",
+      "checkpoints": ["Setup de Conta", "Treinamento Inicial", "Primeiro Acesso"]
+    }
+  ],
+  "deals": [
+    {
+      "id": "d1",
+      "title": "Migração em Nuvem Enterprise",
+      "company": "TechCorp Solutions",
+      "value": 50000,
+      "stage": "lead",
+      "createdAt": "2026-04-25T10:00:00Z",
+      "lastActivity": "2026-04-26T14:30:00Z",
+      "tags": ["Valor Alto", "Nuvem"],
+      "leadSource": "LinkedIn Outreach",
+      "entryDate": "2026-04-25T10:00:00Z",
+      "lastContactDate": "2026-04-28T09:00:00Z",
+      "checklists": [
+        {
+          "id": "cl1",
+          "name": "Revisão SaaS",
+          "items": [
+            { "text": "Revisão Técnica", "checked": false },
+            { "text": "Aprovação de Orçamento", "checked": false },
+            { "text": "Revisão Jurídica", "checked": false }
+          ]
+        }
+      ],
+      "notes": [
+        { "id": "n1", "text": "Cliente está muito interessado na escalabilidade.", "author": "Jefferson Jr", "date": "2026-04-26T14:30:00Z" }
+      ],
+      "activities": [
+        { "id": "a1", "title": "Reunião de Alinhamento", "type": "meeting", "date": "2026-05-01T10:00:00Z", "status": "pending" }
+      ],
+      "documents": [
+        { "id": "doc1", "name": "Apresentação_Comercial.pdf", "size": "2.4MB", "date": "2026-04-25T11:00:00Z" }
+      ],
+      "profile": {
+        "id": "comp1",
+        "name": "TechCorp Solutions",
+        "industry": "Tecnologia",
+        "website": "https://techcorp.com",
+        "contacts": [
+          {
+            "id": "p1",
+            "name": "Ana Silva",
+            "role": "CTO",
+            "email": "ana@techcorp.com",
+            "phone": "+55 11 98888-7777",
+            "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Ana"
+          },
+          {
+            "id": "p2",
+            "name": "Carlos Mendes",
+            "role": "Gerente de TI",
+            "email": "carlos@techcorp.com",
+            "phone": "+55 11 97777-6666",
+            "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Carlos"
+          }
+        ]
+      }
+    }
+  ]
+}
