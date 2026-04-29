@@ -13,14 +13,14 @@ export function OnboardingModal() {
 
   useEffect(() => {
     setMounted(true);
-    const hasCompletedOnboarding = localStorage.getItem("funnel_onboarding_completed");
+    const hasCompletedOnboarding = localStorage.getItem("leads_site_onboarding_completed");
     if (!hasCompletedOnboarding) {
       setIsOpen(true);
     }
   }, []);
 
   const handleComplete = () => {
-    localStorage.setItem("funnel_onboarding_completed", "true");
+    localStorage.setItem("leads_site_onboarding_completed", "true");
     setIsOpen(false);
   };
 
@@ -50,7 +50,7 @@ export function OnboardingModal() {
           </div>
 
           <button 
-            onClick={() => setIsOpen(false)}
+            onClick={handleComplete}
             className="absolute top-8 right-8 p-2 text-gray-300 hover:text-gray-900 transition-colors"
           >
             <X size={24} />

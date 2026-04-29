@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Avatar } from "@/components/common/Avatar";
+import Link from "next/link";
 import { ChevronDown, Bell, Users, Settings, LogOut } from "lucide-react";
 import { UserManagementModal } from "./UserManagementModal";
 import { useFunnel } from "@/context/FunnelContext";
@@ -41,12 +42,12 @@ export function TopHeader() {
               <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Sua Conta</p>
               <p className="text-xs font-bold text-gray-600 mt-1 truncate">{user?.email}</p>
             </div>
-            <button className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-gray-600 hover:bg-gray-50 rounded-2xl transition-all">
+            <Link href="/profile" className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-gray-600 hover:bg-gray-50 rounded-2xl transition-all">
               <Users size={16} /> Meu Perfil
-            </button>
-            <button className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-gray-600 hover:bg-gray-50 rounded-2xl transition-all">
+            </Link>
+            <Link href="/settings" className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-gray-600 hover:bg-gray-50 rounded-2xl transition-all">
               <Settings size={16} /> Configurações
-            </button>
+            </Link>
             <div className="h-[1px] bg-gray-50 my-2 mx-4" />
             <button 
               onClick={logout}

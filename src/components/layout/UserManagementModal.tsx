@@ -14,13 +14,39 @@ interface UserManagementModalProps {
   onUpdateUsers: (users: any[]) => void;
   deals: any[];
   onUpdateDeals: (deals: any[]) => void;
+  initialEditingUser?: any | null;
 }
 
-export function UserManagementModal({ isOpen, onClose, users, onUpdateUsers, deals, onUpdateDeals }: UserManagementModalProps) {
+export function UserManagementModal({ 
+  isOpen, 
+  onClose, 
+  users, 
+  onUpdateUsers, 
+  deals, 
+  onUpdateDeals,
+  initialEditingUser = null
+}: UserManagementModalProps) {
   const [showTransferModal, setShowTransferModal] = useState<{ userToDelete: any, replacementUserId: string } | null>(null);
   const [isAddingUser, setIsAddingUser] = useState(false);
-  const [editingUser, setEditingUser] = useState<any | null>(null);
+  const [editingUser, setEditingUser] = useState<any | null>(initialEditingUser);
   const [form, setForm] = useState({ name: "", email: "", role: "Vendedor", department: "Comercial" });
+
+  React.useEffect(() => {
+    if (initialEditingUser) {
+      setEditingUser(initialEditingUser);
+      setForm({ 
+        name: initialEditingUser.name, 
+        email: initialEditingUser.email, 
+        role: initialEditingUser.role || "Vendedor",
+        department: initialEditingUser.department || "Comercial"
+      });
+      setIsAddingUser(true);
+    } else {
+      setEditingUser(null);
+      setForm({ name: "", email: "", role: "Vendedor", department: "Comercial" });
+      setIsAddingUser(false);
+    }
+  }, [initialEditingUser, isOpen]);
 
   const handleSaveUser = () => {
     if (!form.name || !form.email) return;

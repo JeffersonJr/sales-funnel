@@ -19,7 +19,6 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-
 const navItems = [
   { name: "Negócios", href: "/", icon: LayoutDashboard },
   { name: "Empresas", href: "/companies", icon: Globe },
@@ -27,14 +26,15 @@ const navItems = [
   { name: "Documentos", href: "/documents", icon: FileText },
   { name: "Automações", href: "/automations", icon: Zap },
   { name: "Análise", href: "/analytics", icon: BarChart3 },
+  { name: "Usuários", href: "/users", icon: Users },
   { name: "Configurações", href: "/settings", icon: Settings },
 ];
 
-const integrations = [
-  { name: "WhatsApp", icon: MessageCircle, color: "text-green-500" },
-  { name: "Instagram", icon: Camera, color: "text-pink-500" },
-  { name: "Web Chat", icon: Globe, color: "text-blue-500" },
-  { name: "Salesbot", icon: Bot, color: "text-purple-500" },
+const integrationItems = [
+  { name: "WhatsApp", href: "/integrations/whatsapp", icon: MessageCircle, color: "text-green-500" },
+  { name: "Instagram", href: "/integrations/instagram", icon: Camera, color: "text-pink-500" },
+  { name: "Web Chat", href: "/integrations/webchat", icon: Globe, color: "text-blue-500" },
+  { name: "Salesbot", href: "/integrations/salesbot", icon: Bot, color: "text-purple-500" },
 ];
 
 export function Sidebar() {
@@ -52,7 +52,7 @@ export function Sidebar() {
     >
       <div className="p-6 flex items-center justify-between w-full">
         {!isCollapsed && (
-          <span className="text-xl font-black tracking-tighter text-gray-900">Leads.site</span>
+          <span className="text-xl font-black tracking-tighter text-gray-900">leads.site</span>
         )}
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
@@ -95,23 +95,32 @@ export function Sidebar() {
 
         <div className="pt-6">
            {!isCollapsed && <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-3 mb-4">Integrações</p>}
-           {integrations.map((item) => (
-             <div
-               key={item.name}
-               className={cn(
-                 "flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 hover:bg-white hover:text-gray-900 hover:shadow-sm cursor-pointer transition-all group",
-                 isCollapsed && "justify-center"
-               )}
-             >
-               <item.icon 
-                 size={18} 
-                 className={cn("transition-colors", item.color)} 
-               />
-               {!isCollapsed && (
-                 <span className="text-sm font-bold">{item.name}</span>
-               )}
-             </div>
-           ))}
+           {integrationItems.map((item) => {
+             const isActive = pathname === item.href;
+             return (
+               <Link
+                 key={item.name}
+                 href={item.href}
+                 className={cn(
+                   "flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group mb-0.5",
+                   isActive 
+                     ? "bg-white text-gray-900 shadow-sm border border-gray-50" 
+                     : "text-gray-500 hover:bg-white hover:text-gray-900 hover:shadow-sm"
+                 )}
+               >
+                 <item.icon 
+                   size={18} 
+                   className={cn(
+                     "transition-colors",
+                     isActive ? item.color : "text-gray-400 group-hover:text-gray-900"
+                   )} 
+                 />
+                 {!isCollapsed && (
+                   <span className="text-sm font-bold">{item.name}</span>
+                 )}
+               </Link>
+             );
+           })}
         </div>
       </nav>
 

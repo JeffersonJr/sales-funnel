@@ -97,15 +97,28 @@ export default function AutomationsPage() {
         toast.success("Automação atualizada!");
       }
     } else {
-      const finalAutomation: Automation = {
-        id: Date.now().toString(),
-        name: newRule.name!,
-        triggerStageId: newRule.triggerStageId!,
-        actions: newRule.actions!,
-        status: "active"
-      };
-      setAutomations([...automations, finalAutomation]);
-      toast.success("Automação ativada!");
+      if (isEditingTemplate) {
+        const newTmpl: Automation = {
+          id: `tmpl-${Date.now()}`,
+          name: newRule.name!,
+          triggerStageId: newRule.triggerStageId!,
+          actions: newRule.actions!,
+          status: "active",
+          isTemplate: true
+        };
+        setAutomationTemplates([...automationTemplates, newTmpl]);
+        toast.success("Template criado e salvo!");
+      } else {
+        const finalAutomation: Automation = {
+          id: Date.now().toString(),
+          name: newRule.name!,
+          triggerStageId: newRule.triggerStageId!,
+          actions: newRule.actions!,
+          status: "active"
+        };
+        setAutomations([...automations, finalAutomation]);
+        toast.success("Automação ativada!");
+      }
     }
     resetModal();
   };
@@ -252,7 +265,11 @@ export default function AutomationsPage() {
                     <div>
                       <h3 className="text-xl font-black text-gray-900 flex items-center gap-3">
                         {auto.name}
-                        {auto.status === 'paused' && <span className="text-[10px] bg-gray-100 text-gray-400 px-3 py-1 rounded-full uppercase tracking-widest font-black">Pausada</span>}
+                        {auto.status === 'active' ? (
+                          <span className="text-[9px] bg-green-50 text-green-600 px-3 py-1 rounded-full uppercase tracking-widest font-black border border-green-100">Fluxo Ativo</span>
+                        ) : (
+                          <span className="text-[10px] bg-gray-100 text-gray-400 px-3 py-1 rounded-full uppercase tracking-widest font-black">Pausada</span>
+                        )}
                       </h3>
                       <div className="flex items-center gap-4 mt-2">
                         <div className="flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-widest">
@@ -349,7 +366,10 @@ export default function AutomationsPage() {
                   <div className="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                     <Copy size={28} />
                   </div>
-                  <h3 className="text-2xl font-black text-gray-900 mb-3">{tmpl.name}</h3>
+                  <h3 className="text-2xl font-black text-gray-900 mb-3 flex items-center gap-3">
+                    {tmpl.name}
+                    <span className="text-[10px] bg-blue-50 text-blue-600 px-3 py-1 rounded-full uppercase tracking-widest font-black">Modelo</span>
+                  </h3>
                   <p className="text-sm text-gray-400 font-medium leading-relaxed mb-6">
                     Template com {tmpl.actions?.length || 0} ações integradas.
                   </p>
@@ -413,6 +433,34 @@ export default function AutomationsPage() {
                         placeholder="Ex: Onboarding Cliente VIP"
                         className="w-full bg-gray-50 border border-gray-100 rounded-3xl py-6 px-8 text-xl font-black focus:ring-4 focus:ring-blue-100 outline-none transition-all"
                       />
+                    </div>
+
+                    <div className="space-y-6">
+                      <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Tipo de Automação</label>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <button 
+                          onClick={() => setIsEditingTemplate(false)}
+                          className={cn(
+                            "p-8 rounded-[2.5rem] border-2 transition-all text-left group relative overflow-hidden",
+                            !isEditingTemplate ? "border-gray-900 bg-gray-900 text-white shadow-2xl" : "border-gray-100 bg-white text-gray-500 hover:border-gray-200"
+                          )}
+                        >
+                          <Zap size={24} className={cn("mb-4", !isEditingTemplate ? "text-blue-400" : "text-gray-300")} />
+                          <h4 className="font-black text-sm uppercase tracking-tight">Fluxo Operacional</h4>
+                          <p className="text-[10px] font-medium opacity-60 mt-1">Ativa imediatamente no funil</p>
+                        </button>
+                        <button 
+                          onClick={() => setIsEditingTemplate(true)}
+                          className={cn(
+                            "p-8 rounded-[2.5rem] border-2 transition-all text-left group relative overflow-hidden",
+                            isEditingTemplate ? "border-blue-600 bg-blue-50 text-blue-600 shadow-xl" : "border-gray-100 bg-white text-gray-500 hover:border-gray-200"
+                          )}
+                        >
+                          <Bookmark size={24} className={cn("mb-4", isEditingTemplate ? "text-blue-600" : "text-gray-300")} />
+                          <h4 className="font-black text-sm uppercase tracking-tight">Modelo (Template)</h4>
+                          <p className="text-[10px] font-medium opacity-60 mt-1">Salva na biblioteca de modelos</p>
+                        </button>
+                      </div>
                     </div>
 
                     <div className="space-y-6">
@@ -534,7 +582,7 @@ export default function AutomationsPage() {
                       onClick={handleSave}
                       className="bg-blue-600 text-white px-12 py-5 rounded-[1.5rem] font-black text-sm flex items-center gap-2 shadow-xl shadow-blue-100"
                     >
-                      <Zap size={18} /> {editingId ? "Salvar Alterações" : "Ativar Fluxo"}
+                      <Zap size={18} /> {editingId ? "Salvar Alterações" : (isEditingTemplate ? "Criar Template" : "Ativar Fluxo")}
                     </button>
                   )}
                 </div>

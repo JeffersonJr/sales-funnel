@@ -6,6 +6,13 @@
       "email": "contato@jeffersonjunior.com.br",
       "role": "Administrador",
       "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Jefferson"
+    },
+    {
+      "id": "u2",
+      "name": "Mariana Souza",
+      "email": "mariana@leads.site",
+      "role": "Vendas",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Mariana"
     }
   ],
   "stages": [
@@ -27,6 +34,19 @@
       "checkpoints": ["Setup de Conta", "Treinamento Inicial", "Primeiro Acesso"]
     }
   ],
+  "companies": [
+    { "id": "comp1", "name": "TechCorp Solutions", "industry": "Tecnologia", "website": "https://techcorp.com", "createdAt": "2026-04-25T10:00:00Z" },
+    { "id": "comp2", "name": "EduNext", "industry": "Educação", "website": "https://edunext.com", "createdAt": "2026-04-20T10:00:00Z" },
+    { "id": "comp3", "name": "Global Retail", "industry": "Varejo", "website": "https://globalretail.com", "createdAt": "2026-04-18T10:00:00Z" },
+    { "id": "comp4", "name": "Creative Studio", "industry": "Serviços Digitais", "website": "https://creativestudio.com", "createdAt": "2026-04-15T10:00:00Z" },
+    { "id": "comp5", "name": "FastLogistics", "industry": "Logística", "website": "https://fastlog.com", "createdAt": "2026-04-10T10:00:00Z" },
+    { "id": "comp6", "name": "Skyline Infra", "industry": "Engenharia", "website": "https://skyline.io", "createdAt": "2026-04-22T08:00:00Z" }
+  ],
+  "leads": [
+    { "id": "l1", "name": "Ana Silva", "role": "CTO", "company": "TechCorp Solutions", "email": "ana@techcorp.com", "phone": "+55 11 98888-7777", "createdAt": "2026-04-25T10:00:00Z" },
+    { "id": "l2", "name": "Roberto Costa", "role": "Diretor Financeiro", "company": "EduNext", "email": "roberto@edunext.com", "phone": "+55 11 96666-5555", "createdAt": "2026-04-20T10:00:00Z" },
+    { "id": "l3", "name": "Luciana Dias", "role": "Gerente de Operações", "company": "Global Retail", "email": "luciana@globalretail.com", "phone": "+55 11 95555-4444", "createdAt": "2026-04-18T10:00:00Z" }
+  ],
   "deals": [
     {
       "id": "d1",
@@ -35,55 +55,98 @@
       "value": 50000,
       "stage": "lead",
       "createdAt": "2026-04-25T10:00:00Z",
-      "lastActivity": "2026-04-26T14:30:00Z",
       "tags": ["Valor Alto", "Nuvem"],
-      "leadSource": "LinkedIn Outreach",
-      "entryDate": "2026-04-25T10:00:00Z",
-      "lastContactDate": "2026-04-28T09:00:00Z",
-      "checklists": [
-        {
-          "id": "cl1",
-          "name": "Revisão SaaS",
-          "items": [
-            { "text": "Revisão Técnica", "checked": false },
-            { "text": "Aprovação de Orçamento", "checked": false },
-            { "text": "Revisão Jurídica", "checked": false }
-          ]
-        }
-      ],
-      "notes": [
-        { "id": "n1", "text": "Cliente está muito interessado na escalabilidade.", "author": "Jefferson Jr", "date": "2026-04-26T14:30:00Z" }
-      ],
-      "activities": [
-        { "id": "a1", "title": "Reunião de Alinhamento", "type": "meeting", "date": "2026-05-01T10:00:00Z", "status": "pending" }
-      ],
-      "documents": [
-        { "id": "doc1", "name": "Apresentação_Comercial.pdf", "size": "2.4MB", "date": "2026-04-25T11:00:00Z" }
-      ],
-      "profile": {
-        "id": "comp1",
-        "name": "TechCorp Solutions",
-        "industry": "Tecnologia",
-        "website": "https://techcorp.com",
-        "contacts": [
-          {
-            "id": "p1",
-            "name": "Ana Silva",
-            "role": "CTO",
-            "email": "ana@techcorp.com",
-            "phone": "+55 11 98888-7777",
-            "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Ana"
-          },
-          {
-            "id": "p2",
-            "name": "Carlos Mendes",
-            "role": "Gerente de TI",
-            "email": "carlos@techcorp.com",
-            "phone": "+55 11 97777-6666",
-            "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Carlos"
-          }
-        ]
-      }
+      "profile": { "id": "comp1", "name": "TechCorp Solutions", "contacts": [{ "id": "p1", "name": "Ana Silva", "role": "CTO" }] }
+    },
+    {
+      "id": "d6",
+      "title": "Expansão de Data Center",
+      "company": "Skyline Infra",
+      "value": 75000,
+      "stage": "lead",
+      "createdAt": "2026-04-26T09:00:00Z",
+      "tags": ["Crítico", "Hardware"],
+      "profile": { "id": "comp6", "name": "Skyline Infra", "contacts": [{ "id": "p7", "name": "Marco Tulio", "role": "Head de Infra" }] }
+    },
+    {
+      "id": "d2",
+      "title": "Renovação de Contrato Anual",
+      "company": "EduNext",
+      "value": 15000,
+      "stage": "discovery",
+      "createdAt": "2026-04-20T10:00:00Z",
+      "tags": ["VIP"],
+      "profile": { "id": "comp2", "name": "EduNext", "contacts": [{ "id": "p3", "name": "Roberto Costa", "role": "Diretor Financeiro" }] }
+    },
+    {
+      "id": "d7",
+      "title": "Consultoria de Segurança",
+      "company": "Cyber Defense Ltd",
+      "value": 20000,
+      "stage": "discovery",
+      "createdAt": "2026-04-21T14:00:00Z",
+      "tags": ["Segurança"],
+      "profile": { "id": "comp7", "name": "Cyber Defense Ltd", "contacts": [{ "id": "p8", "name": "Paula Souza", "role": "CISO" }] }
+    },
+    {
+      "id": "d3",
+      "title": "Implantação CRM V2",
+      "company": "Global Retail",
+      "value": 35000,
+      "stage": "proposal",
+      "createdAt": "2026-04-18T10:00:00Z",
+      "tags": ["Urgente"],
+      "profile": { "id": "comp3", "name": "Global Retail", "contacts": [{ "id": "p4", "name": "Luciana Dias", "role": "Gerente de Operações" }] }
+    },
+    {
+      "id": "d8",
+      "title": "Integração de APIs ERP",
+      "company": "Logistics Pro",
+      "value": 28000,
+      "stage": "proposal",
+      "createdAt": "2026-04-19T11:00:00Z",
+      "tags": ["API", "Backend"],
+      "profile": { "id": "comp8", "name": "Logistics Pro", "contacts": [{ "id": "p9", "name": "Tiago Lima", "role": "Arquiteto de Software" }] }
+    },
+    {
+      "id": "d4",
+      "title": "Consultoria de CX & Loyalty",
+      "company": "Creative Studio",
+      "value": 12000,
+      "stage": "negotiation",
+      "createdAt": "2026-04-15T10:00:00Z",
+      "tags": ["Design"],
+      "profile": { "id": "comp4", "name": "Creative Studio", "contacts": [{ "id": "p5", "name": "Felipe Amorim", "role": "Dono" }] }
+    },
+    {
+      "id": "d9",
+      "title": "Desenvolvimento App Mobile",
+      "company": "Food Delivery S/A",
+      "value": 45000,
+      "stage": "negotiation",
+      "createdAt": "2026-04-16T15:00:00Z",
+      "tags": ["Mobile", "Flutter"],
+      "profile": { "id": "comp9", "name": "Food Delivery S/A", "contacts": [{ "id": "p10", "name": "Bia Martins", "role": "Product Manager" }] }
+    },
+    {
+      "id": "d5",
+      "title": "Licenciamento de Software",
+      "company": "FastLogistics",
+      "value": 85000,
+      "stage": "closed",
+      "createdAt": "2026-04-10T10:00:00Z",
+      "tags": ["Valor Alto"],
+      "profile": { "id": "comp5", "name": "FastLogistics", "contacts": [{ "id": "p6", "name": "Renata Lima", "role": "Compras" }] }
+    },
+    {
+      "id": "d10",
+      "title": "Treinamento de Equipe",
+      "company": "Sales Academy",
+      "value": 10000,
+      "stage": "closed",
+      "createdAt": "2026-04-11T12:00:00Z",
+      "tags": ["Educação"],
+      "profile": { "id": "comp10", "name": "Sales Academy", "contacts": [{ "id": "p11", "name": "Joaquim Neto", "role": "Treinador Master" }] }
     }
   ]
 }

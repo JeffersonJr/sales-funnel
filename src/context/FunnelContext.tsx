@@ -12,8 +12,8 @@ export function FunnelProvider({ children }: { children: React.ReactNode }) {
   const [stages, setStages] = useState<any[]>(mockDb.stages);
   const [templates, setTemplates] = useState<any[]>(mockDb.templates);
   const [availableTags, setAvailableTags] = useState<any[]>([]);
-  const [leads, setLeads] = useState<any[]>([]);
-  const [companies, setCompanies] = useState<any[]>([]);
+  const [leads, setLeads] = useState<any[]>((mockDb as any).leads || []);
+  const [companies, setCompanies] = useState<any[]>((mockDb as any).companies || []);
   const [groups, setGroups] = useState<any[]>([]);
   const [automations, setAutomations] = useState<any[]>([]);
   const [automationTemplates, setAutomationTemplates] = useState<any[]>([]);
@@ -37,10 +37,20 @@ export function FunnelProvider({ children }: { children: React.ReactNode }) {
       { id: "3", name: "VIP", color: "#a855f7" },
       { id: "4", name: "Urgente", color: "#f97316" }
     ]);
-    load("funnel_leads", setLeads, []);
-    load("funnel_companies", setCompanies, []);
+    load("funnel_leads", setLeads, (mockDb as any).leads || []);
+    load("funnel_companies", setCompanies, (mockDb as any).companies || []);
     load("funnel_groups", setGroups, [{ id: "g1", name: "Comercial SP", members: ["u1"] }]);
-    load("funnel_automations", setAutomations, []);
+    load("funnel_automations", setAutomations, [
+      {
+        id: "auto-initial",
+        name: "Boas vindas automático",
+        triggerStageId: "lead",
+        status: "active",
+        actions: [
+          { id: "act1", type: "whatsapp", config: { message: "Olá! Seja bem-vindo ao Leads.site. Como podemos ajudar?" } }
+        ]
+      }
+    ]);
     load("funnel_automation_templates", setAutomationTemplates, [
       {
         id: "tmpl-1",
