@@ -64,7 +64,7 @@ export function FunnelProvider({ children }: { children: React.ReactNode }) {
       });
       
       if (!initialStages.some((s: any) => s.id === "lost")) {
-        initialStages.push({ id: "lost", title: "Perdido", color: "#ef4444" });
+        initialStages.push({ id: "lost", title: "Perdido", color: "#ef4444", funnelId: "main" });
         migrated = true;
       }
       
