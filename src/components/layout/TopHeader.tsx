@@ -15,13 +15,6 @@ export function TopHeader() {
 
   return (
     <header className="h-20 border-b border-gray-100 bg-white/50 backdrop-blur-md sticky top-0 z-40 flex items-center justify-end px-8 gap-6">
-      <button 
-        onClick={() => setShowUserModal(true)}
-        className="flex items-center gap-2 px-4 py-2 bg-gray-50 text-gray-600 rounded-xl hover:bg-gray-100 transition-all text-xs font-bold mr-auto"
-      >
-        <Users size={16} /> Gestão de Equipe
-      </button>
-
       <button className="p-2 text-gray-400 hover:bg-gray-50 rounded-xl transition-all relative">
         <Bell size={20} />
         <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white" />
