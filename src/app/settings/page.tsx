@@ -102,8 +102,8 @@ export default function SettingsPage() {
     }
   }, [activeFunnelId]);
 
-  const activeSettingsFunnel = funnels.find(f => f.id === settingsActiveFunnelId) || funnels[0];
-  const activeSettingsStages = stages.filter(s => s.funnelId === settingsActiveFunnelId);
+  const activeSettingsFunnel = funnels.find((f: any) => f.id === settingsActiveFunnelId) || funnels[0];
+  const activeSettingsStages = stages.filter((s: any) => s.funnelId === settingsActiveFunnelId);
 
   const handleAddStage = () => {
     if (!newStageTitle) return;
@@ -434,7 +434,7 @@ export default function SettingsPage() {
                         <p className="text-sm font-black text-foreground truncate uppercase tracking-widest">{f.name}</p>
                       )}
                       <p className="text-[10px] font-bold text-muted-foreground mt-1">
-                        {stages.filter(s => s.funnelId === f.id).length} etapas configuradas
+                        {stages.filter((s: any) => s.funnelId === f.id).length} etapas configuradas
                       </p>
                     </div>
                   ))}
@@ -696,9 +696,9 @@ export default function SettingsPage() {
                               className="w-full bg-background border border-border rounded-xl p-3 text-sm font-bold text-foreground outline-none"
                             >
                               <option value="">Selecione a etapa...</option>
-                              {funnels.filter(f => f.id !== showDeleteFunnelModal).map(f => (
+                              {funnels.filter((f: any) => f.id !== showDeleteFunnelModal).map((f: any) => (
                                 <optgroup key={f.id} label={f.name}>
-                                  {stages.filter(s => s.funnelId === f.id).map(s => (
+                                  {stages.filter((s: any) => s.funnelId === f.id).map((s: any) => (
                                     <option key={s.id} value={s.id}>{s.title}</option>
                                   ))}
                                 </optgroup>
