@@ -551,15 +551,15 @@ export default function AutomationsPage() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-white rounded-[4rem] w-full max-w-4xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+              className="bg-white dark:bg-[#121215] rounded-[4rem] w-full max-w-4xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] border border-transparent dark:border-white/5"
             >
               <div className="p-10 border-b border-gray-50 flex justify-between items-center bg-gray-50/30">
                 <div className="flex items-center gap-6">
-                  <div className="w-12 h-12 bg-gray-900 text-white rounded-2xl flex items-center justify-center">
+                  <div className="w-12 h-12 bg-gray-900 dark:bg-blue-600 text-white rounded-2xl flex items-center justify-center">
                     <Zap size={24} />
                   </div>
                   <div>
-                    <h2 className="text-2xl font-black text-gray-900">Configurador de Workflow</h2>
+                    <h2 className="text-2xl font-black text-gray-900 dark:text-white">Configurador de Workflow</h2>
                     <div className="flex items-center gap-2 mt-1">
                       <span className={cn("w-2 h-2 rounded-full", step >= 1 ? "bg-blue-500" : "bg-gray-200")} />
                       <span className={cn("w-2 h-2 rounded-full", step >= 2 ? "bg-blue-500" : "bg-gray-200")} />
@@ -592,23 +592,23 @@ export default function AutomationsPage() {
                           onClick={() => setIsEditingTemplate(false)}
                           className={cn(
                             "p-8 rounded-[2.5rem] border-2 transition-all text-left group relative overflow-hidden",
-                            !isEditingTemplate ? "border-gray-900 bg-gray-900 text-white shadow-2xl" : "border-gray-100 bg-white text-gray-500 hover:border-gray-200"
+                            !isEditingTemplate ? "border-blue-600 bg-blue-600 text-white shadow-2xl" : "border-gray-100 dark:border-white/5 bg-white dark:bg-white/5 text-gray-500 dark:text-gray-400 hover:border-gray-200 dark:hover:border-white/10"
                           )}
                         >
-                          <Zap size={24} className={cn("mb-4", !isEditingTemplate ? "text-blue-400" : "text-gray-300")} />
-                          <h4 className="font-black text-sm uppercase tracking-tight">Fluxo Operacional</h4>
-                          <p className="text-[10px] font-medium opacity-60 mt-1">Ativa imediatamente no funil</p>
+                          <Zap size={24} className={cn("mb-4", !isEditingTemplate ? "text-white" : "text-gray-300 dark:text-gray-600")} />
+                          <h4 className={cn("font-black text-sm uppercase tracking-tight", !isEditingTemplate ? "text-white" : "text-gray-900 dark:text-white")}>Fluxo Operacional</h4>
+                          <p className={cn("text-[10px] font-medium mt-1", !isEditingTemplate ? "text-blue-100" : "text-gray-400 dark:text-gray-500")}>Ativa imediatamente no funil</p>
                         </button>
                         <button 
                           onClick={() => setIsEditingTemplate(true)}
                           className={cn(
                             "p-8 rounded-[2.5rem] border-2 transition-all text-left group relative overflow-hidden",
-                            isEditingTemplate ? "border-blue-600 bg-blue-50 text-blue-600 shadow-xl" : "border-gray-100 bg-white text-gray-500 hover:border-gray-200"
+                            isEditingTemplate ? "border-blue-600 bg-blue-600 text-white shadow-xl" : "border-gray-100 dark:border-white/5 bg-white dark:bg-white/5 text-gray-500 dark:text-gray-400 hover:border-gray-200 dark:hover:border-white/10"
                           )}
                         >
-                          <Bookmark size={24} className={cn("mb-4", isEditingTemplate ? "text-blue-600" : "text-gray-300")} />
-                          <h4 className="font-black text-sm uppercase tracking-tight">Modelo (Template)</h4>
-                          <p className="text-[10px] font-medium opacity-60 mt-1">Salva na biblioteca de modelos</p>
+                          <Bookmark size={24} className={cn("mb-4", isEditingTemplate ? "text-white" : "text-gray-300 dark:text-gray-600")} />
+                          <h4 className={cn("font-black text-sm uppercase tracking-tight", isEditingTemplate ? "text-white" : "text-gray-900 dark:text-white")}>Modelo (Template)</h4>
+                          <p className={cn("text-[10px] font-medium mt-1", isEditingTemplate ? "text-blue-100" : "text-gray-400 dark:text-gray-500")}>Salva na biblioteca de modelos</p>
                         </button>
                       </div>
                     </div>
