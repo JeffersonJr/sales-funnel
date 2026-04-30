@@ -426,39 +426,41 @@ export default function AutomationsPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="grid grid-cols-1 md:grid-cols-2 gap-8"
+            className="grid grid-cols-1 md:grid-cols-3 gap-6"
           >
             {automationTemplates.map((tmpl: Automation) => (
-              <div key={tmpl.id} className="bg-white p-10 rounded-[3.5rem] border border-gray-100 shadow-xl shadow-gray-50/50 flex flex-col justify-between group hover:border-blue-200 transition-all relative">
-                <div className="absolute top-8 right-8 flex gap-2">
+              <div key={tmpl.id} className="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-xl shadow-gray-50/50 flex flex-col justify-between group hover:border-blue-200 transition-all relative">
+                <div className="absolute top-6 right-6 flex gap-1">
                   <button 
                     onClick={() => handleEdit(tmpl, true)}
-                    className="p-2 text-gray-200 hover:text-blue-500 opacity-0 group-hover:opacity-100 transition-all"
+                    className="p-1.5 text-gray-200 hover:text-blue-500 opacity-0 group-hover:opacity-100 transition-all bg-gray-50 hover:bg-blue-50 rounded-lg"
                     title="Editar Template"
                   >
-                    <Edit2 size={18} />
+                    <Edit2 size={14} />
                   </button>
                   <button 
                     onClick={() => setDeleteTarget({ id: tmpl.id, type: 'template' })}
-                    className="p-2 text-gray-200 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"
+                    className="p-1.5 text-gray-200 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all bg-gray-50 hover:bg-red-50 rounded-lg"
                   >
-                    <Trash2 size={18} />
+                    <Trash2 size={14} />
                   </button>
                 </div>
                 <div>
-                  <div className="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                    <Copy size={28} />
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
+                      <Copy size={18} />
+                    </div>
+                    <span className="text-[9px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-md uppercase tracking-widest font-black">Modelo</span>
                   </div>
-                  <h3 className="text-2xl font-black text-gray-900 mb-3 flex items-center gap-3">
+                  <h3 className="text-lg font-black text-gray-900 mb-2 leading-tight">
                     {tmpl.name}
-                    <span className="text-[10px] bg-blue-50 text-blue-600 px-3 py-1 rounded-full uppercase tracking-widest font-black">Modelo</span>
                   </h3>
-                  <p className="text-sm text-gray-400 font-medium leading-relaxed mb-6">
+                  <p className="text-xs text-gray-400 font-medium leading-relaxed mb-4">
                     Template com {tmpl.actions?.length || 0} ações integradas.
                   </p>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-1.5">
                     {tmpl.actions?.map((a: any, i: number) => (
-                      <span key={i} className="text-[9px] font-black uppercase tracking-widest bg-gray-50 text-gray-400 px-3 py-1.5 rounded-full border border-gray-100">
+                      <span key={i} className="text-[8px] font-black uppercase tracking-widest bg-gray-50 text-gray-500 px-2 py-1 rounded-md border border-gray-100">
                         {a.type}
                       </span>
                     ))}
@@ -466,9 +468,9 @@ export default function AutomationsPage() {
                 </div>
                 <button 
                   onClick={() => useTemplate(tmpl)}
-                  className="mt-10 w-full py-5 rounded-[1.5rem] bg-gray-900 text-white font-black text-sm flex items-center justify-center gap-2 hover:bg-blue-600 transition-all"
+                  className="mt-6 w-full py-3 rounded-xl bg-gray-900 text-white font-black text-xs flex items-center justify-center gap-2 hover:bg-blue-600 transition-all"
                 >
-                  Usar este Modelo <ChevronRight size={18} />
+                  Usar <ChevronRight size={14} />
                 </button>
               </div>
             ))}
