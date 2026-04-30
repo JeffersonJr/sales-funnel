@@ -108,7 +108,7 @@ export function TagManagementModal({ isOpen, onClose, tags, onUpdateTags }: TagM
                       "w-8 h-8 rounded-full transition-all flex items-center justify-center",
                       selectedColor === c ? "ring-4 ring-offset-2 scale-110 shadow-md" : "hover:scale-110 opacity-50 hover:opacity-100"
                     )}
-                    style={{ backgroundColor: c, ringColor: c }}
+                    style={{ backgroundColor: c, "--tw-ring-color": c } as React.CSSProperties}
                   >
                     {selectedColor === c && <Check size={14} className="text-white" />}
                   </button>
@@ -154,7 +154,7 @@ export function TagManagementModal({ isOpen, onClose, tags, onUpdateTags }: TagM
                                 "w-6 h-6 rounded-full transition-all",
                                 editingTag.color === c ? "ring-2 ring-offset-1 scale-110" : "opacity-50 hover:opacity-100"
                               )}
-                              style={{ backgroundColor: c, ringColor: c }}
+                              style={{ backgroundColor: c, "--tw-ring-color": c } as React.CSSProperties}
                             />
                           ))}
                         </div>
