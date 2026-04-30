@@ -8,6 +8,7 @@ import { TopHeader } from "@/components/layout/TopHeader";
 import { MobileNav } from "./MobileNav";
 import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
+import { CommandPalette } from "@/components/common/CommandPalette";
 
 export function AppWrapper({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
@@ -57,6 +58,7 @@ export function AppWrapper({ children }: { children: React.ReactNode }) {
           <MobileNav />
         </div>
       </main>
+      <CommandPalette />
     </div>
   );
 }

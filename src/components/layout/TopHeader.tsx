@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Avatar } from "@/components/common/Avatar";
 import Link from "next/link";
-import { ChevronDown, Bell, Users, Settings, LogOut, CreditCard, Zap, DollarSign, FileText, Sun, Moon, Monitor } from "lucide-react";
+import { ChevronDown, Bell, Users, Settings, LogOut, CreditCard, Zap, DollarSign, FileText, Sun, Moon, Monitor, Search } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useFunnel } from "@/context/FunnelContext";
 import { motion, AnimatePresence } from "framer-motion";
@@ -13,6 +13,16 @@ export function TopHeader() {
   const { user, logout } = useAuth();
   const { theme, setTheme } = useFunnel();
   const [showNotifications, setShowNotifications] = useState(false);
+  const [isMac, setIsMac] = useState(false);
+
+  useEffect(() => {
+    setIsMac(navigator.platform.toUpperCase().includes('MAC') || navigator.userAgent.toUpperCase().includes('MAC'));
+  }, []);
+
+  const openCommandPalette = () => {
+    const event = new KeyboardEvent('keydown', { key: 'k', metaKey: isMac, ctrlKey: !isMac, bubbles: true });
+    document.dispatchEvent(event);
+  };
 
   const notifications = [
     { id: 1, title: "Novo Lead recebido", desc: "João Silva entrou pelo formulário", time: "5m atrás", icon: Users, color: "text-blue-500", bg: "bg-blue-50 dark:bg-blue-900/20", link: "/leads" },
@@ -22,6 +32,22 @@ export function TopHeader() {
 
   return (
     <header className="h-20 border-b border-border bg-background/80 backdrop-blur-xl sticky top-0 z-40 flex items-center justify-end px-8 gap-4 transition-all duration-300">
+      {/* Command Palette Hint */}
+      <button
+        onClick={openCommandPalette}
+        className="hidden md:flex items-center gap-2.5 px-3.5 py-2 bg-muted/60 hover:bg-muted border border-border rounded-xl transition-all group"
+      >
+        <Search size={14} className="text-muted-foreground" />
+        <span className="text-xs font-medium text-muted-foreground">Busca rápida</span>
+        <span className="flex items-center gap-1 ml-1">
+          <kbd className="bg-background border border-border text-muted-foreground group-hover:text-foreground px-1.5 py-0.5 rounded text-[10px] font-mono font-bold leading-none transition-colors shadow-sm">
+            {isMac ? '⌘' : 'Ctrl'}
+          </kbd>
+          <kbd className="bg-background border border-border text-muted-foreground group-hover:text-foreground px-1.5 py-0.5 rounded text-[10px] font-mono font-bold leading-none transition-colors shadow-sm">
+            K
+          </kbd>
+        </span>
+      </button>
       {/* Theme Switcher */}
       <div className="flex items-center bg-muted/50 p-1 rounded-xl border border-border">
         {[

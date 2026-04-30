@@ -202,6 +202,19 @@ export function KanbanBoard() {
     setShowNewDealModal(true);
   };
 
+  useEffect(() => {
+    const handleNewDeal = () => openNewDealModal();
+    const handleNewFunnel = () => setShowNewFunnelModal(true);
+
+    window.addEventListener("cmd-new-deal", handleNewDeal);
+    window.addEventListener("cmd-new-funnel", handleNewFunnel);
+
+    return () => {
+      window.removeEventListener("cmd-new-deal", handleNewDeal);
+      window.removeEventListener("cmd-new-funnel", handleNewFunnel);
+    };
+  }, [activeStages]);
+
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
