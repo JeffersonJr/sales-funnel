@@ -325,7 +325,7 @@ export default function SettingsPage() {
                     <div>
                       <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 ml-1">Cor</label>
                       <div className="flex flex-wrap gap-2">
-                        {colors.map(c => (
+                        {colors.map((c: string) => (
                           <button 
                             key={c} 
                             onClick={() => setNewTagColor(c)}
@@ -385,7 +385,7 @@ export default function SettingsPage() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-8">
-                  {funnels.map(f => (
+                  {funnels.map((f: any) => (
                     <div 
                       key={f.id}
                       className={cn(
@@ -550,7 +550,7 @@ export default function SettingsPage() {
                                </button>
                              </div>
                              <div className="flex flex-wrap gap-2">
-                               {STAGE_COLORS.map(c => (
+                               {STAGE_COLORS.map((c: string) => (
                                  <button 
                                    key={c}
                                    onClick={() => setEditingStageColor(c)}
@@ -793,7 +793,7 @@ export default function SettingsPage() {
                       { id: 'light', label: 'Claro', icon: Sun },
                       { id: 'dark', label: 'Escuro', icon: Moon },
                       { id: 'system', label: 'Sistema', icon: Monitor },
-                    ].map(t => (
+                    ].map((t: any) => (
                       <button 
                         key={t.id} 
                         onClick={() => handleThemeChange(t.id as any)}
