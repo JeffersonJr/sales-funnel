@@ -55,9 +55,9 @@ export function TwoFactorModal({ isOpen, onClose, onComplete }: TwoFactorModalPr
               <div className="w-10 h-10 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center">
                 <ShieldCheck size={20} />
               </div>
-              <h2 className="text-xl font-black text-gray-900 dark:text-white">Configurar 2FA</h2>
+              <h2 className="text-xl font-black text-foreground">Configurar 2FA</h2>
             </div>
-            <button onClick={onClose} className="p-2 hover:bg-gray-200 dark:hover:bg-muted rounded-xl text-gray-400 transition-colors">
+            <button onClick={onClose} className="p-2 hover:bg-muted rounded-xl text-muted-foreground transition-colors">
               <X size={20} />
             </button>
           </div>
@@ -66,11 +66,11 @@ export function TwoFactorModal({ isOpen, onClose, onComplete }: TwoFactorModalPr
             {step === 1 && (
               <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-8">
                 <div className="text-center">
-                  <div className="w-20 h-20 bg-gray-50 dark:bg-muted rounded-3xl flex items-center justify-center mx-auto mb-6">
-                    <Smartphone size={40} className="text-gray-400" />
+                  <div className="w-20 h-20 bg-muted rounded-3xl flex items-center justify-center mx-auto mb-6">
+                    <Smartphone size={40} className="text-muted-foreground" />
                   </div>
-                  <h3 className="text-xl font-black text-gray-900 dark:text-white">Escaneie o QR Code</h3>
-                  <p className="text-sm text-gray-500 dark:text-muted-foreground mt-2 font-medium">
+                  <h3 className="text-xl font-black text-foreground">Escaneie o QR Code</h3>
+                  <p className="text-sm text-muted-foreground mt-2 font-medium">
                     Abra o Google Authenticator ou seu app de preferência e escaneie o código abaixo.
                   </p>
                 </div>
@@ -84,9 +84,9 @@ export function TwoFactorModal({ isOpen, onClose, onComplete }: TwoFactorModalPr
                         ))}
                      </div>
                   </div>
-                  <div className="flex items-center gap-3 bg-gray-50 px-4 py-2 rounded-xl border border-gray-100">
-                    <code className="text-xs font-black text-gray-600 uppercase tracking-widest">{secret}</code>
-                    <button onClick={() => { navigator.clipboard.writeText(secret); toast.success("Copiado!"); }} className="p-1 text-gray-400 hover:text-gray-900">
+                  <div className="flex items-center gap-3 bg-muted px-4 py-2 rounded-xl border border-border">
+                    <code className="text-xs font-black text-foreground uppercase tracking-widest">{secret}</code>
+                    <button onClick={() => { navigator.clipboard.writeText(secret); toast.success("Copiado!"); }} className="p-1 text-muted-foreground hover:text-foreground">
                       <Copy size={14} />
                     </button>
                   </div>
@@ -104,8 +104,8 @@ export function TwoFactorModal({ isOpen, onClose, onComplete }: TwoFactorModalPr
             {step === 2 && (
               <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-8">
                 <div className="text-center">
-                  <h3 className="text-xl font-black text-gray-900 dark:text-white">Verificar Código</h3>
-                  <p className="text-sm text-gray-500 dark:text-muted-foreground mt-2 font-medium">
+                  <h3 className="text-xl font-black text-foreground">Verificar Código</h3>
+                  <p className="text-sm text-muted-foreground mt-2 font-medium">
                     Insira o código de 6 dígitos gerado pelo seu aplicativo.
                   </p>
                 </div>
@@ -124,7 +124,7 @@ export function TwoFactorModal({ isOpen, onClose, onComplete }: TwoFactorModalPr
                 <div className="flex gap-4">
                    <button
                     onClick={() => setStep(1)}
-                    className="flex-1 bg-gray-100 dark:bg-muted text-gray-500 py-4 rounded-2xl font-black text-sm hover:bg-gray-200 transition-all"
+                    className="flex-1 bg-muted text-muted-foreground py-4 rounded-2xl font-black text-sm hover:bg-muted/80 transition-all"
                   >
                     Voltar
                   </button>
@@ -145,8 +145,8 @@ export function TwoFactorModal({ isOpen, onClose, onComplete }: TwoFactorModalPr
                   <ShieldCheck size={48} className="text-green-500" />
                 </div>
                 <div>
-                  <h3 className="text-2xl font-black text-gray-900 dark:text-white">Segurança Ativada!</h3>
-                  <p className="text-sm text-gray-500 dark:text-muted-foreground mt-2 font-medium max-w-xs mx-auto">
+                  <h3 className="text-2xl font-black text-foreground">Segurança Ativada!</h3>
+                  <p className="text-sm text-muted-foreground mt-2 font-medium max-w-xs mx-auto">
                     Seu 2FA foi configurado com sucesso. Agora sua conta está muito mais segura.
                   </p>
                 </div>

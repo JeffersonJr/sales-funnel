@@ -19,6 +19,7 @@ import {
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
+import { useFunnel } from "@/context/FunnelContext";
 
 // Official Brand Icons in SVG
 const WhatsAppIcon = ({ size, className }: any) => (
@@ -57,36 +58,39 @@ const integrationItems = [
   { name: "Instagram", href: "/integrations/instagram", icon: InstagramIcon, color: "text-pink-500" },
   { name: "Meta Ads", href: "/integrations/meta", icon: MetaIcon, color: "text-blue-600" },
   { name: "Web Chat", href: "/integrations/webchat", icon: Globe, color: "text-blue-500" },
-  { name: "Salesbot", href: "/integrations/salesbot", icon: Bot, color: "text-purple-500" },
+  { name: "Salesbot", href: "/integrations/salesbot", icon: Bot, color: "text-primary" },
 ];
 
 export function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const pathname = usePathname();
   const { user, logout } = useAuth();
+  const { theme } = useFunnel();
+
+  const isDarkMode = theme === 'dark' || (theme === 'system' && typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches);
 
   return (
     <motion.aside
       initial={false}
       animate={{ width: isCollapsed ? 80 : 260 }}
       className={cn(
-        "flex flex-col h-screen border-r border-gray-100 dark:border-white/10 bg-white dark:bg-[#0c0c0e] sticky top-0 transition-all duration-300 z-50",
+        "flex flex-col h-screen border-r border-border bg-card sticky top-0 transition-all duration-300 z-50",
         isCollapsed ? "items-center" : "items-start"
       )}
     >
       <div className="p-6 flex items-center justify-between w-full h-20">
         {!isCollapsed && (
-          <motion.img 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            src="/logo gray.svg" 
-            alt="Leads.site Logo" 
-            className="h-6 w-auto dark:invert opacity-100" 
-          />
+          <Link href="/">
+            <img 
+              src={isDarkMode ? "/logo white.svg" : "/logo gray.svg"} 
+              alt="Leads.site Logo" 
+              className="h-7 w-auto transition-all duration-300" 
+            />
+          </Link>
         )}
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className="p-2 rounded-xl hover:bg-gray-50 dark:hover:bg-white/5 text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all"
+          className="p-2 rounded-xl hover:bg-muted text-muted-foreground hover:text-foreground transition-all"
         >
           {isCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
         </button>
@@ -95,7 +99,7 @@ export function Sidebar() {
       <nav className="flex-1 px-4 py-4 space-y-8 w-full overflow-y-auto scrollbar-hide">
         <div className="space-y-1">
            {!isCollapsed && (
-             <p className="text-[10px] font-black text-gray-400 dark:text-gray-400 uppercase tracking-[0.2em] px-3 mb-4">
+             <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] px-3 mb-4">
                Menu Principal
              </p>
            )}
@@ -108,15 +112,15 @@ export function Sidebar() {
                  className={cn(
                    "flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group relative",
                    isActive 
-                     ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900 shadow-lg dark:shadow-white/10" 
-                     : "text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white"
+                     ? "bg-primary text-primary-foreground shadow-lg dark:shadow-white/5" 
+                     : "text-muted-foreground hover:bg-muted hover:text-foreground"
                  )}
                >
                  <item.icon 
                    size={18} 
                    className={cn(
                      "transition-colors",
-                     isActive ? "text-inherit" : "text-gray-400 group-hover:text-inherit"
+                     isActive ? "text-inherit" : "text-muted-foreground group-hover:text-foreground"
                    )} 
                  />
                  {!isCollapsed && (
@@ -125,7 +129,7 @@ export function Sidebar() {
                  {isActive && !isCollapsed && (
                    <motion.div 
                      layoutId="active-indicator"
-                     className="absolute left-0 w-1 h-5 bg-blue-500 rounded-r-full"
+                     className="absolute left-0 w-1 h-5 bg-primary rounded-r-full"
                    />
                  )}
                </Link>
@@ -135,7 +139,7 @@ export function Sidebar() {
 
         <div className="space-y-1">
            {!isCollapsed && (
-             <p className="text-[10px] font-black text-gray-400 dark:text-gray-400 uppercase tracking-[0.2em] px-3 mb-4">
+             <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] px-3 mb-4">
                Canais Ativos
              </p>
            )}
@@ -148,15 +152,15 @@ export function Sidebar() {
                  className={cn(
                    "flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group relative",
                    isActive 
-                     ? "bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-white" 
-                     : "text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white"
+                     ? "bg-muted text-foreground" 
+                     : "text-muted-foreground hover:bg-muted hover:text-foreground"
                  )}
                >
                  <item.icon 
                    size={18} 
                    className={cn(
                      "transition-colors",
-                     isActive ? item.color : "text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                     isActive ? item.color : "text-muted-foreground group-hover:text-foreground"
                    )} 
                  />
                  {!isCollapsed && (
@@ -168,10 +172,10 @@ export function Sidebar() {
         </div>
       </nav>
 
-      <div className="p-4 border-t border-gray-100 dark:border-white/10 w-full">
+      <div className="p-4 border-t border-border w-full">
         <button 
           onClick={logout}
-          className="p-3 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-2xl transition-all flex items-center gap-3 group w-full px-4"
+          className="p-3 text-muted-foreground hover:text-red-500 hover:bg-red-500/10 rounded-2xl transition-all flex items-center gap-3 group w-full px-4"
         >
           <LogOut size={20} className="transition-transform group-hover:-translate-x-1" />
           {!isCollapsed && <span className="text-sm font-bold">Encerrar Sessão</span>}

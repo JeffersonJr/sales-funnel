@@ -62,27 +62,27 @@ export default function UsersPage() {
     <div className="p-10 max-w-7xl mx-auto">
       <div className="flex justify-between items-end mb-12">
         <div>
-          <h1 className="text-4xl font-black text-gray-900 tracking-tight">Equipe & Acessos</h1>
-          <p className="text-gray-400 font-medium mt-2">Gerencie quem tem acesso ao seu funil e seus níveis de permissão</p>
+          <h1 className="text-4xl font-black text-foreground tracking-tight">Equipe & Acessos</h1>
+          <p className="text-muted-foreground font-medium mt-2">Gerencie quem tem acesso ao seu funil e seus níveis de permissão</p>
         </div>
         <button 
           onClick={() => { setEditingUser(null); setShowModal(true); }}
-          className="bg-gray-900 text-white px-8 py-4 rounded-2xl font-black text-sm flex items-center gap-3 hover:bg-blue-600 transition-all shadow-xl shadow-gray-200"
+          className="bg-primary text-white px-8 py-4 rounded-2xl font-black text-sm flex items-center gap-3 hover:opacity-90 transition-all shadow-xl shadow-primary/20"
         >
-          <Plus size={20} /> Convidar Usuário
+          <Plus size={20} /> <span className="hidden md:inline">Convidar Usuário</span>
         </button>
       </div>
 
-      <div className="bg-white rounded-[3rem] border border-gray-100 shadow-xl shadow-gray-50/50 overflow-hidden">
-        <div className="p-8 border-b border-gray-50 bg-gray-50/30 flex flex-col md:flex-row items-stretch md:items-center gap-4">
+      <div className="bg-card rounded-[3rem] border border-border shadow-xl overflow-hidden">
+        <div className="p-8 border-b border-border bg-muted/30 flex flex-col md:flex-row items-stretch md:items-center gap-4">
           <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50" size={18} />
             <input 
               type="text"
               placeholder="Buscar por nome ou e-mail..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-white border border-gray-100 rounded-2xl py-4 pl-12 pr-4 text-sm font-bold focus:ring-2 focus:ring-gray-900/5 outline-none transition-all"
+              className="w-full bg-background border border-border rounded-2xl py-4 pl-12 pr-4 text-sm font-bold focus:ring-2 focus:ring-primary/10 outline-none transition-all dark:text-white"
             />
           </div>
           <div className="flex gap-2">
@@ -90,7 +90,7 @@ export default function UsersPage() {
               onClick={() => setShowFilters(!showFilters)}
               className={cn(
                 "flex-1 md:flex-none px-6 py-4 rounded-2xl transition-all border flex items-center justify-center gap-2",
-                showFilters ? "bg-gray-900 text-white border-gray-900" : "bg-white text-gray-400 border-gray-100 hover:text-gray-900 hover:bg-gray-50"
+                showFilters ? "bg-primary text-white border-primary" : "bg-background text-muted-foreground border-border hover:text-foreground hover:bg-muted"
               )}
             >
               <Filter size={20} />
@@ -113,35 +113,35 @@ export default function UsersPage() {
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-gray-50/50">
-                <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest">Usuário</th>
-                <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest">Permissão</th>
-                <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest">Status</th>
-                <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">Ações</th>
+              <tr className="bg-muted/50">
+                <th className="px-8 py-5 text-[10px] font-black text-muted-foreground uppercase tracking-widest">Usuário</th>
+                <th className="px-8 py-5 text-[10px] font-black text-muted-foreground uppercase tracking-widest">Permissão</th>
+                <th className="px-8 py-5 text-[10px] font-black text-muted-foreground uppercase tracking-widest">Status</th>
+                <th className="px-8 py-5 text-[10px] font-black text-muted-foreground uppercase tracking-widest text-right">Ações</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-border">
               {filteredUsers.map((u: any) => (
-                <tr key={u.id} className="hover:bg-gray-50/30 transition-colors group">
+                <tr key={u.id} className="hover:bg-muted/30 transition-colors group">
                   <td className="px-8 py-6">
                     <div className="flex items-center gap-4">
                       <Avatar name={u.name} size="md" />
                       <div>
-                        <p className="text-sm font-black text-gray-900">{u.name}</p>
-                        <p className="text-xs font-bold text-gray-400">{u.email}</p>
+                        <p className="text-sm font-black text-foreground">{u.name}</p>
+                        <p className="text-xs font-bold text-muted-foreground">{u.email}</p>
                       </div>
                     </div>
                   </td>
                   <td className="px-8 py-6">
-                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 text-blue-600 w-fit">
+                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary w-fit">
                       <Shield size={14} />
                       <span className="text-[10px] font-black uppercase tracking-wider">{u.role}</span>
                     </div>
                   </td>
                   <td className="px-8 py-6">
                     <div className="flex items-center gap-2">
-                      <div className={cn("w-1.5 h-1.5 rounded-full", u.active !== false ? "bg-green-500 animate-pulse" : "bg-gray-300")} />
-                      <span className={cn("text-[10px] font-black uppercase tracking-widest", u.active !== false ? "text-green-500" : "text-gray-400")}>
+                      <div className={cn("w-1.5 h-1.5 rounded-full", u.active !== false ? "bg-green-500 animate-pulse" : "bg-muted-foreground/30")} />
+                      <span className={cn("text-[10px] font-black uppercase tracking-widest", u.active !== false ? "text-green-500" : "text-muted-foreground")}>
                         {u.active !== false ? "Ativo" : "Inativo"}
                       </span>
                     </div>
@@ -152,7 +152,7 @@ export default function UsersPage() {
                         onClick={() => toggleUserStatus(u.id)}
                         className={cn(
                           "p-2.5 rounded-xl transition-all",
-                          u.active !== false ? "text-orange-300 hover:text-orange-600 hover:bg-orange-50" : "text-green-300 hover:text-green-600 hover:bg-green-50"
+                          u.active !== false ? "text-orange-400 hover:text-orange-500 hover:bg-orange-500/10" : "text-green-400 hover:text-green-500 hover:bg-green-500/10"
                         )}
                         title={u.active !== false ? "Desativar Usuário" : "Ativar Usuário"}
                       >
@@ -160,11 +160,11 @@ export default function UsersPage() {
                       </button>
                       <button 
                         onClick={() => { setEditingUser(u); setShowModal(true); }}
-                        className="p-2.5 text-gray-300 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all"
+                        className="p-2.5 text-muted-foreground hover:text-primary hover:bg-primary/5 rounded-xl transition-all"
                       >
                         <Edit2 size={18} />
                       </button>
-                      <button className="p-2.5 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all">
+                      <button className="p-2.5 text-muted-foreground hover:text-red-500 hover:bg-red-500/5 rounded-xl transition-all">
                         <Trash2 size={18} />
                       </button>
                     </div>

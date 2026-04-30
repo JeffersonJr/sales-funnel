@@ -89,26 +89,26 @@ export default function LeadsPage() {
     <div className="p-6 md:p-8 max-w-7xl mx-auto">
       <div className="flex justify-between items-end mb-12">
         <div className="flex-1">
-          <h1 className="text-3xl md:text-4xl font-black text-gray-900 tracking-tight">Contatos & Leads</h1>
-          <p className="text-gray-400 font-medium mt-1 text-sm md:text-base">Gerencie sua base de contatos</p>
+          <h1 className="text-3xl md:text-4xl font-black text-foreground tracking-tight">Contatos & Leads</h1>
+          <p className="text-muted-foreground font-medium mt-1 text-sm md:text-base">Gerencie sua base de contatos</p>
         </div>
         <button 
           onClick={() => setShowModal(true)}
-          className="bg-gray-900 text-white p-4 md:px-8 md:py-4 rounded-2xl font-black text-sm shadow-xl shadow-gray-200 flex items-center gap-2 hover:bg-gray-800 transition-all"
+          className="bg-primary text-white p-4 md:px-8 md:py-4 rounded-2xl font-black text-sm shadow-xl shadow-primary/20 flex items-center gap-2 hover:opacity-90 transition-all"
         >
           <Plus size={20} /> <span className="hidden md:inline">Novo Contato</span>
         </button>
       </div>
 
-      <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-50 overflow-hidden">
-        <div className="p-6 border-b border-gray-50 bg-gray-50/30 flex flex-col md:flex-row items-stretch md:items-center gap-4">
+      <div className="bg-card rounded-[2.5rem] border border-border shadow-xl overflow-hidden">
+        <div className="p-6 border-b border-border bg-muted/30 flex flex-col md:flex-row items-stretch md:items-center gap-4">
           <div className="relative flex-1">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={18} />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50" size={18} />
             <input 
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Buscar por nome, empresa ou e-mail..."
-              className="w-full bg-white border border-gray-100 rounded-xl py-3 pl-12 pr-4 text-sm font-bold focus:ring-2 focus:ring-gray-900/5 outline-none transition-all"
+              className="w-full bg-background border border-border rounded-xl py-3 pl-12 pr-4 text-sm font-bold focus:ring-2 focus:ring-primary/10 outline-none transition-all dark:text-white"
             />
           </div>
           <div className="flex gap-2">
@@ -116,7 +116,7 @@ export default function LeadsPage() {
               onClick={() => setShowFilters(!showFilters)}
               className={cn(
                 "flex-1 md:flex-none px-5 py-3 rounded-xl transition-all border flex items-center justify-center gap-2",
-                showFilters ? "bg-gray-900 text-white border-gray-900" : "bg-white text-gray-400 border-gray-100 hover:text-gray-900 hover:bg-gray-50"
+                showFilters ? "bg-primary text-white border-primary" : "bg-background text-muted-foreground border-border hover:text-foreground hover:bg-muted"
               )}
             >
               <Filter size={20} />
@@ -141,30 +141,30 @@ export default function LeadsPage() {
             <div 
               key={lead.id} 
               onClick={() => setSelectedLead(lead)}
-              className="bg-gray-50/50 p-6 rounded-[2rem] border border-gray-100 space-y-4 active:scale-95 transition-all"
+              className="bg-muted/50 p-6 rounded-[2rem] border border-border space-y-4 active:scale-95 transition-all"
             >
               <div className="flex justify-between items-start">
                 <div className="flex items-center gap-4">
                   <Avatar name={lead.name} size="md" />
                   <div>
-                    <p className="text-sm font-black text-gray-900">{lead.name}</p>
-                    <p className="text-[10px] font-bold text-blue-500 uppercase tracking-widest">{lead.role}</p>
+                    <p className="text-sm font-black text-foreground">{lead.name}</p>
+                    <p className="text-[10px] font-bold text-primary uppercase tracking-widest">{lead.role}</p>
                   </div>
                 </div>
                 <div className="flex gap-2">
                    <button 
                      onClick={(e) => { e.stopPropagation(); setEditingLead(lead); setShowModal(true); }}
-                     className="p-2 text-gray-400"
+                     className="p-2 text-muted-foreground hover:text-foreground transition-colors"
                    >
                      <Edit2 size={16} />
                    </button>
                 </div>
               </div>
-              <div className="space-y-2 pt-2 border-t border-gray-100">
-                <div className="flex items-center gap-2 text-xs font-bold text-gray-400">
+              <div className="space-y-2 pt-2 border-t border-border">
+                <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground">
                   <Building2 size={12} /> {lead.company}
                 </div>
-                <div className="flex items-center gap-2 text-xs font-bold text-gray-400">
+                <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground">
                   <Mail size={12} /> {lead.email}
                 </div>
               </div>
@@ -175,41 +175,41 @@ export default function LeadsPage() {
         <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-gray-50/50">
-                <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Nome</th>
-                <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Empresa</th>
-                <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Contato</th>
-                <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">Ações</th>
+              <tr className="bg-muted/50">
+                <th className="px-6 py-4 text-[10px] font-black text-muted-foreground uppercase tracking-widest">Nome</th>
+                <th className="px-6 py-4 text-[10px] font-black text-muted-foreground uppercase tracking-widest">Empresa</th>
+                <th className="px-6 py-4 text-[10px] font-black text-muted-foreground uppercase tracking-widest">Contato</th>
+                <th className="px-6 py-4 text-[10px] font-black text-muted-foreground uppercase tracking-widest text-right">Ações</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-border">
               {filteredLeads.map((lead: any) => (
                 <tr 
                   key={lead.id} 
                   onClick={() => setSelectedLead(lead)}
-                  className="hover:bg-gray-50/50 cursor-pointer transition-colors group"
+                  className="hover:bg-muted/50 cursor-pointer transition-colors group"
                 >
                   <td className="px-6 py-5">
                     <div className="flex items-center gap-4">
                       <Avatar name={lead.name} size="md" />
                       <div>
-                        <p className="text-sm font-black text-gray-900">{lead.name}</p>
-                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{lead.role}</p>
+                        <p className="text-sm font-black text-foreground">{lead.name}</p>
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{lead.role}</p>
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-5">
-                    <div className="flex items-center gap-2 text-gray-600 font-bold text-sm">
-                      <Building2 size={14} className="text-gray-300" />
+                    <div className="flex items-center gap-2 text-foreground/80 font-bold text-sm">
+                      <Building2 size={14} className="text-muted-foreground/40" />
                       {lead.company}
                     </div>
                   </td>
                   <td className="px-6 py-5">
                     <div className="space-y-1">
-                      <div className="flex items-center gap-2 text-xs font-bold text-gray-400">
+                      <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground">
                         <Mail size={12} /> {lead.email}
                       </div>
-                      <div className="flex items-center gap-2 text-xs font-bold text-gray-400">
+                      <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground">
                         <Phone size={12} /> {lead.phone}
                       </div>
                     </div>
@@ -218,13 +218,13 @@ export default function LeadsPage() {
                     <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button 
                         onClick={(e) => { e.stopPropagation(); setEditingLead(lead); setShowModal(true); }}
-                        className="p-2 text-gray-300 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-all"
+                        className="p-2 text-muted-foreground hover:text-primary hover:bg-primary/5 rounded-lg transition-all"
                       >
                         <Edit2 size={16} />
                       </button>
                       <button 
                         onClick={(e) => { e.stopPropagation(); setShowDeleteConfirm(lead); }}
-                        className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                        className="p-2 text-muted-foreground hover:text-red-500 hover:bg-red-500/5 rounded-lg transition-all"
                       >
                         <Trash2 size={16} />
                       </button>
@@ -253,60 +253,60 @@ export default function LeadsPage() {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 30, stiffness: 300 }}
-              className="fixed top-0 right-0 h-full w-full md:w-[500px] bg-white shadow-2xl z-[110] flex flex-col"
+              className="fixed top-0 right-0 h-full w-full md:w-[500px] bg-card shadow-2xl z-[110] flex flex-col border-l border-border"
             >
-              <div className="p-8 border-b border-gray-50 flex justify-between items-center bg-gray-50/30">
-                <h2 className="text-xl font-black text-gray-900">Perfil do Lead</h2>
-                <button onClick={() => setSelectedLead(null)} className="p-2 hover:bg-gray-200 rounded-xl text-gray-400 transition-colors">
+              <div className="p-8 border-b border-border flex justify-between items-center bg-muted/30">
+                <h2 className="text-xl font-black text-foreground">Perfil do Lead</h2>
+                <button onClick={() => setSelectedLead(null)} className="p-2 hover:bg-muted rounded-xl text-muted-foreground transition-colors">
                   <X size={20} />
                 </button>
               </div>
 
-              <div className="flex-1 overflow-auto p-10">
+              <div className="flex-1 overflow-auto p-10 bg-card">
                 <div className="flex flex-col items-center text-center mb-12">
-                  <Avatar name={selectedLead.name} size="xl" className="w-24 h-24 text-2xl mb-6 shadow-2xl shadow-gray-200" />
-                  <h3 className="text-2xl font-black text-gray-900">{selectedLead.name}</h3>
-                  <p className="text-blue-600 font-black text-xs uppercase tracking-widest mt-1">{selectedLead.role} @ {selectedLead.company}</p>
+                  <Avatar name={selectedLead.name} size="xl" className="w-24 h-24 text-2xl mb-6 shadow-2xl shadow-primary/10" />
+                  <h3 className="text-2xl font-black text-foreground">{selectedLead.name}</h3>
+                  <p className="text-primary font-black text-xs uppercase tracking-widest mt-1">{selectedLead.role} @ {selectedLead.company}</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
-                  <div className="bg-gray-50 p-6 rounded-[2rem] border border-gray-100">
-                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">E-mail</p>
-                    <p className="text-sm font-bold text-gray-700">{selectedLead.email}</p>
+                  <div className="bg-muted p-6 rounded-[2rem] border border-border">
+                    <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2">E-mail</p>
+                    <p className="text-sm font-bold text-foreground">{selectedLead.email}</p>
                   </div>
-                  <div className="bg-gray-50 p-6 rounded-[2rem] border border-gray-100">
-                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Telefone</p>
-                    <p className="text-sm font-bold text-gray-700">{selectedLead.phone}</p>
+                  <div className="bg-muted p-6 rounded-[2rem] border border-border">
+                    <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2">Telefone</p>
+                    <p className="text-sm font-bold text-foreground">{selectedLead.phone}</p>
                   </div>
                 </div>
 
                 <section className="space-y-6">
                   <div className="flex justify-between items-center">
-                    <h4 className="text-sm font-black text-gray-900 uppercase tracking-widest">Negócios Atrelados</h4>
-                    <span className="text-[10px] font-black bg-gray-900 text-white px-2 py-1 rounded-lg">
+                    <h4 className="text-sm font-black text-foreground uppercase tracking-widest">Negócios Atrelados</h4>
+                    <span className="text-[10px] font-black bg-primary text-white px-2 py-1 rounded-lg">
                       {getLeadDeals(selectedLead.email).length} ATIVOS
                     </span>
                   </div>
 
                   <div className="space-y-3">
                     {getLeadDeals(selectedLead.email).map((deal: any) => (
-                      <div key={deal.id} className="bg-white border border-gray-100 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all flex justify-between items-center group">
+                      <div key={deal.id} className="bg-muted/30 border border-border p-5 rounded-2xl shadow-sm hover:shadow-md transition-all flex justify-between items-center group">
                         <div>
-                          <p className="text-sm font-black text-gray-900">{deal.title}</p>
+                          <p className="text-sm font-black text-foreground">{deal.title}</p>
                           <div className="flex items-center gap-2 mt-1">
-                            <span className="text-[10px] font-bold text-blue-500 bg-blue-50 px-2 py-0.5 rounded-full">{deal.stage}</span>
-                            <span className="text-[10px] font-bold text-gray-400 uppercase">{formatCurrency(deal.value)}</span>
+                            <span className="text-[10px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full">{deal.stage}</span>
+                            <span className="text-[10px] font-bold text-muted-foreground uppercase">{formatCurrency(deal.value)}</span>
                           </div>
                         </div>
-                        <button className="p-2 text-gray-300 hover:text-gray-900 opacity-0 group-hover:opacity-100 transition-all">
+                        <button className="p-2 text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition-all">
                           <ExternalLink size={16} />
                         </button>
                       </div>
                     ))}
                     {getLeadDeals(selectedLead.email).length === 0 && (
-                      <div className="text-center py-12 border-2 border-dashed border-gray-50 rounded-3xl">
-                        <Zap size={32} className="text-gray-200 mx-auto mb-4" />
-                        <p className="text-sm font-bold text-gray-400">Nenhum negócio ativo para este lead</p>
+                      <div className="text-center py-12 border-2 border-dashed border-border rounded-3xl bg-muted/20">
+                        <Zap size={32} className="text-muted-foreground/30 mx-auto mb-4" />
+                        <p className="text-sm font-bold text-muted-foreground">Nenhum negócio ativo para este lead</p>
                       </div>
                     )}
                   </div>

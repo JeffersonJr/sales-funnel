@@ -68,10 +68,10 @@ export default function DocumentsPage() {
     <div className="p-8 max-w-7xl mx-auto">
       <div className="flex justify-between items-end mb-12">
         <div>
-          <h1 className="text-4xl font-black text-gray-900 tracking-tight">Central de Documentos</h1>
-          <p className="text-gray-400 font-medium mt-2">Gerencie arquivos, propostas e contratos de todos os seus negócios</p>
+          <h1 className="text-4xl font-black text-foreground tracking-tight">Central de Documentos</h1>
+          <p className="text-muted-foreground font-medium mt-2">Gerencie arquivos, propostas e contratos de todos os seus negócios</p>
         </div>
-        <button className="bg-gray-900 text-white px-8 py-4 rounded-2xl font-black text-sm shadow-xl shadow-gray-200 flex items-center gap-2 hover:bg-gray-800 transition-all">
+        <button className="bg-primary text-white px-8 py-4 rounded-2xl font-black text-sm shadow-xl shadow-primary/20 flex items-center gap-2 hover:opacity-90 transition-all">
           <Upload size={20} /> Enviar Arquivo
         </button>
       </div>
@@ -88,8 +88,8 @@ export default function DocumentsPage() {
                 <stat.icon className={stat.color} size={24} />
               </div>
               <div>
-                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{stat.label}</p>
-                <p className="text-lg font-black text-gray-900 dark:text-white">{stat.value}</p>
+                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">{stat.label}</p>
+                <p className="text-lg font-black text-foreground">{stat.value}</p>
               </div>
             </div>
             {stat.action && (
@@ -105,15 +105,15 @@ export default function DocumentsPage() {
         ))}
       </div>
 
-      <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-50 overflow-hidden">
-        <div className="p-6 border-b border-gray-50 bg-gray-50/30 flex flex-col md:flex-row items-stretch md:items-center gap-4">
+      <div className="bg-card rounded-[2.5rem] border border-border shadow-xl overflow-hidden">
+        <div className="p-6 border-b border-border bg-muted/30 flex flex-col md:flex-row items-stretch md:items-center gap-4">
           <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={18} />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50" size={18} />
             <input 
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Buscar por nome ou negócio..."
-              className="w-full bg-white border border-gray-100 rounded-xl py-3 pl-12 pr-4 text-sm font-bold focus:ring-2 focus:ring-gray-900/5 outline-none transition-all"
+              className="w-full bg-background border border-border rounded-xl py-3 pl-12 pr-4 text-sm font-bold focus:ring-2 focus:ring-primary/10 outline-none transition-all dark:text-white"
             />
           </div>
           <div className="flex gap-2">
@@ -121,7 +121,7 @@ export default function DocumentsPage() {
               onClick={() => setShowFilters(!showFilters)}
               className={cn(
                 "flex-1 md:flex-none px-5 py-3 rounded-xl transition-all border flex items-center justify-center gap-2",
-                showFilters ? "bg-gray-900 text-white border-gray-900" : "bg-white text-gray-400 border-gray-100 hover:text-gray-900 hover:bg-gray-50"
+                showFilters ? "bg-primary text-white border-primary" : "bg-background text-muted-foreground border-border hover:text-foreground hover:bg-muted"
               )}
             >
               <Filter size={20} />
@@ -143,15 +143,15 @@ export default function DocumentsPage() {
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-gray-50/50">
-                <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Documento</th>
-                <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Negócio Relacionado</th>
-                <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Data</th>
-                <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Tamanho</th>
-                <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">Ações</th>
+              <tr className="bg-muted/50">
+                <th className="px-6 py-4 text-[10px] font-black text-muted-foreground uppercase tracking-widest">Documento</th>
+                <th className="px-6 py-4 text-[10px] font-black text-muted-foreground uppercase tracking-widest">Negócio Relacionado</th>
+                <th className="px-6 py-4 text-[10px] font-black text-muted-foreground uppercase tracking-widest">Data</th>
+                <th className="px-6 py-4 text-[10px] font-black text-muted-foreground uppercase tracking-widest">Tamanho</th>
+                <th className="px-6 py-4 text-[10px] font-black text-muted-foreground uppercase tracking-widest text-right">Ações</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-border">
               {filteredDocs.map((doc: any, i: number) => (
                 <motion.tr 
                   initial={{ opacity: 0 }}
@@ -162,34 +162,34 @@ export default function DocumentsPage() {
                 >
                   <td className="px-6 py-5">
                     <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 bg-blue-50 text-blue-500 rounded-xl flex items-center justify-center">
+                      <div className="w-10 h-10 bg-primary/10 text-primary rounded-xl flex items-center justify-center">
                         <FileText size={20} />
                       </div>
-                      <p className="text-sm font-black text-gray-900">{doc.name}</p>
+                      <p className="text-sm font-black text-foreground">{doc.name}</p>
                     </div>
                   </td>
                   <td className="px-6 py-5">
-                    <span className="text-xs font-bold text-gray-500 bg-gray-50 px-3 py-1 rounded-full border border-gray-100">
+                    <span className="text-xs font-bold text-muted-foreground bg-muted px-3 py-1 rounded-full border border-border">
                       {doc.dealTitle}
                     </span>
                   </td>
                   <td className="px-6 py-5">
-                    <p className="text-xs font-bold text-gray-400">{new Date(doc.date).toLocaleDateString()}</p>
+                    <p className="text-xs font-bold text-muted-foreground">{new Date(doc.date).toLocaleDateString()}</p>
                   </td>
                   <td className="px-6 py-5">
-                    <p className="text-[10px] font-black text-gray-400 uppercase">{doc.size}</p>
+                    <p className="text-[10px] font-black text-muted-foreground uppercase">{doc.size}</p>
                   </td>
                   <td className="px-6 py-5 text-right">
                     <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all">
-                      <button className="p-2 text-gray-300 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-all">
+                      <button className="p-2 text-muted-foreground hover:text-primary hover:bg-primary/5 rounded-lg transition-all">
                         <Download size={18} />
                       </button>
-                      <button className="p-2 text-gray-300 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-all">
+                      <button className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-all">
                         <Edit2 size={18} />
                       </button>
                       <button 
                         onClick={() => setShowDeleteConfirm(doc)}
-                        className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                        className="p-2 text-muted-foreground hover:text-red-500 hover:bg-red-500/5 rounded-lg transition-all"
                       >
                         <Trash2 size={18} />
                       </button>
@@ -200,8 +200,8 @@ export default function DocumentsPage() {
               {filteredDocs.length === 0 && (
                 <tr>
                   <td colSpan={5} className="px-6 py-20 text-center">
-                    <FileText size={48} className="text-gray-100 mx-auto mb-4" />
-                    <p className="text-sm font-bold text-gray-400">Nenhum documento encontrado</p>
+                    <FileText size={48} className="text-muted-foreground/20 mx-auto mb-4" />
+                    <p className="text-sm font-bold text-muted-foreground">Nenhum documento encontrado</p>
                   </td>
                 </tr>
               )}
@@ -220,9 +220,9 @@ export default function DocumentsPage() {
               exit={{ opacity: 0, scale: 0.95 }}
               className="bg-white dark:bg-card rounded-[2.5rem] w-full max-w-md shadow-2xl overflow-hidden border border-gray-100 dark:border-border"
             >
-              <div className="p-8 border-b border-gray-50 dark:border-border flex justify-between items-center">
-                <h2 className="text-xl font-black text-gray-900 dark:text-white">Armazenamento</h2>
-                <button onClick={() => setShowStorageModal(false)} className="text-gray-400 hover:text-gray-900 dark:hover:text-white"><X size={20} /></button>
+              <div className="p-8 border-b border-border flex justify-between items-center bg-muted/30">
+                <h2 className="text-xl font-black text-foreground">Armazenamento</h2>
+                <button onClick={() => setShowStorageModal(false)} className="text-muted-foreground hover:text-foreground transition-colors"><X size={20} /></button>
               </div>
               <div className="p-8 space-y-4">
                 <Link 
@@ -233,8 +233,8 @@ export default function DocumentsPage() {
                     <ArrowUpCircle size={24} />
                   </div>
                   <div className="text-left">
-                    <p className="text-sm font-black text-gray-900 dark:text-white">Aumentar Limite</p>
-                    <p className="text-xs font-bold text-blue-600 dark:text-blue-400">Expandir para 50 GB ou mais</p>
+                    <p className="text-sm font-black text-foreground">Aumentar Limite</p>
+                    <p className="text-xs font-bold text-primary">Expandir para 50 GB ou mais</p>
                   </div>
                 </Link>
 
@@ -246,8 +246,8 @@ export default function DocumentsPage() {
                     <ArrowDownCircle size={24} />
                   </div>
                   <div className="text-left">
-                    <p className="text-sm font-black text-gray-900 dark:text-white">Reduzir Limite</p>
-                    <p className="text-xs font-bold text-gray-400">Solicitar downgrade de plano</p>
+                    <p className="text-sm font-black text-foreground">Reduzir Limite</p>
+                    <p className="text-xs font-bold text-muted-foreground">Solicitar downgrade de plano</p>
                   </div>
                 </button>
               </div>

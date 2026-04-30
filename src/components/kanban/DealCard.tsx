@@ -58,7 +58,7 @@ export function DealCard({ deal, stageColor, onDelete, onUpdateStage }: { deal: 
       {...attributes}
       {...listeners}
       className={cn(
-        "bg-white dark:bg-card p-4 rounded-xl shadow-sm border border-gray-100 dark:border-white/5 cursor-grab active:cursor-grabbing card-hover overflow-hidden transition-all duration-300",
+        "bg-card p-4 rounded-xl border border-border cursor-grab active:cursor-grabbing card-hover overflow-hidden transition-all duration-300",
         isDragging && "opacity-50"
       )}
       style={{
@@ -67,17 +67,17 @@ export function DealCard({ deal, stageColor, onDelete, onUpdateStage }: { deal: 
       }}
     >
       <div className="flex justify-between items-start mb-2">
-        <h3 className="text-sm font-black text-gray-900 dark:text-white truncate flex-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors tracking-tight">{deal.title}</h3>
+        <h3 className="text-sm font-black text-foreground truncate flex-1 group-hover:text-primary transition-colors tracking-tight">{deal.title}</h3>
         <div className="flex gap-1 opacity-0 group-hover/deal:opacity-100 transition-opacity relative">
-           <button 
+          <button 
             onClick={(e) => { e.stopPropagation(); onDelete?.(); }}
-            className="text-gray-300 hover:text-red-500 transition-colors p-1"
+            className="text-muted-foreground/50 hover:text-red-500 transition-colors p-1"
           >
             <Trash2 size={14} />
           </button>
           <button 
             onClick={(e) => { e.stopPropagation(); setShowMenu(!showMenu); }}
-            className={cn("text-gray-300 hover:text-gray-900 transition-colors p-1", showMenu && "text-gray-900")}
+            className={cn("text-muted-foreground/50 hover:text-foreground transition-colors p-1", showMenu && "text-foreground")}
           >
             <MoreHorizontal size={14} />
           </button>
@@ -89,25 +89,25 @@ export function DealCard({ deal, stageColor, onDelete, onUpdateStage }: { deal: 
                 initial={{ opacity: 0, scale: 0.95, y: -10 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                className="absolute right-0 top-8 w-48 bg-white rounded-2xl shadow-2xl border border-gray-100 py-2 z-50 overflow-hidden"
+                className="absolute right-0 top-8 w-48 bg-card rounded-xl border border-border py-2 z-50 overflow-hidden"
                 onClick={(e) => e.stopPropagation()}
               >
                 <button 
                   onClick={() => { onUpdateStage?.(deal.id, 'closed'); setShowMenu(false); toast.success("Parabéns pelo fechamento! 🎉"); }}
-                  className="w-full px-4 py-2 text-left text-xs font-bold text-green-600 hover:bg-green-50 flex items-center gap-3 transition-colors"
+                  className="w-full px-4 py-2 text-left text-xs font-bold text-emerald-600 hover:bg-emerald-500/10 flex items-center gap-3 transition-colors"
                 >
                   <Trophy size={14} /> Ganhamos!
                 </button>
                 <button 
                   onClick={() => { onDelete?.(); setShowMenu(false); toast.error("Negócio marcado como perdido."); }}
-                  className="w-full px-4 py-2 text-left text-xs font-bold text-red-400 hover:bg-red-50 flex items-center gap-3 transition-colors"
+                  className="w-full px-4 py-2 text-left text-xs font-bold text-red-500 hover:bg-red-500/10 flex items-center gap-3 transition-colors"
                 >
                   <Frown size={14} /> Perdemos...
                 </button>
-                <div className="h-px bg-gray-50 my-1" />
+                <div className="h-px bg-border my-1" />
                 <button 
                   onClick={() => { setShowMenu(false); toast.info("Negócio arquivado"); }}
-                  className="w-full px-4 py-2 text-left text-xs font-bold text-gray-500 hover:bg-gray-50 flex items-center gap-3 transition-colors"
+                  className="w-full px-4 py-2 text-left text-xs font-bold text-muted-foreground hover:bg-muted flex items-center gap-3 transition-colors"
                 >
                   <Archive size={14} /> Arquivar
                 </button>
@@ -117,10 +117,10 @@ export function DealCard({ deal, stageColor, onDelete, onUpdateStage }: { deal: 
         </div>
       </div>
 
-      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-4">{deal.company}</p>
+      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-4">{deal.company}</p>
 
       <div className="flex items-center gap-2 mb-4">
-        <div className="flex items-center gap-1 text-gray-900 dark:text-white bg-gray-50 dark:bg-white/5 px-2 py-1 rounded-lg text-xs font-black">
+        <div className="flex items-center gap-1 text-foreground bg-muted px-2 py-1 rounded-lg text-xs font-black">
           {formatCurrency(deal.value)}
         </div>
         {isStale && (
@@ -136,13 +136,13 @@ export function DealCard({ deal, stageColor, onDelete, onUpdateStage }: { deal: 
           {deal.tags?.slice(0, 3).map((tag) => (
             <span 
               key={tag} 
-              className="text-[9px] font-black uppercase tracking-widest bg-blue-50 dark:bg-blue-500/10 text-blue-500 dark:text-blue-400 px-2 py-0.5 rounded-md border border-blue-100/50 dark:border-blue-400/20"
+              className="text-[9px] font-black uppercase tracking-widest bg-primary/10 text-primary px-2 py-0.5 rounded-md border border-primary/20"
             >
               {tag}
             </span>
           ))}
         </div>
-        <div className="flex items-center gap-1 text-gray-300 text-[10px] font-bold">
+        <div className="flex items-center gap-1 text-muted-foreground text-[10px] font-black uppercase tracking-widest">
           <Clock size={10} />
           <span>{daysInactive}d</span>
         </div>

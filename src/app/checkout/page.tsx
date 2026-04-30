@@ -319,37 +319,37 @@ export default function CheckoutPage() {
           <motion.div 
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="bg-gray-900 text-white p-8 md:p-12 rounded-[3rem] shadow-2xl sticky top-8"
+            className="bg-white dark:bg-card p-8 md:p-12 rounded-[3rem] shadow-2xl dark:shadow-none border border-gray-100 dark:border-white/5 sticky top-8"
           >
-            <h3 className="text-xl font-black mb-8">Resumo do Pedido</h3>
+            <h3 className="text-xl font-black mb-8 text-gray-900 dark:text-white">Resumo do Pedido</h3>
             
-            <div className="bg-gray-800/50 rounded-[2rem] p-6 mb-8 border border-gray-700">
+            <div className="bg-gray-50 dark:bg-muted/50 rounded-[2rem] p-6 mb-8 border border-gray-100 dark:border-white/5">
               <div className="flex justify-between items-start mb-4">
                 <div>
-                  <h4 className="font-black text-lg">{planName}</h4>
-                  <p className="text-xs text-gray-400 font-bold">Assinatura Mensal</p>
+                  <h4 className="font-black text-lg text-gray-900 dark:text-white">{planName}</h4>
+                  <p className="text-xs text-gray-400 dark:text-gray-500 font-bold uppercase tracking-widest">Assinatura Mensal</p>
                 </div>
-                <span className="text-xl font-black text-blue-400">{planPrice}</span>
+                <span className="text-xl font-black text-blue-600 dark:text-blue-400">{planPrice}</span>
               </div>
               
               {isCouponApplied && (
-                <div className="flex justify-between items-center text-sm font-bold text-green-400 mb-4">
+                <div className="flex justify-between items-center text-sm font-bold text-green-600 dark:text-green-400 mb-4">
                    <span>Desconto ({discount}%)</span>
                    <span>- {calculateTotal(planPrice)}</span>
                 </div>
               )}
 
-              <div className="h-px w-full bg-gray-700 my-4" />
+              <div className="h-px w-full bg-gray-100 dark:bg-white/5 my-4" />
               
               <div className="mb-6">
-                <p className="text-[8px] font-black uppercase tracking-widest text-gray-500 mb-2">Cupom de Desconto</p>
+                <p className="text-[8px] font-black uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-2">Cupom de Desconto</p>
                 <div className="flex gap-2">
                    <input 
                      type="text" 
                      placeholder="CUPOM"
                      value={coupon}
                      onChange={(e) => setCoupon(e.target.value)}
-                     className="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-4 py-2 text-xs font-bold uppercase tracking-widest outline-none focus:border-blue-500"
+                     className="flex-1 bg-white dark:bg-muted/50 border border-gray-100 dark:border-white/5 rounded-xl px-4 py-2 text-xs font-bold uppercase tracking-widest outline-none focus:border-blue-500 text-gray-900 dark:text-white"
                    />
                    <button 
                      onClick={applyCoupon}
@@ -361,23 +361,23 @@ export default function CheckoutPage() {
               </div>
 
               <div className="flex justify-between items-center text-sm font-bold">
-                <span className="text-gray-400">Total a pagar hoje</span>
-                <span className="text-2xl font-black text-blue-400">{calculateTotal(planPrice)}</span>
+                <span className="text-gray-500 dark:text-gray-400">Total a pagar hoje</span>
+                <span className="text-2xl font-black text-blue-600 dark:text-blue-400">{calculateTotal(planPrice)}</span>
               </div>
             </div>
 
             <div className="space-y-4">
               <div className="flex gap-4">
-                <CheckCircle2 size={20} className="text-blue-400 shrink-0" />
-                <p className="text-sm font-medium text-gray-300">Acesso imediato a todas as funcionalidades do {planName}.</p>
+                <CheckCircle2 size={20} className="text-blue-600 dark:text-blue-400 shrink-0" />
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Acesso imediato a todas as funcionalidades do {planName}.</p>
               </div>
               <div className="flex gap-4">
-                <CheckCircle2 size={20} className="text-blue-400 shrink-0" />
-                <p className="text-sm font-medium text-gray-300">Cancele quando quiser. Sem taxas escondidas.</p>
+                <CheckCircle2 size={20} className="text-blue-600 dark:text-blue-400 shrink-0" />
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Cancele quando quiser. Sem taxas escondidas.</p>
               </div>
               <div className="flex gap-4">
-                <AlertCircle size={20} className="text-gray-500 shrink-0" />
-                <p className="text-xs font-medium text-gray-400">Ao finalizar a compra, você concorda com nossos Termos de Serviço e Política de Privacidade.</p>
+                <AlertCircle size={20} className="text-gray-400 dark:text-gray-600 shrink-0" />
+                <p className="text-xs font-medium text-gray-400 dark:text-gray-500">Ao finalizar a compra, você concorda com nossos Termos de Serviço e Política de Privacidade.</p>
               </div>
             </div>
           </motion.div>

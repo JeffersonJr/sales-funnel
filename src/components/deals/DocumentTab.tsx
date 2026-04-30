@@ -394,7 +394,7 @@ export function DocumentTab({
         onUpdateDealTags={(tags) => onUpdate({ ...deal, tags })}
       />
       {/* Cabeçalho do Negócio */}
-      <div className="bg-white p-6 md:p-8 rounded-t-3xl border border-gray-100 shadow-sm mb-1 relative group/header">
+      <div className="bg-card p-6 md:p-8 rounded-t-3xl border border-border mb-1 relative group/header transition-colors">
         <div className="flex justify-between items-start mb-8">
           <div className="space-y-3 w-full max-w-2xl">
             <div className="flex items-center gap-3">
@@ -428,18 +428,18 @@ export function DocumentTab({
                   autoFocus
                   value={editForm.title}
                   onChange={(e) => setEditForm({...editForm, title: e.target.value})}
-                  className="text-4xl font-black text-gray-900 tracking-tight bg-gray-50 p-2 rounded-xl w-full outline-none border-b-2 border-blue-500"
+                  className="text-4xl font-black text-foreground tracking-tight bg-background p-2 rounded-xl w-full outline-none border-b-2 border-primary"
                 />
                 <input 
                   value={editForm.company}
                   onChange={(e) => setEditForm({...editForm, company: e.target.value})}
-                  className="text-xl text-gray-400 font-medium bg-gray-50 p-2 rounded-xl w-full outline-none"
+                  className="text-xl text-muted-foreground font-medium bg-background p-2 rounded-xl w-full outline-none"
                 />
               </div>
             ) : (
               <>
-                <h1 className="text-4xl font-black text-gray-900 tracking-tight">{deal.title}</h1>
-                <p className="text-xl text-gray-400 font-medium flex items-center gap-2">
+                <h1 className="text-4xl font-black text-foreground tracking-tight">{deal.title}</h1>
+                <p className="text-xl text-muted-foreground font-medium flex items-center gap-2">
                   <Building2 size={20} />
                   {deal.company}
                 </p>
@@ -451,7 +451,7 @@ export function DocumentTab({
              {isEditingHeader ? (
                 <button 
                   onClick={handleHeaderSave}
-                  className="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-2xl text-sm font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 hover:-translate-y-0.5 active:translate-y-0"
+                  className="flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-2xl text-sm font-bold hover:opacity-90 transition-all"
                 >
                   <Check size={18} /> Salvar Alterações
                 </button>
@@ -459,19 +459,19 @@ export function DocumentTab({
                <>
                  <button 
                   onClick={() => setIsEditingHeader(true)}
-                  className="flex items-center gap-2 bg-white border border-gray-100 text-gray-700 px-6 py-3 rounded-2xl text-sm font-bold hover:bg-gray-50 transition-all shadow-sm"
+                  className="flex items-center gap-2 bg-card border border-border text-foreground px-6 py-3 rounded-2xl text-sm font-bold hover:bg-muted transition-all"
                 >
                   <Edit2 size={18} /> Editar
                 </button>
                 <button 
                   onClick={handleGenerateProposal}
-                  className="flex items-center gap-2 bg-gray-900 text-white px-6 py-3 rounded-2xl text-sm font-bold hover:bg-gray-800 transition-all shadow-xl shadow-gray-200 hover:-translate-y-0.5 active:translate-y-0"
+                  className="flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-2xl text-sm font-bold hover:opacity-90 transition-all"
                 >
                   <Wand2 size={18} /> Gerar Proposta
                 </button>
                 <button 
                   onClick={() => onDelete?.(deal.id)}
-                  className="flex items-center gap-2 bg-red-50 text-red-500 px-6 py-3 rounded-2xl text-sm font-bold hover:bg-red-100 transition-all"
+                  className="flex items-center gap-2 bg-red-500/10 text-red-500 border border-red-500/20 px-6 py-3 rounded-2xl text-sm font-bold hover:bg-red-500/20 transition-all"
                 >
                   <Trash2 size={18} /> Excluir
                 </button>
@@ -480,27 +480,27 @@ export function DocumentTab({
           </div>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-6 pt-8 border-t border-gray-50">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-6 pt-8 border-t border-border">
           <div className="space-y-1">
-            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Valor do Negócio</p>
+            <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">Valor do Negócio</p>
             {isEditingHeader ? (
               <input 
                 type="text"
                 value={editForm.value}
                 onChange={(e) => setEditForm({...editForm, value: maskCurrency(e.target.value)})}
-                className="text-xl font-black text-gray-900 bg-gray-50 w-full rounded p-1 outline-none"
+                className="text-xl font-black text-foreground bg-background border border-border w-full rounded-xl p-2 outline-none"
               />
             ) : (
-              <p className="text-xl font-black text-gray-900">{formatCurrency(deal.value)}</p>
+              <p className="text-xl font-black text-foreground">{formatCurrency(deal.value)}</p>
             )}
           </div>
-          <div className="space-y-1 border-l border-gray-50 pl-6">
-            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Origem do Lead</p>
+          <div className="space-y-1 border-l border-border pl-6">
+            <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">Origem do Lead</p>
             {isEditingHeader ? (
                <select 
                 value={editForm.leadSource}
                 onChange={(e) => setEditForm({...editForm, leadSource: e.target.value})}
-                className="text-sm font-bold text-gray-700 bg-gray-50 w-full rounded p-1"
+                className="text-sm font-bold text-foreground bg-background border border-border w-full rounded-xl p-2 outline-none"
                >
                  <option>Manual</option>
                  <option>LinkedIn</option>
@@ -508,23 +508,23 @@ export function DocumentTab({
                  <option>Instagram</option>
                </select>
             ) : (
-              <p className="text-sm font-bold text-gray-700">{deal.leadSource || "Manual"}</p>
+              <p className="text-sm font-bold text-foreground">{deal.leadSource || "Manual"}</p>
             )}
           </div>
-          <div className="space-y-1 border-l border-gray-50 pl-6">
-            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Último Contato</p>
-            <p className="text-sm font-bold text-gray-700">{deal.lastContactDate ? format(parseISO(deal.lastContactDate), "dd/MM/yy") : "Nenhum"}</p>
+          <div className="space-y-1 border-l border-border pl-6">
+            <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">Último Contato</p>
+            <p className="text-sm font-bold text-foreground">{deal.lastContactDate ? format(parseISO(deal.lastContactDate), "dd/MM/yy") : "Nenhum"}</p>
           </div>
-          <div className="space-y-1 border-l border-gray-50 pl-6">
-            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Responsável</p>
+          <div className="space-y-1 border-l border-border pl-6">
+            <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">Responsável</p>
             <div className="flex items-center gap-2">
               {isEditingHeader ? (
-                <div className="flex items-center gap-2 bg-gray-50 rounded-xl px-2">
+                <div className="flex items-center gap-2 bg-background border border-border rounded-xl px-2">
                    <Avatar name={editForm.owner} size="sm" />
                    <select 
                     value={editForm.owner}
                     onChange={(e) => setEditForm({...editForm, owner: e.target.value})}
-                    className="text-sm font-bold text-gray-700 bg-transparent py-2 outline-none"
+                    className="text-sm font-bold text-foreground bg-transparent py-2 outline-none"
                    >
                      {users.map((u: any) => (
                        <option key={u.id} value={u.name}>{u.name}</option>
@@ -534,14 +534,14 @@ export function DocumentTab({
               ) : (
                 <>
                   <Avatar name={deal.owner || "Jefferson Jr"} size="sm" />
-                  <p className="text-sm font-bold text-gray-700">{deal.owner || "Jefferson Jr"}</p>
+                  <p className="text-sm font-bold text-foreground">{deal.owner || "Jefferson Jr"}</p>
                 </>
               )}
             </div>
           </div>
-          <div className="space-y-2 border-l border-gray-50 pl-6">
+          <div className="space-y-2 border-l border-border pl-6">
             <div className="flex items-center justify-between">
-              <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Tags</p>
+              <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">Tags</p>
               <button onClick={() => setShowTagModal(true)} className="text-[10px] font-black text-blue-600 hover:text-blue-700 flex items-center gap-1 transition-colors">
                 <Edit2 size={10} /> Editar
               </button>
@@ -568,7 +568,7 @@ export function DocumentTab({
       </div>
 
       {/* Navegação por Abas */}
-      <div className="flex bg-white border-x border-b border-gray-100 px-4 md:px-8 sticky top-0 z-10 shadow-sm overflow-x-auto scrollbar-hide">
+      <div className="flex bg-card border-x border-b border-border px-4 md:px-8 sticky top-0 z-10 overflow-x-auto scrollbar-hide">
         {[
           { id: "details", label: "Visão Geral", icon: Layout },
           { id: "profile", label: "Perfil & Contatos", icon: Building2 },
@@ -581,8 +581,8 @@ export function DocumentTab({
             className={cn(
               "flex items-center gap-2 py-5 px-4 md:px-6 border-b-2 transition-all text-sm font-bold whitespace-nowrap",
               activeSubTab === tab.id 
-                ? "border-gray-900 text-gray-900" 
-                : "border-transparent text-gray-400 hover:text-gray-600"
+                ? "border-primary text-foreground" 
+                : "border-transparent text-muted-foreground hover:text-foreground"
             )}
           >
             <tab.icon size={18} />
@@ -592,13 +592,13 @@ export function DocumentTab({
       </div>
 
       {/* Conteúdo das Abas */}
-      <div className="bg-white p-6 md:p-10 rounded-b-3xl border-x border-b border-gray-100 shadow-sm min-h-[600px]">
+      <div className="bg-card p-6 md:p-10 rounded-b-3xl border-x border-b border-border min-h-[600px]">
         {activeSubTab === "details" && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 md:gap-16">
             <div className="col-span-1 lg:col-span-2 space-y-8 md:space-y-12">
               <section>
                 <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-lg font-black text-gray-900 flex items-center gap-3">
+                  <h3 className="text-lg font-black text-foreground flex items-center gap-3">
                     Checklists de Execução
                   </h3>
                   <div className="flex gap-2">
@@ -622,7 +622,7 @@ export function DocumentTab({
                 
                 <div className="space-y-6">
                   {deal.checklists?.map((cl: any) => (
-                    <div key={cl.id} id={`checklist-${cl.id}`} className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100 group/cl">
+                    <div key={cl.id} id={`checklist-${cl.id}`} className="bg-background rounded-2xl p-6 border border-border group/cl">
                       <div className="flex justify-between items-center mb-4">
                         <div className="flex items-center gap-3">
                           {editingChecklistTitleId === cl.id ? (
@@ -661,7 +661,7 @@ export function DocumentTab({
                         {cl.items.map((item: any, i: number) => (
                           <div 
                             key={i}
-                            className="flex items-center justify-between p-3 bg-white rounded-xl border border-gray-100 group/item hover:shadow-sm transition-all"
+                            className="flex items-center justify-between p-3 bg-card rounded-xl border border-border group/item transition-all"
                           >
                              <div className="flex items-center gap-3 flex-1">
                                <div 
@@ -704,13 +704,13 @@ export function DocumentTab({
               </section>
 
               <section>
-                <h3 className="text-lg font-black text-gray-900 mb-6">Notas do Negócio</h3>
-                <div className="bg-gray-50/30 rounded-2xl p-6 border border-gray-100 mb-8">
+                <h3 className="text-lg font-black text-foreground mb-6">Notas do Negócio</h3>
+                <div className="bg-background rounded-2xl p-6 border border-border mb-8">
                   <textarea 
                     value={newNote}
                     onChange={(e) => setNewNote(e.target.value)}
                     placeholder="Anote algo importante sobre este negócio..."
-                    className="w-full bg-white p-4 rounded-xl border border-gray-100 text-sm focus:ring-2 focus:ring-gray-900/5 transition-all resize-none min-h-[120px] shadow-inner"
+                    className="w-full bg-card p-4 rounded-xl border border-border text-sm focus:ring-2 focus:ring-primary/5 transition-all resize-none min-h-[120px] outline-none"
                   />
                   <div className="flex justify-end mt-4">
                     <button onClick={() => {
@@ -729,15 +729,15 @@ export function DocumentTab({
                         setNewNote("");
                         toast.success("Nota salva");
                       }
-                    }} className="bg-gray-900 text-white px-6 py-2.5 rounded-xl text-xs font-bold hover:bg-gray-800 shadow-md">Salvar Nota</button>
+                    }} className="bg-primary text-primary-foreground px-6 py-2.5 rounded-xl text-xs font-bold hover:opacity-90 transition-all">Salvar Nota</button>
                   </div>
                 </div>
                 <div className="space-y-4">
                   {deal.notes?.map((note: any) => (
-                    <div key={note.id} className="p-5 bg-white border border-gray-50 rounded-2xl shadow-sm group/note relative">
+                    <div key={note.id} className="p-5 bg-card border border-border rounded-2xl group/note relative">
                       <div className="flex justify-between items-center mb-3">
                         <div className="flex items-center gap-2">
-                          <span className="text-xs font-black text-gray-900">{note.author}</span>
+                          <span className="text-xs font-black text-foreground">{note.author}</span>
                           {note.edited && <span className="text-[9px] text-gray-400 font-bold uppercase italic">(editada)</span>}
                         </div>
                         <div className="flex items-center gap-4">
@@ -789,7 +789,7 @@ export function DocumentTab({
                           </div>
                         </div>
                       ) : (
-                        <p className="text-sm text-gray-600 leading-relaxed">{note.text}</p>
+                        <p className="text-sm text-muted-foreground leading-relaxed">{note.text}</p>
                       )}
                     </div>
                   ))}
@@ -799,11 +799,11 @@ export function DocumentTab({
 
             <div className="space-y-10">
                <section>
-                <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-6">Ações Estratégicas</h3>
+                <h3 className="text-xs font-black text-muted-foreground uppercase tracking-widest mb-6">Ações Estratégicas</h3>
                 <div className="grid grid-cols-1 gap-3">
                   <button 
                     onClick={() => setShowMeetingModal(true)} 
-                    className="w-full text-left p-4 rounded-2xl border border-gray-100 text-sm font-bold text-gray-700 hover:bg-gray-50 hover:border-gray-200 transition-all flex items-center justify-between group"
+                    className="w-full text-left p-4 rounded-2xl border border-border text-sm font-bold text-foreground hover:bg-muted transition-all flex items-center justify-between group"
                   >
                     <div className="flex items-center gap-3">
                       <Calendar size={18} className="text-orange-400" />
@@ -811,7 +811,7 @@ export function DocumentTab({
                     </div>
                     <ChevronRight size={14} className="text-gray-300 group-hover:translate-x-1 transition-transform" />
                   </button>
-                  <button onClick={() => toast.info("Interface de e-mail em desenvolvimento")} className="w-full text-left p-4 rounded-2xl border border-gray-100 text-sm font-bold text-gray-700 hover:bg-gray-50 hover:border-gray-200 transition-all flex items-center justify-between group">
+                  <button onClick={() => toast.info("Interface de e-mail em desenvolvimento")} className="w-full text-left p-4 rounded-2xl border border-border text-sm font-bold text-foreground hover:bg-muted transition-all flex items-center justify-between group">
                     <div className="flex items-center gap-3">
                       <Mail size={18} className="text-blue-400" />
                       Enviar E-mail
@@ -828,7 +828,7 @@ export function DocumentTab({
                       <div key={act.id} className="p-4 bg-white border border-gray-100 rounded-2xl hover:border-gray-200 transition-all shadow-sm group/act">
                         <div className="flex justify-between items-start mb-2">
                            <div className="flex items-center gap-2">
-                             <div className={cn("p-1.5 rounded-lg text-gray-400", act.isImportant ? "bg-red-50 text-red-500" : "bg-gray-50")}>
+                             <div className={cn("p-1.5 rounded-lg text-muted-foreground", act.isImportant ? "bg-red-500/10 text-red-500" : "bg-muted")}>
                                 {act.type === 'online' && <Video size={14} />}
                                 {act.type === 'cafe' && <Coffee size={14} />}
                                 {act.type === 'presencial' && <MapPin size={14} />}
@@ -838,7 +838,7 @@ export function DocumentTab({
                            <div className="flex items-center gap-2">
                              <span className={cn(
                                "text-[9px] font-black uppercase px-2 py-0.5 rounded-full cursor-pointer hover:opacity-80 transition-opacity",
-                               act.status === 'completed' ? "bg-green-50 text-green-600" : "bg-orange-50 text-orange-500"
+                               act.status === 'completed' ? "bg-green-500/10 text-green-500" : "bg-orange-500/10 text-orange-500"
                              )}
                              onClick={() => toggleActivityStatus(act.id)}
                              >
@@ -857,7 +857,7 @@ export function DocumentTab({
                              </div>
                            </div>
                         </div>
-                        <p className="text-sm font-black text-gray-900 mb-1">{act.title}</p>
+                        <p className="text-sm font-black text-foreground mb-1">{act.title}</p>
                         <p className="text-[10px] font-bold text-gray-400 flex items-center gap-1">
                            <Clock size={10} />
                            {format(parseISO(act.date), "eeee, dd 'de' MMMM 'às' HH:mm", { locale: ptBR })}
@@ -879,15 +879,15 @@ export function DocumentTab({
             <div className="col-span-1 lg:col-span-2 space-y-12">
                <section>
                   <div className="flex flex-col md:flex-row items-center md:items-start gap-8 mb-10">
-                    <div className="w-24 h-24 bg-gray-50 rounded-[2.5rem] flex items-center justify-center text-gray-300 border border-gray-100 shadow-inner">
+                    <div className="w-24 h-24 bg-muted rounded-[2.5rem] flex items-center justify-center text-muted-foreground border border-border">
                       <Building2 size={48} />
                     </div>
                     <div className="space-y-2 text-center md:text-left">
-                      <h2 className="text-4xl font-black text-gray-900 tracking-tight">{deal.profile.name}</h2>
+                      <h2 className="text-4xl font-black text-foreground tracking-tight">{deal.profile.name}</h2>
                       <div className="flex flex-wrap justify-center md:justify-start gap-3 text-sm font-bold text-gray-400">
                         <span>{deal.profile.industry}</span>
                         <span className="text-gray-200">•</span>
-                        <a href={deal.profile.website} target="_blank" className="text-blue-500 hover:underline flex items-center gap-1">
+                        <a href={deal.profile.website} target="_blank" className="text-primary hover:underline flex items-center gap-1">
                           {deal.profile.website} <ExternalLink size={12} />
                         </a>
                       </div>
@@ -895,20 +895,20 @@ export function DocumentTab({
                   </div>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-                     <div className="p-6 bg-gray-50/50 rounded-2xl border border-gray-100">
-                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Sobre a Conta</p>
-                        <p className="text-sm text-gray-600 leading-relaxed">Cliente estratégico focado em {deal.profile.industry}. Relacionamento iniciado via {deal.leadSource}.</p>
+                     <div className="p-6 bg-background rounded-2xl border border-border">
+                        <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-4">Sobre a Conta</p>
+                        <p className="text-sm text-muted-foreground leading-relaxed">Cliente estratégico focado em {deal.profile.industry}. Relacionamento iniciado via {deal.leadSource}.</p>
                      </div>
-                     <div className="p-6 bg-gray-50/50 rounded-2xl border border-gray-100">
-                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Métricas</p>
+                     <div className="p-6 bg-background rounded-2xl border border-border">
+                        <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-4">Métricas</p>
                         <div className="space-y-3">
                            <div className="flex justify-between text-xs">
-                              <span className="text-gray-400 font-bold">Total Gasto</span>
-                              <span className="text-gray-900 font-black">R$ 145k</span>
+                              <span className="text-muted-foreground font-bold">Total Gasto</span>
+                              <span className="text-foreground font-black">R$ 145k</span>
                            </div>
                            <div className="flex justify-between text-xs">
-                              <span className="text-gray-400 font-bold">Tempo de Vida</span>
-                              <span className="text-gray-900 font-black">2.4 Anos</span>
+                              <span className="text-muted-foreground font-bold">Tempo de Vida</span>
+                              <span className="text-foreground font-black">2.4 Anos</span>
                            </div>
                         </div>
                      </div>
@@ -917,10 +917,10 @@ export function DocumentTab({
 
                <section>
                   <div className="flex justify-between items-center mb-8">
-                    <h3 className="text-lg font-black text-gray-900">Contatos na Empresa</h3>
+                    <h3 className="text-lg font-black text-foreground">Contatos na Empresa</h3>
                     <button 
                       onClick={() => setShowContactModal(true)}
-                      className="text-xs font-bold text-blue-600 bg-blue-50 px-3 py-1.5 rounded-lg flex items-center gap-1 hover:bg-blue-100 transition-colors"
+                      className="text-xs font-bold text-primary bg-primary/10 px-3 py-1.5 rounded-lg flex items-center gap-1 hover:bg-primary/20 transition-colors"
                     >
                       <Plus size={14} /> Novo Contato
                     </button>
@@ -929,7 +929,7 @@ export function DocumentTab({
                     {deal.profile.contacts?.map((contact: any) => (
                       <div 
                         key={contact.id} 
-                        className="p-5 bg-white border border-gray-100 rounded-2xl hover:border-gray-900/10 hover:shadow-xl hover:shadow-gray-100 transition-all cursor-pointer group flex justify-between items-center"
+                        className="p-5 bg-background border border-border rounded-2xl hover:border-primary/30 transition-all cursor-pointer group flex justify-between items-center"
                       >
                          <div className="flex items-center gap-4 flex-1" onClick={() => setSelectedPerson(contact)}>
                             <Avatar name={contact.name} size="lg" />
@@ -1080,14 +1080,14 @@ export function DocumentTab({
               </div>
               <div className="grid grid-cols-1 gap-3">
                 {deal.documents?.map((doc: any) => (
-                  <div key={doc.id} className="p-4 bg-white border border-gray-100 rounded-2xl flex items-center justify-between group hover:border-gray-900/10 transition-all">
+                  <div key={doc.id} className="p-4 bg-background border border-border rounded-2xl flex items-center justify-between group hover:border-primary/30 transition-all">
                     <div className="flex items-center gap-4">
                       <div className="p-3 bg-gray-50 rounded-xl text-gray-400 group-hover:text-blue-500 group-hover:bg-blue-50 transition-all">
                         <FileText size={24} />
                       </div>
                       <div>
-                        <p className="text-sm font-black text-gray-900">{doc.name}</p>
-                        <p className="text-[10px] font-bold text-gray-400">{doc.size} • {format(parseISO(doc.date), "dd/MM/yy")}</p>
+                        <p className="text-sm font-black text-foreground">{doc.name}</p>
+                        <p className="text-[10px] font-bold text-muted-foreground">{doc.size} • {format(parseISO(doc.date), "dd/MM/yy")}</p>
                       </div>
                     </div>
                     <div className="flex gap-2">
@@ -1101,7 +1101,7 @@ export function DocumentTab({
         )}
 
         {activeSubTab === "activity" && (
-            <div className="space-y-6 relative before:absolute before:left-[19px] before:top-2 before:bottom-2 before:w-0.5 before:bg-gray-100">
+            <div className="space-y-6 relative before:absolute before:left-[19px] before:top-2 before:bottom-2 before:w-0.5 before:bg-border">
               {deal.activityLogs?.map((log: any, i: number) => {
                 const isStatusChange = log.action.includes("estágio");
                 const isNote = log.action.includes("nota");
@@ -1112,8 +1112,8 @@ export function DocumentTab({
                 return (
                   <div key={log.id} className="flex gap-6 relative group">
                     <div className={cn(
-                      "w-10 h-10 rounded-2xl border-4 border-white shadow-md flex items-center justify-center flex-shrink-0 z-10 transition-transform group-hover:scale-110",
-                      i === 0 ? "bg-gray-900 text-white" : "bg-white text-gray-400"
+                      "w-10 h-10 rounded-2xl border-4 border-card flex items-center justify-center flex-shrink-0 z-10 transition-transform group-hover:scale-110",
+                      i === 0 ? "bg-primary text-primary-foreground" : "bg-card text-muted-foreground"
                     )}>
                        {isStatusChange && <RefreshCw size={14} />}
                        {isNote && <MessageSquare size={14} />}
@@ -1122,7 +1122,7 @@ export function DocumentTab({
                        {isWhatsApp && <Zap size={14} />}
                        {!isStatusChange && !isNote && !isDoc && !isEmail && !isWhatsApp && <Clock size={14} />}
                     </div>
-                    <div className="flex-1 bg-gray-50/50 p-5 rounded-2xl border border-gray-100 group-hover:bg-white group-hover:shadow-xl group-hover:shadow-gray-100 transition-all">
+                    <div className="flex-1 bg-background p-5 rounded-2xl border border-border group-hover:bg-muted transition-all">
                       <div className="flex justify-between items-start mb-2">
                         <p className="text-sm text-gray-900 font-black leading-tight">{log.action}</p>
                         <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest whitespace-nowrap ml-4">
@@ -1140,9 +1140,9 @@ export function DocumentTab({
                 );
               })}
               {(!deal.activityLogs || deal.activityLogs.length === 0) && (
-                <div className="text-center py-20 bg-gray-50/50 rounded-[3rem] border border-dashed border-gray-100">
-                   <div className="w-20 h-20 bg-white rounded-[2rem] flex items-center justify-center mx-auto mb-6 shadow-sm">
-                     <History size={32} className="text-gray-200" />
+                <div className="text-center py-20 bg-background rounded-[3rem] border border-dashed border-border">
+                   <div className="w-20 h-20 bg-card rounded-[2rem] flex items-center justify-center mx-auto mb-6">
+                     <History size={32} className="text-muted-foreground/20" />
                    </div>
                    <p className="text-sm font-black text-gray-900 mb-1">Nenhuma atividade</p>
                    <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">O histórico do negócio aparecerá aqui</p>

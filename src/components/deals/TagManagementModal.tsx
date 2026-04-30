@@ -80,21 +80,21 @@ export function TagManagementModal({ isOpen, onClose, tags, onUpdateTags, dealTa
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="bg-white rounded-[2.5rem] w-full max-w-md shadow-2xl overflow-hidden flex flex-col border border-gray-100"
+          className="bg-card rounded-[2.5rem] w-full max-w-md overflow-hidden flex flex-col border border-border"
         >
-          <div className="p-8 border-b border-gray-50 flex justify-between items-center bg-gray-50/50">
+          <div className="p-8 border-b border-border flex justify-between items-center bg-muted/30">
             <div>
-              <h2 className="text-xl font-black text-gray-900">{dealTags ? "Tags do Negócio" : "Gerenciar Tags"}</h2>
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">
+              <h2 className="text-xl font-black text-foreground">{dealTags ? "Tags do Negócio" : "Gerenciar Tags"}</h2>
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1">
                 {dealTags ? "Selecione ou crie novas tags" : "Tags globais do sistema"}
               </p>
             </div>
-            <button onClick={onClose} className="p-3 hover:bg-white bg-gray-100 rounded-2xl text-gray-400 hover:text-gray-900 transition-all">
+            <button onClick={onClose} className="p-3 hover:bg-muted bg-background rounded-2xl text-muted-foreground hover:text-foreground transition-all">
               <X size={20} />
             </button>
           </div>
 
-          <div className="p-8 space-y-8 bg-white">
+          <div className="p-8 space-y-8 bg-card">
             <div className="space-y-4">
               <div className="flex gap-2">
                 <input 
@@ -102,12 +102,12 @@ export function TagManagementModal({ isOpen, onClose, tags, onUpdateTags, dealTa
                   value={newTag}
                   onChange={(e) => setNewTag(e.target.value)}
                   placeholder="Nome da nova tag..."
-                  className="flex-1 p-4 rounded-2xl border-2 border-gray-100 bg-gray-50 text-sm font-bold outline-none focus:border-blue-500 focus:bg-white transition-all"
+                  className="flex-1 p-4 rounded-2xl border-2 border-border bg-background text-sm font-bold outline-none focus:border-primary transition-all text-foreground"
                   onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
                 />
                 <button 
                   onClick={handleAdd}
-                  className="p-4 bg-gray-900 text-white rounded-2xl hover:bg-gray-800 transition-all active:scale-95 flex items-center justify-center shadow-lg shadow-gray-200"
+                  className="p-4 bg-primary text-primary-foreground rounded-2xl hover:opacity-90 transition-all active:scale-95 flex items-center justify-center"
                 >
                   <Plus size={24} />
                 </button>
@@ -144,7 +144,7 @@ export function TagManagementModal({ isOpen, onClose, tags, onUpdateTags, dealTa
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, scale: 0.9 }}
                     key={tag.id} 
-                    className="flex items-center justify-between p-4 bg-gray-50/50 rounded-2xl border border-gray-100 hover:border-gray-200 group transition-all hover:bg-white hover:shadow-sm"
+                    className="flex items-center justify-between p-4 bg-background rounded-2xl border border-border group transition-all"
                   >
                     {editingTag?.id === tag.id ? (
                       <div className="flex-1 flex flex-col gap-3">
@@ -153,10 +153,10 @@ export function TagManagementModal({ isOpen, onClose, tags, onUpdateTags, dealTa
                             autoFocus
                             value={editingTag.name}
                             onChange={(e) => setEditingTag({...editingTag, name: e.target.value})}
-                            className="flex-1 bg-white border-2 border-blue-200 rounded-xl px-3 py-2 text-sm font-bold outline-none focus:border-blue-500 transition-colors"
+                            className="flex-1 bg-background border-2 border-primary/30 rounded-xl px-3 py-2 text-sm font-bold outline-none focus:border-primary transition-colors text-foreground"
                            />
-                           <button onClick={handleEdit} className="p-2 bg-green-50 text-green-600 rounded-xl hover:bg-green-100 transition-colors"><Check size={18} /></button>
-                           <button onClick={() => setEditingTag(null)} className="p-2 bg-gray-100 text-gray-400 rounded-xl hover:bg-gray-200 transition-colors"><X size={18} /></button>
+                           <button onClick={handleEdit} className="p-2 bg-green-500/10 text-green-500 rounded-xl hover:bg-green-500/20 transition-colors"><Check size={18} /></button>
+                           <button onClick={() => setEditingTag(null)} className="p-2 bg-muted text-muted-foreground rounded-xl hover:bg-muted/80 transition-colors"><X size={18} /></button>
                         </div>
                         <div className="flex gap-2">
                           {TAG_COLORS.map(c => (
@@ -181,20 +181,20 @@ export function TagManagementModal({ isOpen, onClose, tags, onUpdateTags, dealTa
                           {dealTags && (
                             <div className={cn(
                               "w-5 h-5 rounded-md border flex items-center justify-center transition-colors",
-                              dealTags.includes(tag.name) ? "bg-gray-900 border-gray-900 text-white" : "border-gray-200"
+                              dealTags.includes(tag.name) ? "bg-primary border-primary text-primary-foreground" : "border-border"
                             )}>
                               {dealTags.includes(tag.name) && <Check size={12} />}
                             </div>
                           )}
-                          <div className="w-3 h-3 rounded-full shadow-sm" style={{ backgroundColor: tag.color || "#3b82f6" }} />
+                          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: tag.color || "#3b82f6" }} />
                           <span className={cn(
                             "text-sm font-black tracking-tight",
-                            dealTags?.includes(tag.name) ? "text-gray-900" : "text-gray-500"
+                            dealTags?.includes(tag.name) ? "text-foreground" : "text-muted-foreground"
                           )}>{tag.name}</span>
                         </div>
                         <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
-                          <button onClick={() => setEditingTag({id: tag.id, name: tag.name, color: tag.color || "#3b82f6"})} className="p-2 bg-white text-gray-400 rounded-xl border border-gray-100 shadow-sm hover:text-blue-600 hover:border-blue-100 transition-all"><Edit2 size={16} /></button>
-                          <button onClick={() => handleDelete(tag.id)} className="p-2 bg-white text-gray-400 rounded-xl border border-gray-100 shadow-sm hover:text-red-500 hover:border-red-100 transition-all"><Trash2 size={16} /></button>
+                          <button onClick={() => setEditingTag({id: tag.id, name: tag.name, color: tag.color || "#3b82f6"})} className="p-2 bg-card text-muted-foreground rounded-xl border border-border hover:text-primary transition-all"><Edit2 size={16} /></button>
+                          <button onClick={() => handleDelete(tag.id)} className="p-2 bg-card text-muted-foreground rounded-xl border border-border hover:text-red-500 transition-all"><Trash2 size={16} /></button>
                         </div>
                       </>
                     )}
@@ -204,8 +204,8 @@ export function TagManagementModal({ isOpen, onClose, tags, onUpdateTags, dealTa
             </div>
           </div>
 
-          <div className="p-6 bg-gray-50 flex justify-center border-t border-gray-100">
-            <button onClick={onClose} className="px-6 py-3 bg-white border border-gray-200 rounded-xl text-xs font-black text-gray-500 uppercase tracking-widest hover:text-gray-900 hover:border-gray-300 shadow-sm transition-all">Concluído</button>
+          <div className="p-6 bg-muted/30 flex justify-center border-t border-border">
+            <button onClick={onClose} className="px-6 py-3 bg-card border border-border rounded-xl text-xs font-black text-muted-foreground uppercase tracking-widest hover:text-foreground hover:border-muted transition-all">Concluído</button>
           </div>
         </motion.div>
       </div>

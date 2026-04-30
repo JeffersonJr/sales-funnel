@@ -130,18 +130,18 @@ export default function StorageCheckoutPage() {
             
             <div className="space-y-6 mb-10">
               <div className="flex justify-between items-center text-sm">
-                <span className="font-bold text-gray-400">Upgrade ({storagePlans[selectedPlan].size})</span>
+                <span className="font-bold text-gray-500">Upgrade ({storagePlans[selectedPlan].size})</span>
                 <span className="font-black text-gray-900 dark:text-white">R$ {storagePlans[selectedPlan].price}</span>
               </div>
               
               {isCouponApplied && (
-                <div className="flex justify-between items-center text-sm font-bold text-green-500">
+                <div className="flex justify-between items-center text-sm font-bold text-green-600">
                   <span>Desconto ({discount}%)</span>
                   <span>- R$ {(parseFloat(storagePlans[selectedPlan].price.replace(',', '.')) * discount / 100).toFixed(2).replace('.', ',')}</span>
                 </div>
               )}
 
-              <div className="pt-4 border-t border-gray-50 dark:border-border">
+              <div className="pt-4 border-t border-gray-100 dark:border-border">
                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Cupom de Desconto</p>
                 <div className="flex gap-2">
                    <input 
@@ -149,7 +149,7 @@ export default function StorageCheckoutPage() {
                      placeholder="CUPOM"
                      value={coupon}
                      onChange={(e) => setCoupon(e.target.value)}
-                     className="flex-1 bg-gray-50 dark:bg-muted/50 border border-gray-100 dark:border-border rounded-xl px-4 py-2 text-xs font-bold uppercase tracking-widest outline-none focus:border-blue-500"
+                     className="flex-1 bg-gray-50 dark:bg-muted/50 border border-gray-200 dark:border-border rounded-xl px-4 py-2 text-xs font-bold uppercase tracking-widest outline-none focus:border-blue-500"
                    />
                    <button 
                      onClick={applyCoupon}
@@ -160,7 +160,7 @@ export default function StorageCheckoutPage() {
                 </div>
               </div>
 
-              <div className="h-px bg-gray-50 dark:bg-border my-2" />
+              <div className="h-px bg-gray-100 dark:bg-border my-2" />
               <div className="flex justify-between items-center">
                 <span className="text-lg font-black text-gray-900 dark:text-white">Total Hoje</span>
                 <span className="text-3xl font-black text-blue-600 dark:text-blue-400 tracking-tight">R$ {calculateTotal(storagePlans[selectedPlan].price)}</span>

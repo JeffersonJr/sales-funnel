@@ -63,9 +63,9 @@ export function ChangePasswordModal({ isOpen, onClose }: ChangePasswordModalProp
               <div className="w-10 h-10 bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-xl flex items-center justify-center">
                 <Lock size={20} />
               </div>
-              <h2 className="text-xl font-black text-gray-900 dark:text-white">Alterar Senha</h2>
+              <h2 className="text-xl font-black text-foreground">Alterar Senha</h2>
             </div>
-            <button onClick={handleClose} className="p-2 hover:bg-gray-200 dark:hover:bg-muted rounded-xl text-gray-400 transition-colors">
+            <button onClick={handleClose} className="p-2 hover:bg-muted rounded-xl text-muted-foreground transition-colors">
               <X size={20} />
             </button>
           </div>
@@ -74,7 +74,7 @@ export function ChangePasswordModal({ isOpen, onClose }: ChangePasswordModalProp
             {step === 1 ? (
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Senha Atual</label>
+                  <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Senha Atual</label>
                   <div className="relative">
                     <input
                       required
@@ -83,7 +83,7 @@ export function ChangePasswordModal({ isOpen, onClose }: ChangePasswordModalProp
                       onChange={(e) => setFormData({ ...formData, current: e.target.value })}
                       className="w-full bg-gray-50 dark:bg-muted border border-transparent dark:border-border rounded-2xl px-6 py-4 text-sm font-bold focus:bg-white dark:focus:bg-card focus:border-blue-500 outline-none transition-all dark:text-white"
                     />
-                    <button type="button" onClick={() => setShowPass(!showPass)} className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-400">
+                    <button type="button" onClick={() => setShowPass(!showPass)} className="absolute right-6 top-1/2 -translate-y-1/2 text-muted-foreground">
                       {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
                   </div>
@@ -92,7 +92,7 @@ export function ChangePasswordModal({ isOpen, onClose }: ChangePasswordModalProp
                 <div className="h-px bg-gray-50 dark:bg-border my-2" />
 
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Nova Senha</label>
+                  <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Nova Senha</label>
                   <input
                     required
                     type="password"
@@ -103,7 +103,7 @@ export function ChangePasswordModal({ isOpen, onClose }: ChangePasswordModalProp
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Confirmar Nova Senha</label>
+                  <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Confirmar Nova Senha</label>
                   <input
                     required
                     type="password"
@@ -129,8 +129,8 @@ export function ChangePasswordModal({ isOpen, onClose }: ChangePasswordModalProp
                   <Check size={48} className="text-green-500" />
                 </div>
                 <div>
-                  <h3 className="text-2xl font-black text-gray-900 dark:text-white">Senha Alterada!</h3>
-                  <p className="text-sm text-gray-500 dark:text-muted-foreground mt-2 font-medium max-w-xs mx-auto">
+                  <h3 className="text-2xl font-black text-foreground">Senha Alterada!</h3>
+                  <p className="text-sm text-muted-foreground mt-2 font-medium max-w-xs mx-auto">
                     Sua nova senha foi salva com sucesso. Use-a no seu próximo acesso.
                   </p>
                 </div>

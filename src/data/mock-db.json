@@ -15,190 +15,57 @@
       "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Mariana"
     }
   ],
+  "funnels": [
+    { "id": "main", "name": "Principal" },
+    { "id": "sales", "name": "Vendas" },
+    { "id": "rental", "name": "Locação" }
+  ],
   "stages": [
-    { "id": "lead", "title": "Lead", "color": "#64748b" },
-    { "id": "discovery", "title": "Descoberta", "color": "#3b82f6" },
-    { "id": "proposal", "title": "Proposta", "color": "#8b5cf6" },
-    { "id": "negotiation", "title": "Negociação", "color": "#f59e0b" },
-    { "id": "won", "title": "Ganho", "color": "#22c55e" },
-    { "id": "lost", "title": "Perdido", "color": "#ef4444" }
-  ],
-  "templates": [
-    {
-      "id": "t1",
-      "name": "Padrão SaaS Enterprise",
-      "checkpoints": ["Revisão Técnica", "Aprovação de Orçamento", "Revisão Jurídica"]
-    },
-    {
-      "id": "t2",
-      "name": "Onboarding Cliente",
-      "checkpoints": ["Setup de Conta", "Treinamento Inicial", "Primeiro Acesso"]
-    }
-  ],
-  "companies": [
-    { "id": "comp1", "name": "TechCorp Solutions", "industry": "Tecnologia", "website": "https://techcorp.com", "createdAt": "2026-04-25T10:00:00Z" },
-    { "id": "comp2", "name": "EduNext", "industry": "Educação", "website": "https://edunext.com", "createdAt": "2026-04-20T10:00:00Z" },
-    { "id": "comp3", "name": "Global Retail", "industry": "Varejo", "website": "https://globalretail.com", "createdAt": "2026-04-18T10:00:00Z" },
-    { "id": "comp4", "name": "Creative Studio", "industry": "Serviços Digitais", "website": "https://creativestudio.com", "createdAt": "2026-04-15T10:00:00Z" },
-    { "id": "comp5", "name": "FastLogistics", "industry": "Logística", "website": "https://fastlog.com", "createdAt": "2026-04-10T10:00:00Z" },
-    { "id": "comp6", "name": "Skyline Infra", "industry": "Engenharia", "website": "https://skyline.io", "createdAt": "2026-04-22T08:00:00Z" }
-  ],
-  "leads": [
-    { "id": "l1", "name": "Ana Silva", "role": "CTO", "company": "TechCorp Solutions", "email": "ana@techcorp.com", "phone": "+55 11 98888-7777", "createdAt": "2026-04-25T10:00:00Z" },
-    { "id": "l2", "name": "Roberto Costa", "role": "Diretor Financeiro", "company": "EduNext", "email": "roberto@edunext.com", "phone": "+55 11 96666-5555", "createdAt": "2026-04-20T10:00:00Z" },
-    { "id": "l3", "name": "Luciana Dias", "role": "Gerente de Operações", "company": "Global Retail", "email": "luciana@globalretail.com", "phone": "+55 11 95555-4444", "createdAt": "2026-04-18T10:00:00Z" }
+    { "id": "main-prospec", "title": "Prospecção", "color": "#6272a4", "funnelId": "main" },
+    { "id": "main-visit", "title": "Visita Agendada", "color": "#8be9fd", "funnelId": "main" },
+    { "id": "main-prop", "title": "Proposta Enviada", "color": "#3C91BB", "funnelId": "main" },
+    { "id": "main-due", "title": "Due Diligence", "color": "#ffb86c", "funnelId": "main" },
+    { "id": "main-won", "title": "Contrato Assinado", "color": "#50fa7b", "funnelId": "main" },
+    { "id": "main-lost", "title": "Perdido", "color": "#ff5555", "funnelId": "main" },
+
+    { "id": "sales-lead", "title": "Novo Lead", "color": "#6272a4", "funnelId": "sales" },
+    { "id": "sales-qual", "title": "Qualificação", "color": "#8be9fd", "funnelId": "sales" },
+    { "id": "sales-pres", "title": "Apresentação", "color": "#3C91BB", "funnelId": "sales" },
+    { "id": "sales-neg", "title": "Negociação", "color": "#ffb86c", "funnelId": "sales" },
+    { "id": "sales-won", "title": "Fechamento", "color": "#50fa7b", "funnelId": "sales" },
+
+    { "id": "rental-lead", "title": "Lead de Aluguel", "color": "#6272a4", "funnelId": "rental" },
+    { "id": "rental-credit", "title": "Análise de Crédito", "color": "#8be9fd", "funnelId": "rental" },
+    { "id": "rental-insp", "title": "Vistoria", "color": "#3C91BB", "funnelId": "rental" },
+    { "id": "rental-cont", "title": "Elaboração de Contrato", "color": "#ffb86c", "funnelId": "rental" },
+    { "id": "rental-renov", "title": "Renovação de Contrato", "color": "#ff79c6", "funnelId": "rental" },
+    { "id": "rental-won", "title": "Chaves Entregues", "color": "#50fa7b", "funnelId": "rental" }
   ],
   "deals": [
-    {
-      "id": "d1",
-      "title": "Migração em Nuvem Enterprise",
-      "company": "TechCorp Solutions",
-      "value": 50000,
-      "stage": "lead",
-      "createdAt": "2026-04-25T10:00:00Z",
-      "tags": ["Valor Alto", "Nuvem"],
-      "documents": [
-        { "id": "doc1", "name": "Proposta_Comercial.pdf", "size": "1.2MB", "date": "2026-04-25T10:00:00Z" },
-        { "id": "doc2", "name": "Contrato_Assinado.pdf", "size": "2.4MB", "date": "2026-04-27T10:00:00Z" }
-      ],
-      "profile": { "id": "comp1", "name": "TechCorp Solutions", "contacts": [{ "id": "p1", "name": "Ana Silva", "role": "CTO" }] }
-    },
-    {
-      "id": "d6",
-      "title": "Expansão de Data Center",
-      "company": "Skyline Infra",
-      "value": 75000,
-      "stage": "lead",
-      "createdAt": "2026-04-26T09:00:00Z",
-      "tags": ["Crítico", "Hardware"],
-      "documents": [
-        { "id": "doc3", "name": "Especificações_Hardware.xlsx", "size": "0.8MB", "date": "2026-04-26T09:00:00Z" }
-      ],
-      "profile": { "id": "comp6", "name": "Skyline Infra", "contacts": [{ "id": "p7", "name": "Marco Tulio", "role": "Head de Infra" }] }
-    },
-    {
-      "id": "d2",
-      "title": "Renovação de Contrato Anual",
-      "company": "EduNext",
-      "value": 15000,
-      "stage": "discovery",
-      "createdAt": "2026-04-20T10:00:00Z",
-      "tags": ["VIP"],
-      "profile": { "id": "comp2", "name": "EduNext", "contacts": [{ "id": "p3", "name": "Roberto Costa", "role": "Diretor Financeiro" }] }
-    },
-    {
-      "id": "d7",
-      "title": "Consultoria de Segurança",
-      "company": "Cyber Defense Ltd",
-      "value": 20000,
-      "stage": "discovery",
-      "createdAt": "2026-04-21T14:00:00Z",
-      "tags": ["Segurança"],
-      "profile": { "id": "comp7", "name": "Cyber Defense Ltd", "contacts": [{ "id": "p8", "name": "Paula Souza", "role": "CISO" }] }
-    },
-    {
-      "id": "d3",
-      "title": "Implantação CRM V2",
-      "company": "Global Retail",
-      "value": 35000,
-      "stage": "proposal",
-      "createdAt": "2026-04-18T10:00:00Z",
-      "tags": ["Urgente"],
-      "profile": { "id": "comp3", "name": "Global Retail", "contacts": [{ "id": "p4", "name": "Luciana Dias", "role": "Gerente de Operações" }] }
-    },
-    {
-      "id": "d8",
-      "title": "Integração de APIs ERP",
-      "company": "Logistics Pro",
-      "value": 28000,
-      "stage": "proposal",
-      "createdAt": "2026-04-19T11:00:00Z",
-      "tags": ["API", "Backend"],
-      "profile": { "id": "comp8", "name": "Logistics Pro", "contacts": [{ "id": "p9", "name": "Tiago Lima", "role": "Arquiteto de Software" }] }
-    },
-    {
-      "id": "d4",
-      "title": "Consultoria de CX & Loyalty",
-      "company": "Creative Studio",
-      "value": 12000,
-      "stage": "negotiation",
-      "createdAt": "2026-04-15T10:00:00Z",
-      "tags": ["Design"],
-      "profile": { "id": "comp4", "name": "Creative Studio", "contacts": [{ "id": "p5", "name": "Felipe Amorim", "role": "Dono" }] }
-    },
-    {
-      "id": "d9",
-      "title": "Desenvolvimento App Mobile",
-      "company": "Food Delivery S/A",
-      "value": 45000,
-      "stage": "negotiation",
-      "createdAt": "2026-04-16T15:00:00Z",
-      "tags": ["Mobile", "Flutter"],
-      "profile": { "id": "comp9", "name": "Food Delivery S/A", "contacts": [{ "id": "p10", "name": "Bia Martins", "role": "Product Manager" }] }
-    },
-    {
-      "id": "d5",
-      "title": "Licenciamento de Software",
-      "company": "FastLogistics",
-      "value": 85000,
-      "stage": "won",
-      "createdAt": "2026-04-10T10:00:00Z",
-      "tags": ["Valor Alto"],
-      "profile": { "id": "comp5", "name": "FastLogistics", "contacts": [{ "id": "p6", "name": "Renata Lima", "role": "Compras" }] }
-    },
-    {
-      "id": "d10",
-      "title": "Treinamento de Equipe",
-      "company": "Sales Academy",
-      "value": 10000,
-      "stage": "won",
-      "createdAt": "2026-04-11T12:00:00Z",
-      "tags": ["Educação"],
-      "profile": { "id": "comp10", "name": "Sales Academy", "contacts": [{ "id": "p11", "name": "Joaquim Neto", "role": "Treinador Master" }] }
-    },
-    {
-      "id": "dbowie",
-      "title": "Campanha Interstellar",
-      "company": "Starman Inc.",
-      "value": 80000,
-      "stage": "discovery",
-      "createdAt": "2026-04-29T10:00:00Z",
-      "lastActivity": "2026-04-29T10:00:00Z",
-      "tags": ["Glam Rock", "Visuals"],
-      "profile": { "id": "comp_bowie", "name": "Starman Inc.", "contacts": [{ "id": "p_bowie", "name": "David Bowie", "role": "Creative Lead" }] }
-    },
-    {
-      "id": "elvis",
-      "title": "Rock & Roll Revival",
-      "company": "Graceland Records",
-      "value": 120000,
-      "stage": "negotiation",
-      "createdAt": "2026-04-29T11:00:00Z",
-      "lastActivity": "2026-04-29T11:00:00Z",
-      "tags": ["Legendary", "Live"],
-      "profile": { "id": "comp_elvis", "name": "Graceland Records", "contacts": [{ "id": "p_elvis", "name": "Elvis Presley", "role": "King of Rock" }] }
-    },
-    {
-      "id": "vader",
-      "title": "Consultoria Estrela da Morte",
-      "company": "Império Galáctico",
-      "value": 5000000,
-      "stage": "proposal",
-      "createdAt": "2026-04-29T12:00:00Z",
-      "lastActivity": "2026-04-29T12:00:00Z",
-      "tags": ["Dark Side", "Infra"],
-      "profile": { "id": "comp_vader", "name": "Império Galáctico", "contacts": [{ "id": "p_vader", "name": "Anakin Skywalker", "role": "General" }] }
-    },
-    {
-      "id": "mj",
-      "title": "Michael Jackson",
-      "company": "BILLY JEAN INC",
-      "value": 1500000,
-      "stage": "lead",
-      "createdAt": "2026-04-29T14:00:00Z",
-      "lastActivity": "2026-04-29T14:00:00Z",
-      "tags": ["VIP", "REI DO POP"],
-      "profile": { "id": "comp_mj", "name": "BILLY JEAN INC", "contacts": [{ "id": "p_mj", "name": "Michael Jackson", "role": "Artist" }] }
-    }
-  ]
+    { "id": "d1", "title": "Mansão Jardim Europa", "company": "Família Albuquerque", "value": 15000000, "stage": "main-prospec", "createdAt": "2026-04-25T10:00:00Z", "tags": ["Alto Padrão"], "profile": { "name": "Família Albuquerque", "contacts": [{ "name": "Dr. Albuquerque" }] } },
+    { "id": "d2", "title": "Cobertura Leblon", "company": "Gisele B.", "value": 8500000, "stage": "main-visit", "createdAt": "2026-04-26T09:00:00Z", "tags": ["Luxo"], "profile": { "name": "Gisele B.", "contacts": [{ "name": "Gisele" }] } },
+    { "id": "d3", "title": "Penthouse Itaim Bibi", "company": "Roberto Justos", "value": 12000000, "stage": "main-prop", "createdAt": "2026-04-26T10:00:00Z", "tags": ["Exclusivo"], "profile": { "name": "Roberto Justos", "contacts": [{ "name": "Roberto" }] } },
+    { "id": "d4", "title": "Casa de Praia Trancoso", "company": "Marina Ruy", "value": 5000000, "stage": "main-due", "createdAt": "2026-04-27T11:00:00Z", "tags": ["Temporada"], "profile": { "name": "Marina Ruy", "contacts": [{ "name": "Marina" }] } },
+    { "id": "d5", "title": "Apartamento Vila Nova", "company": "Empresário X", "value": 7000000, "stage": "main-won", "createdAt": "2026-04-28T12:00:00Z", "tags": ["Vendido"], "profile": { "name": "Empresário X", "contacts": [{ "name": "X" }] } },
+    { "id": "d6", "title": "Terreno Alphaville", "company": "Investidor Y", "value": 2000000, "stage": "main-lost", "createdAt": "2026-04-29T13:00:00Z", "tags": ["Cancelado"], "profile": { "name": "Investidor Y", "contacts": [{ "name": "Y" }] } },
+
+    { "id": "d7", "title": "Apartamento 3 Qts Moema", "company": "João Silva", "value": 1200000, "stage": "sales-lead", "createdAt": "2026-04-25T10:00:00Z", "tags": ["Pronto"], "profile": { "name": "João Silva", "contacts": [{ "name": "João" }] } },
+    { "id": "d8", "title": "Sobrado Condomínio", "company": "Maria Oliveira", "value": 950000, "stage": "sales-qual", "createdAt": "2026-04-26T09:00:00Z", "tags": ["Financiado"], "profile": { "name": "Maria Oliveira", "contacts": [{ "name": "Maria" }] } },
+    { "id": "d9", "title": "Studio Vila Madalena", "company": "Lucas Mendes", "value": 450000, "stage": "sales-pres", "createdAt": "2026-04-27T10:00:00Z", "tags": ["Investimento"], "profile": { "name": "Lucas Mendes", "contacts": [{ "name": "Lucas" }] } },
+    { "id": "d10", "title": "Sala Comercial Berrini", "company": "Tech Startup", "value": 800000, "stage": "sales-neg", "createdAt": "2026-04-28T11:00:00Z", "tags": ["Comercial"], "profile": { "name": "Tech Startup", "contacts": [{ "name": "CEO" }] } },
+    { "id": "d11", "title": "Casa de Vila Pacaembu", "company": "Família Santos", "value": 1800000, "stage": "sales-won", "createdAt": "2026-04-29T12:00:00Z", "tags": ["Vendido"], "profile": { "name": "Família Santos", "contacts": [{ "name": "Santos" }] } },
+
+    { "id": "d12", "title": "Loft Pinheiros - Design", "company": "Ana Paula", "value": 4500, "stage": "rental-lead", "createdAt": "2026-04-25T10:00:00Z", "tags": ["Moderno"], "profile": { "name": "Ana Paula", "contacts": [{ "name": "Ana" }] } },
+    { "id": "d13", "title": "Flat Jardins", "company": "Executivo Z", "value": 3800, "stage": "rental-credit", "createdAt": "2026-04-26T09:00:00Z", "tags": ["Executivo"], "profile": { "name": "Executivo Z", "contacts": [{ "name": "Z" }] } },
+    { "id": "d14", "title": "Apartamento Campo Belo", "company": "Carla Dias", "value": 5500, "stage": "rental-insp", "createdAt": "2026-04-27T10:00:00Z", "tags": ["Familiar"], "profile": { "name": "Carla Dias", "contacts": [{ "name": "Carla" }] } },
+    { "id": "d15", "title": "Cobertura Brooklin", "company": "Bruno Gagliasso", "value": 12000, "stage": "rental-cont", "createdAt": "2026-04-28T11:00:00Z", "tags": ["Luxo"], "profile": { "name": "Bruno Gagliasso", "contacts": [{ "name": "Bruno" }] } },
+    { "id": "d17", "title": "Renovação - Duplex Itaim", "company": "Fernando Zor", "value": 15000, "stage": "rental-renov", "createdAt": "2026-04-29T08:00:00Z", "tags": ["Renovação"], "profile": { "name": "Fernando Zor", "contacts": [{ "name": "Fernando" }] } },
+    { "id": "d16", "title": "Garden Perdizes", "company": "Juliana Paes", "value": 8000, "stage": "rental-won", "createdAt": "2026-04-29T12:00:00Z", "tags": ["Entregue"], "profile": { "name": "Juliana Paes", "contacts": [{ "name": "Juliana" }] } }
+  ],
+  "templates": [
+    { "id": "t1", "name": "Checklist de Venda", "checkpoints": ["Documentação OK", "Certidões Negativas", "Aprovação de Crédito"] },
+    { "id": "t2", "name": "Checklist de Locação", "checkpoints": ["Vistoria Realizada", "Seguro Fiança", "Assinatura Digital"] }
+  ],
+  "companies": [],
+  "leads": []
 }

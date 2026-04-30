@@ -286,20 +286,20 @@ export default function AutomationsPage() {
     <div className="p-8 max-w-7xl mx-auto">
       <div className="flex justify-between items-end mb-12">
         <div>
-          <h1 className="text-4xl font-black text-gray-900 tracking-tight">Workflow Automations</h1>
-          <p className="text-gray-400 font-medium mt-2">Transforme seu funil em uma máquina de vendas automática</p>
+          <h1 className="text-4xl font-black text-foreground tracking-tight">Workflow Automations</h1>
+          <p className="text-muted-foreground font-medium mt-2">Transforme seu funil em uma máquina de vendas automática</p>
         </div>
         <div className="flex gap-4">
           <button 
             onClick={() => setActiveTab(activeTab === "active" ? "templates" : "active")}
-            className="px-6 py-4 rounded-2xl font-black text-sm flex items-center gap-2 bg-gray-100 text-gray-600 hover:bg-gray-200 transition-all"
+            className="px-6 py-4 rounded-2xl font-black text-sm flex items-center gap-2 bg-background border border-border text-muted-foreground hover:bg-muted transition-all"
           >
             {activeTab === "active" ? <Layout size={18} /> : <History size={18} />}
             {activeTab === "active" ? "Ver Templates" : "Minhas Automações"}
           </button>
           <button 
             onClick={() => setShowModal(true)}
-            className="bg-gray-900 text-white px-8 py-4 rounded-2xl font-black text-sm shadow-xl shadow-gray-200 flex items-center gap-2 hover:bg-gray-800 transition-all hover:scale-[1.02]"
+            className="bg-primary text-primary-foreground px-8 py-4 rounded-2xl font-black text-sm flex items-center gap-2 hover:opacity-90 transition-all hover:scale-[1.02]"
           >
             <Plus size={20} /> Criar Automação
           </button>
@@ -314,15 +314,15 @@ export default function AutomationsPage() {
             animate={{ opacity: 1, y: 0 }}
             className="flex flex-col gap-6"
           >
-            <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-50 overflow-hidden">
-              <div className="p-6 border-b border-gray-50 bg-gray-50/30 flex flex-col md:flex-row items-stretch md:items-center gap-4">
+            <div className="bg-card rounded-[2.5rem] border border-border overflow-hidden">
+              <div className="p-6 border-b border-border bg-muted/30 flex flex-col md:flex-row items-stretch md:items-center gap-4">
                 <div className="relative flex-1">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={18} />
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50" size={18} />
                   <input 
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     placeholder="Buscar automação..."
-                    className="w-full bg-white border border-gray-100 rounded-xl py-3 pl-12 pr-4 text-sm font-bold focus:ring-2 focus:ring-gray-900/5 outline-none transition-all"
+                    className="w-full bg-background border border-border rounded-xl py-3 pl-12 pr-4 text-sm font-bold focus:ring-2 focus:ring-primary/5 outline-none transition-all dark:text-white"
                   />
                 </div>
                 <div className="flex gap-2">
@@ -330,7 +330,7 @@ export default function AutomationsPage() {
                     onClick={() => setShowFilters(!showFilters)}
                     className={cn(
                       "flex-1 md:flex-none px-5 py-3 rounded-xl transition-all border flex items-center justify-center gap-2",
-                      showFilters ? "bg-gray-900 text-white border-gray-900" : "bg-white text-gray-400 border-gray-100 hover:text-gray-900 hover:bg-gray-50"
+                      showFilters ? "bg-primary text-primary-foreground border-primary" : "bg-card text-muted-foreground border-border hover:text-foreground hover:bg-muted"
                     )}
                   >
                     <Filter size={20} />
@@ -370,36 +370,36 @@ export default function AutomationsPage() {
                 <div 
                   key={auto.id} 
                   className={cn(
-                    "bg-white p-8 rounded-[3rem] border transition-all flex items-center justify-between group",
-                    auto.status === 'active' ? "border-gray-100 shadow-xl shadow-gray-50/50" : "border-gray-50 opacity-60"
+                    "bg-card p-8 rounded-[3rem] border transition-all flex items-center justify-between group",
+                    auto.status === 'active' ? "border-border" : "border-border/50 opacity-60"
                   )}
                 >
                   <div className="flex items-center gap-8">
                     <div className={cn(
-                      "w-16 h-16 rounded-[1.5rem] flex items-center justify-center shadow-inner",
-                      auto.status === 'active' ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-400"
+                      "w-16 h-16 rounded-[1.5rem] flex items-center justify-center",
+                      auto.status === 'active' ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
                     )}>
                       <Zap size={32} />
                     </div>
                     <div>
-                      <h3 className="text-xl font-black text-gray-900 flex items-center gap-3">
+                      <h3 className="text-xl font-black text-foreground flex items-center gap-3">
                         {auto.name}
                         {auto.status === 'active' ? (
-                          <span className="text-[9px] bg-green-50 text-green-600 px-3 py-1 rounded-full uppercase tracking-widest font-black border border-green-100">Fluxo Ativo</span>
+                          <span className="text-[9px] bg-green-500/10 text-green-500 px-3 py-1 rounded-full uppercase tracking-widest font-black border border-green-500/20">Fluxo Ativo</span>
                         ) : (
-                          <span className="text-[10px] bg-gray-100 text-gray-400 px-3 py-1 rounded-full uppercase tracking-widest font-black">Pausada</span>
+                          <span className="text-[10px] bg-muted text-muted-foreground px-3 py-1 rounded-full uppercase tracking-widest font-black">Pausada</span>
                         )}
                         {auto.savedAsTemplate && (
                           <span className="text-[9px] bg-purple-50 text-purple-600 px-3 py-1 rounded-full uppercase tracking-widest font-black border border-purple-100 flex items-center gap-1"><Library size={10} /> Template</span>
                         )}
                       </h3>
                       <div className="flex items-center gap-4 mt-2">
-                        <div className="flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                        <div className="flex items-center gap-2 text-[10px] font-black text-muted-foreground uppercase tracking-widest">
                           <MousePointer2 size={12} />
-                          Trigger: <span className="text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">{triggerLabel}</span>
+                          Trigger: <span className="text-primary bg-primary/10 px-2 py-0.5 rounded-md">{triggerLabel}</span>
                         </div>
-                        <div className="w-1 h-1 bg-gray-200 rounded-full" />
-                        <div className="flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                        <div className="w-1 h-1 bg-border rounded-full" />
+                        <div className="flex items-center gap-2 text-[10px] font-black text-muted-foreground uppercase tracking-widest">
                           <Plus size={12} />
                           {auto.actions?.length || 0} Ações configuradas
                         </div>
@@ -475,10 +475,10 @@ export default function AutomationsPage() {
             })}
 
             {filteredAutomations.length === 0 && (
-              <div className="text-center py-32 bg-gray-50/50 rounded-[4rem] border-4 border-dashed border-gray-100">
-                <Zap size={64} className="text-gray-100 mx-auto mb-6" />
-                <h3 className="text-2xl font-black text-gray-900 mb-2">Sua esteira está parada</h3>
-                <p className="text-sm font-medium text-gray-400 max-w-sm mx-auto">
+              <div className="text-center py-32 bg-muted/20 rounded-[4rem] border-4 border-dashed border-border">
+                <Zap size={64} className="text-muted-foreground/20 mx-auto mb-6" />
+                <h3 className="text-2xl font-black text-foreground mb-2">Sua esteira está parada</h3>
+                <p className="text-sm font-medium text-muted-foreground max-w-sm mx-auto">
                   Crie automações para enviar mensagens, agendar tarefas e notificar sua equipe automaticamente.
                 </p>
               </div>
@@ -494,7 +494,7 @@ export default function AutomationsPage() {
             className="grid grid-cols-1 md:grid-cols-3 gap-6"
           >
             {automationTemplates.map((tmpl: Automation) => (
-              <div key={tmpl.id} className="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-xl shadow-gray-50/50 flex flex-col justify-between group hover:border-blue-200 transition-all relative">
+              <div key={tmpl.id} className="bg-card p-6 rounded-[2rem] border border-border flex flex-col justify-between group hover:border-primary/50 transition-all relative">
                 <div className="absolute top-6 right-6 flex gap-1">
                   <button 
                     onClick={() => handleEdit(tmpl, true)}
@@ -517,15 +517,15 @@ export default function AutomationsPage() {
                     </div>
                     <span className="text-[9px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-md uppercase tracking-widest font-black">Modelo</span>
                   </div>
-                  <h3 className="text-lg font-black text-gray-900 mb-2 leading-tight">
+                  <h3 className="text-lg font-black text-foreground mb-2 leading-tight">
                     {tmpl.name}
                   </h3>
-                  <p className="text-xs text-gray-400 font-medium leading-relaxed mb-4">
+                  <p className="text-xs text-muted-foreground font-medium leading-relaxed mb-4">
                     Template com {tmpl.actions?.length || 0} ações integradas.
                   </p>
                   <div className="flex flex-wrap gap-1.5">
                     {tmpl.actions?.map((a: any, i: number) => (
-                      <span key={i} className="text-[8px] font-black uppercase tracking-widest bg-gray-50 text-gray-500 px-2 py-1 rounded-md border border-gray-100">
+                      <span key={i} className="text-[8px] font-black uppercase tracking-widest bg-muted text-muted-foreground px-2 py-1 rounded-md border border-border">
                         {a.type}
                       </span>
                     ))}
@@ -533,7 +533,7 @@ export default function AutomationsPage() {
                 </div>
                 <button 
                   onClick={() => useTemplate(tmpl)}
-                  className="mt-6 w-full py-3 rounded-xl bg-gray-900 text-white font-black text-xs flex items-center justify-center gap-2 hover:bg-blue-600 transition-all"
+                  className="mt-6 w-full py-3 rounded-xl bg-primary text-white font-black text-xs flex items-center justify-center gap-2 hover:bg-primary/90 transition-all shadow-lg shadow-primary/20"
                 >
                   Usar <ChevronRight size={14} />
                 </button>
@@ -575,13 +575,13 @@ export default function AutomationsPage() {
               <div className="p-12 overflow-y-auto flex-1 custom-scrollbar">
                 {step === 1 ? (
                   <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-12">
-                    <div className="space-y-4">
-                      <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Nome Identificador</label>
+                  <div className="space-y-4">
+                      <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Nome Identificador</label>
                       <input 
                         value={newRule.name}
                         onChange={(e) => setNewRule({...newRule, name: e.target.value})}
                         placeholder="Ex: Onboarding Cliente VIP"
-                        className="w-full bg-gray-50 border border-gray-100 rounded-3xl py-6 px-8 text-xl font-black focus:ring-4 focus:ring-blue-100 outline-none transition-all"
+                        className="w-full bg-muted/50 border border-border rounded-3xl py-6 px-8 text-xl font-black focus:ring-4 focus:ring-primary/10 outline-none transition-all text-foreground"
                       />
                     </div>
 
@@ -625,21 +625,21 @@ export default function AutomationsPage() {
                             className={cn(
                               "p-4 rounded-2xl border-2 text-left transition-all flex items-center gap-4",
                               newRule.triggerType === t.id 
-                                ? "border-blue-600 bg-blue-50/50 shadow-md shadow-blue-100/50" 
-                                : "border-gray-50 bg-gray-50 hover:border-gray-200"
+                                ? "border-primary bg-primary/10 shadow-md shadow-primary/10" 
+                                : "border-muted bg-muted hover:border-border"
                             )}
                           >
-                            <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-colors", newRule.triggerType === t.id ? "bg-blue-600 text-white" : "bg-white text-gray-400 shadow-sm border border-gray-100")}>
+                            <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-colors", newRule.triggerType === t.id ? "bg-primary text-white" : "bg-card text-muted-foreground shadow-sm border border-border")}>
                               <t.icon size={20} />
                             </div>
-                            <span className={cn("text-sm font-black tracking-tight", newRule.triggerType === t.id ? "text-blue-900" : "text-gray-600")}>{t.label}</span>
+                            <span className={cn("text-sm font-black tracking-tight", newRule.triggerType === t.id ? "text-foreground" : "text-muted-foreground")}>{t.label}</span>
                           </button>
                         ))}
                       </div>
 
                       {newRule.triggerType === "stage_change" && (
-                        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="mt-6 pt-6 border-t border-gray-50">
-                          <p className="text-sm font-bold text-gray-900 mb-4">Qual coluna vai disparar o gatilho?</p>
+                        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="mt-6 pt-6 border-t border-border">
+                          <p className="text-sm font-bold text-foreground mb-4">Qual coluna vai disparar o gatilho?</p>
                           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                             {stages.map((s: any) => (
                               <button
@@ -648,14 +648,14 @@ export default function AutomationsPage() {
                                 className={cn(
                                   "p-6 rounded-3xl border-2 text-left transition-all",
                                   newRule.triggerStageId === s.id 
-                                    ? "border-blue-600 bg-blue-50/50 shadow-xl shadow-blue-100/50" 
-                                    : "border-gray-50 bg-gray-50 hover:border-gray-200"
+                                    ? "border-primary bg-primary/10 shadow-xl shadow-primary/10" 
+                                    : "border-muted bg-muted hover:border-border"
                                 )}
                               >
-                                <div className={cn("w-8 h-8 rounded-full mb-3 flex items-center justify-center font-black text-xs", newRule.triggerStageId === s.id ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-400")}>
+                                <div className={cn("w-8 h-8 rounded-full mb-3 flex items-center justify-center font-black text-xs", newRule.triggerStageId === s.id ? "bg-primary text-white" : "bg-card text-muted-foreground")}>
                                   {stages.indexOf(s) + 1}
                                 </div>
-                                <span className={cn("text-xs font-black uppercase tracking-widest", newRule.triggerStageId === s.id ? "text-blue-900" : "text-gray-400")}>{s.title}</span>
+                                <span className={cn("text-xs font-black uppercase tracking-widest", newRule.triggerStageId === s.id ? "text-foreground" : "text-muted-foreground")}>{s.title}</span>
                               </button>
                             ))}
                           </div>
@@ -663,12 +663,12 @@ export default function AutomationsPage() {
                       )}
 
                       {(newRule.triggerType === "tag_added" || newRule.triggerType === "tag_removed") && (
-                        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="mt-6 pt-6 border-t border-gray-50">
+                        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="mt-6 pt-6 border-t border-border">
                           <div className="flex items-center justify-between mb-4">
-                            <p className="text-sm font-bold text-gray-900">Qual tag deve disparar a automação?</p>
+                            <p className="text-sm font-bold text-foreground">Qual tag deve disparar a automação?</p>
                             <button 
                               onClick={() => setShowTagModal(true)}
-                              className="text-[10px] font-black uppercase tracking-widest text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg flex items-center gap-1 transition-all"
+                              className="text-[10px] font-black uppercase tracking-widest text-primary hover:text-primary/80 bg-primary/10 px-3 py-1.5 rounded-lg flex items-center gap-1 transition-all"
                             >
                               <Settings size={12} /> Gerenciar Tags
                             </button>
@@ -681,12 +681,12 @@ export default function AutomationsPage() {
                                 className={cn(
                                   "p-4 rounded-2xl border-2 text-left transition-all flex items-center gap-3",
                                   newRule.triggerTagId === tag.id 
-                                    ? "border-blue-600 bg-blue-50/50 shadow-md" 
-                                    : "border-gray-50 bg-gray-50 hover:border-gray-200"
+                                    ? "border-primary bg-primary/10 shadow-md" 
+                                    : "border-muted bg-muted hover:border-border"
                                 )}
                               >
                                 <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: tag.color }} />
-                                <span className={cn("text-[10px] font-black tracking-widest uppercase truncate", newRule.triggerTagId === tag.id ? "text-blue-900" : "text-gray-500")}>{tag.name}</span>
+                                <span className={cn("text-[10px] font-black tracking-widest uppercase truncate", newRule.triggerTagId === tag.id ? "text-foreground" : "text-muted-foreground")}>{tag.name}</span>
                               </button>
                             ))}
                           </div>
@@ -694,14 +694,14 @@ export default function AutomationsPage() {
                       )}
 
                       {newRule.triggerType === "deal_stale" && (
-                        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="mt-6 pt-6 border-t border-gray-50">
-                          <p className="text-sm font-bold text-gray-900 mb-4">Quantos dias sem interação?</p>
+                        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="mt-6 pt-6 border-t border-border">
+                          <p className="text-sm font-bold text-foreground mb-4">Quantos dias sem interação?</p>
                           <input 
                             type="number"
                             min="1"
                             value={newRule.triggerDays || 3}
                             onChange={(e) => setNewRule({...newRule, triggerDays: parseInt(e.target.value) || 3})}
-                            className="w-full md:w-1/3 bg-white border border-gray-100 rounded-xl py-4 px-6 text-xl font-black text-gray-900 outline-none focus:ring-4 focus:ring-blue-100 transition-all"
+                            className="w-full md:w-1/3 bg-muted border border-border rounded-xl py-4 px-6 text-xl font-black text-foreground outline-none focus:ring-4 focus:ring-primary/10 transition-all"
                           />
                         </motion.div>
                       )}
@@ -720,39 +720,39 @@ export default function AutomationsPage() {
                       {newRule.actions?.map((action, idx) => {
                         const type = actionTypes.find(t => t.id === action.type);
                         return (
-                          <div key={action.id} className="bg-gray-50 p-8 rounded-[2.5rem] border border-gray-100 relative group/action">
+                          <div key={action.id} className="bg-muted/50 p-8 rounded-[2.5rem] border border-border relative group/action">
                             <button 
                               onClick={() => removeAction(action.id)}
-                              className="absolute top-6 right-6 p-2 text-gray-300 hover:text-red-500 opacity-0 group-hover/action:opacity-100 transition-all"
+                              className="absolute top-6 right-6 p-2 text-muted-foreground hover:text-red-500 opacity-0 group-hover/action:opacity-100 transition-all"
                             >
                               <Trash2 size={18} />
                             </button>
                             <div className="flex items-center gap-6 mb-8">
-                              <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center", type?.bg)}>
+                              <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center", type?.bg, "dark:bg-muted dark:border dark:border-border")}>
                                 {type && <type.icon className={type.color} size={24} />}
                               </div>
                               <div>
-                                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Ação {idx + 1}</span>
-                                <p className="text-sm font-black text-gray-900">{type?.label}</p>
+                                <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Ação {idx + 1}</span>
+                                <p className="text-sm font-black text-foreground">{type?.label}</p>
                               </div>
                             </div>
 
                             {action.type === 'activity' ? (
                               <div className="space-y-3">
-                                <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Nome da Atividade</label>
+                                <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Nome da Atividade</label>
                                 <input 
                                   value={action.config.title}
                                   onChange={(e) => updateActionConfig(action.id, { ...action.config, title: e.target.value })}
-                                  className="w-full bg-white border border-gray-100 rounded-xl py-3 px-5 text-sm font-bold outline-none focus:ring-2 focus:ring-blue-100 transition-all"
+                                  className="w-full bg-background border border-border rounded-xl py-3 px-5 text-sm font-bold outline-none focus:ring-2 focus:ring-primary/10 transition-all text-foreground"
                                 />
                               </div>
                             ) : action.type === 'move_stage' ? (
                               <div className="space-y-3">
-                                <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Para qual coluna mover?</label>
+                                <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Para qual coluna mover?</label>
                                 <select 
                                   value={action.config.stageId}
                                   onChange={(e) => updateActionConfig(action.id, { ...action.config, stageId: e.target.value })}
-                                  className="w-full bg-white border border-gray-100 rounded-xl py-3 px-5 text-sm font-bold outline-none focus:ring-2 focus:ring-blue-100 transition-all cursor-pointer"
+                                  className="w-full bg-background border border-border rounded-xl py-3 px-5 text-sm font-bold outline-none focus:ring-2 focus:ring-primary/10 transition-all cursor-pointer text-foreground"
                                 >
                                   {stages.map((s: any) => (
                                     <option key={s.id} value={s.id}>{s.title}</option>
@@ -761,11 +761,11 @@ export default function AutomationsPage() {
                               </div>
                             ) : action.type === 'add_tag' || action.type === 'remove_tag' ? (
                               <div className="space-y-3">
-                                <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Qual Tag?</label>
+                                <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Qual Tag?</label>
                                 <select 
                                   value={action.config.tagId}
                                   onChange={(e) => updateActionConfig(action.id, { ...action.config, tagId: e.target.value })}
-                                  className="w-full bg-white border border-gray-100 rounded-xl py-3 px-5 text-sm font-bold outline-none focus:ring-2 focus:ring-blue-100 transition-all cursor-pointer"
+                                  className="w-full bg-background border border-border rounded-xl py-3 px-5 text-sm font-bold outline-none focus:ring-2 focus:ring-primary/10 transition-all cursor-pointer text-foreground"
                                 >
                                   {availableTags.map((tag: any) => (
                                     <option key={tag.id} value={tag.id}>{tag.name}</option>
@@ -774,21 +774,21 @@ export default function AutomationsPage() {
                               </div>
                             ) : action.type === 'webhook' ? (
                               <div className="space-y-3">
-                                <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest">URL do Webhook (POST)</label>
+                                <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">URL do Webhook (POST)</label>
                                 <input 
                                   value={action.config.url}
                                   onChange={(e) => updateActionConfig(action.id, { ...action.config, url: e.target.value })}
-                                  className="w-full bg-white border border-gray-100 rounded-xl py-3 px-5 text-sm font-bold outline-none focus:ring-2 focus:ring-blue-100 transition-all font-mono"
+                                  className="w-full bg-background border border-border rounded-xl py-3 px-5 text-sm font-bold outline-none focus:ring-2 focus:ring-primary/10 transition-all font-mono text-foreground"
                                   placeholder="https://..."
                                 />
                               </div>
                             ) : (
                               <div className="space-y-3">
-                                <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Conteúdo da Mensagem</label>
+                                <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Conteúdo da Mensagem</label>
                                 <textarea 
                                   value={action.config.message}
                                   onChange={(e) => updateActionConfig(action.id, { ...action.config, message: e.target.value })}
-                                  className="w-full bg-white border border-gray-100 rounded-xl py-4 px-5 text-sm font-bold outline-none min-h-[100px] resize-none focus:ring-2 focus:ring-blue-100 transition-all"
+                                  className="w-full bg-background border border-border rounded-xl py-4 px-5 text-sm font-bold outline-none min-h-[100px] resize-none focus:ring-2 focus:ring-primary/10 transition-all text-foreground"
                                   placeholder="Digite sua mensagem personalizada..."
                                 />
                               </div>

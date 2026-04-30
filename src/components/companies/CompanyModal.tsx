@@ -59,14 +59,14 @@ export function CompanyModal({ isOpen, onClose, onSave, initialData }: CompanyMo
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
-          className="bg-white rounded-[2.5rem] w-full max-w-lg shadow-2xl overflow-hidden"
+          className="bg-card rounded-[2.5rem] w-full max-w-lg shadow-2xl overflow-hidden border border-border"
         >
-          <div className="p-8 border-b border-gray-50 flex justify-between items-center bg-gray-50/50">
+          <div className="p-8 border-b border-border flex justify-between items-center bg-muted/50">
             <div>
-              <h2 className="text-xl font-black text-gray-900">{initialData ? "Editar Empresa" : "Nova Empresa"}</h2>
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Dados da organização</p>
+              <h2 className="text-xl font-black text-foreground">{initialData ? "Editar Empresa" : "Nova Empresa"}</h2>
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1">Dados da organização</p>
             </div>
-            <button onClick={onClose} className="p-2 hover:bg-gray-200 rounded-xl text-gray-400 transition-colors">
+            <button onClick={onClose} className="p-2 hover:bg-muted rounded-xl text-muted-foreground transition-colors">
               <X size={20} />
             </button>
           </div>
@@ -75,84 +75,81 @@ export function CompanyModal({ isOpen, onClose, onSave, initialData }: CompanyMo
             <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="col-span-2">
-                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Nome da Empresa</label>
+                  <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2 ml-1">Nome da Empresa</label>
                   <div className="relative">
-                    <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={18} />
+                    <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50" size={18} />
                     <input 
                       value={form.name}
                       onChange={(e) => setForm({...form, name: e.target.value})}
-                      className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-4 pl-12 pr-4 text-sm font-bold focus:ring-2 focus:ring-gray-900/5 outline-none transition-all"
+                      className="w-full bg-muted/30 border border-border rounded-2xl py-4 pl-12 pr-4 text-sm font-bold focus:ring-2 focus:ring-primary/10 outline-none transition-all text-foreground"
                       placeholder="Ex: TechCorp Solutions"
                     />
                   </div>
                 </div>
 
                 <div className="col-span-1">
-                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Setor</label>
+                  <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2 ml-1">Setor</label>
                   <div className="relative">
-                    <Info className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={18} />
+                    <Info className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50" size={18} />
                     <input 
                       value={form.industry}
                       onChange={(e) => setForm({...form, industry: e.target.value})}
-                      className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-4 pl-12 pr-4 text-sm font-bold focus:ring-2 focus:ring-gray-900/5 outline-none transition-all"
+                      className="w-full bg-muted/30 border border-border rounded-2xl py-4 pl-12 pr-4 text-sm font-bold focus:ring-2 focus:ring-primary/10 outline-none transition-all text-foreground"
                       placeholder="Ex: Tecnologia"
                     />
                   </div>
                 </div>
 
                 <div className="col-span-1">
-                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Website</label>
+                  <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2 ml-1">Website</label>
                   <div className="relative">
-                    <Globe className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={18} />
+                    <Globe className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50" size={18} />
                     <input 
                       value={form.website}
                       onChange={(e) => setForm({...form, website: e.target.value})}
-                      className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-4 pl-12 pr-4 text-sm font-bold focus:ring-2 focus:ring-gray-900/5 outline-none transition-all"
+                      className="w-full bg-muted/30 border border-border rounded-2xl py-4 pl-12 pr-4 text-sm font-bold focus:ring-2 focus:ring-primary/10 outline-none transition-all text-foreground"
                       placeholder="https://exemplo.com"
                     />
                   </div>
                 </div>
 
                 <div className="col-span-1">
-                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">CEP</label>
+                  <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2 ml-1">CEP</label>
                   <div className="relative">
-                    <Hash className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={18} />
+                    <Hash className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50" size={18} />
                     <input 
                       value={form.cep}
                       onChange={(e) => setForm({...form, cep: maskCEP(e.target.value)})}
-                      className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-4 pl-12 pr-4 text-sm font-bold focus:ring-2 focus:ring-gray-900/5 outline-none transition-all"
+                      className="w-full bg-muted/30 border border-border rounded-2xl py-4 pl-12 pr-4 text-sm font-bold focus:ring-2 focus:ring-primary/10 outline-none transition-all text-foreground"
                       placeholder="00000-000"
                     />
                   </div>
                 </div>
 
                 <div className="col-span-1">
-                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Endereço</label>
+                  <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2 ml-1">Endereço</label>
                   <div className="relative">
-                    <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={18} />
+                    <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50" size={18} />
                     <input 
                       value={form.address}
                       onChange={(e) => setForm({...form, address: e.target.value})}
-                      className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-4 pl-12 pr-4 text-sm font-bold focus:ring-2 focus:ring-gray-900/5 outline-none transition-all"
+                      className="w-full bg-muted/30 border border-border rounded-2xl py-4 pl-12 pr-4 text-sm font-bold focus:ring-2 focus:ring-primary/10 outline-none transition-all text-foreground"
                       placeholder="Cidade, Estado, País"
                     />
                   </div>
                 </div>
 
                 <div className="col-span-2">
-                  <div className="flex justify-between items-center mb-4">
-                    <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Contatos Associados</label>
-                  </div>
                   <div className="space-y-3 max-h-[280px] overflow-y-auto pr-2 scrollbar-hide py-2">
                     {leads.filter((l: any) => selectedLeads.includes(l.id)).map((lead: any) => (
-                      <div key={lead.id} className="group relative bg-white border border-gray-100 rounded-[1.5rem] p-4 flex items-center justify-between hover:border-blue-200 hover:shadow-lg hover:shadow-blue-50/50 transition-all">
+                      <div key={lead.id} className="group relative bg-background border border-border rounded-[1.5rem] p-4 flex items-center justify-between hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5 transition-all">
                         <div className="flex items-center gap-4">
-                          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 text-blue-600 flex items-center justify-center text-xs font-black shadow-inner">
+                          <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center text-xs font-black shadow-inner">
                             {lead.name.charAt(0)}
                           </div>
                           <div>
-                            <p className="text-sm font-black text-gray-900 leading-tight">{lead.name}</p>
-                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">{lead.role || "Contato"}</p>
+                            <p className="text-sm font-black text-foreground leading-tight">{lead.name}</p>
+                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-0.5">{lead.role || "Contato"}</p>
                           </div>
                         </div>
                         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
@@ -162,13 +159,13 @@ export function CompanyModal({ isOpen, onClose, onSave, initialData }: CompanyMo
                               setEditingQuickLeadId(lead.id);
                               setShowQuickAddLead(true);
                             }}
-                            className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all"
+                            className="p-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-xl transition-all"
                           >
                             <Edit2 size={14} />
                           </button>
                           <button 
                             onClick={() => setSelectedLeads(selectedLeads.filter(id => id !== lead.id))}
-                            className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
+                            className="p-2 text-muted-foreground hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all"
                           >
                             <UserMinus size={14} />
                           </button>
@@ -177,8 +174,8 @@ export function CompanyModal({ isOpen, onClose, onSave, initialData }: CompanyMo
                     ))}
                     
                     {selectedLeads.length === 0 && (
-                      <div className="py-8 text-center bg-gray-50/50 border border-dashed border-gray-200 rounded-[2rem]">
-                        <p className="text-xs font-bold text-gray-400">Nenhum contato vinculado ainda</p>
+                      <div className="py-8 text-center bg-muted/20 border border-dashed border-border rounded-[2rem]">
+                        <p className="text-xs font-bold text-muted-foreground">Nenhum contato vinculado ainda</p>
                       </div>
                     )}
                   </div>
@@ -191,7 +188,7 @@ export function CompanyModal({ isOpen, onClose, onSave, initialData }: CompanyMo
                         }
                         e.target.value = "";
                       }}
-                      className="flex-1 bg-gray-50 border border-dashed border-gray-200 rounded-xl py-3 px-4 text-xs font-bold text-gray-500 outline-none hover:bg-gray-100 transition-all cursor-pointer"
+                      className="flex-1 bg-muted/50 border border-dashed border-border rounded-xl py-3 px-4 text-xs font-bold text-muted-foreground outline-none hover:bg-muted transition-all cursor-pointer"
                     >
                       <option value="">+ Associar Contato Existente</option>
                       {leads.filter((l: any) => !selectedLeads.includes(l.id)).map((l: any) => (
@@ -201,9 +198,9 @@ export function CompanyModal({ isOpen, onClose, onSave, initialData }: CompanyMo
                     
                     <button 
                       onClick={() => setShowQuickAddLead(!showQuickAddLead)}
-                      className="px-4 bg-blue-50 text-blue-600 rounded-xl flex items-center gap-2 text-xs font-bold hover:bg-blue-100 transition-all"
+                      className="px-4 bg-primary/10 text-primary rounded-xl flex items-center gap-2 text-xs font-bold hover:bg-primary/20 transition-all"
                     >
-                      <UserPlus size={16} /> {showQuickAddLead ? "Cancelar" : "Novo"}
+                      <Plus size={16} /> {showQuickAddLead ? "Cancelar" : "Novo"}
                     </button>
                   </div>
 
@@ -226,7 +223,7 @@ export function CompanyModal({ isOpen, onClose, onSave, initialData }: CompanyMo
                                 setEditingQuickLeadId(null);
                                 setQuickLead({ name: "", role: "", email: "" });
                               }}
-                              className="text-[10px] font-black text-gray-400 hover:text-gray-600"
+                              className="text-[10px] font-black text-muted-foreground hover:text-foreground"
                             >
                               Cancelar
                             </button>
@@ -297,13 +294,13 @@ export function CompanyModal({ isOpen, onClose, onSave, initialData }: CompanyMo
                 </div>
 
                 <div className="col-span-2">
-                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Descrição</label>
+                  <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2 ml-1">Descrição</label>
                   <div className="relative">
-                    <FileText className="absolute left-4 top-4 text-gray-300" size={18} />
+                    <FileText className="absolute left-4 top-4 text-muted-foreground/50" size={18} />
                     <textarea 
                       value={form.description}
                       onChange={(e) => setForm({...form, description: e.target.value})}
-                      className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-4 pl-12 pr-4 text-sm font-bold focus:ring-2 focus:ring-gray-900/5 outline-none transition-all min-h-[80px] resize-none"
+                      className="w-full bg-muted/30 border border-border rounded-2xl py-4 pl-12 pr-4 text-sm font-bold focus:ring-2 focus:ring-primary/10 outline-none transition-all min-h-[80px] resize-none text-foreground"
                       placeholder="Breve descrição da empresa..."
                     />
                   </div>
@@ -314,13 +311,13 @@ export function CompanyModal({ isOpen, onClose, onSave, initialData }: CompanyMo
             <div className="flex gap-3 pt-4">
               <button 
                 onClick={onClose}
-                className="flex-1 py-4 text-sm font-black text-gray-400 uppercase tracking-widest hover:text-gray-900 transition-colors"
+                className="flex-1 py-4 text-sm font-black text-muted-foreground uppercase tracking-widest hover:text-foreground transition-colors"
               >
                 Cancelar
               </button>
               <button 
                 onClick={() => onSave({ ...form, leadIds: selectedLeads })}
-                className="flex-[2] bg-gray-900 text-white py-4 rounded-2xl font-black text-sm shadow-xl shadow-gray-200 flex items-center justify-center gap-2 hover:bg-gray-800 transition-all"
+                className="flex-[2] bg-primary text-white py-4 rounded-2xl font-black text-sm shadow-xl shadow-primary/20 flex items-center justify-center gap-2 hover:opacity-90 transition-all"
               >
                 <Save size={18} /> {initialData ? "Salvar Alterações" : "Criar Empresa"}
               </button>

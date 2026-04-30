@@ -34,28 +34,28 @@ export function ConfirmModal({
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="bg-white rounded-[2rem] w-full max-w-md shadow-2xl overflow-hidden"
+          className="bg-card rounded-[2rem] w-full max-w-md overflow-hidden border border-border"
         >
           <div className="p-8">
             <div className="flex justify-between items-start mb-6">
               <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${
-                type === 'danger' ? 'bg-red-50 text-red-500' : 
-                type === 'warning' ? 'bg-orange-50 text-orange-500' : 'bg-blue-50 text-blue-500'
+                type === 'danger' ? 'bg-red-500/10 text-red-500' : 
+                type === 'warning' ? 'bg-orange-500/10 text-orange-500' : 'bg-primary/10 text-primary'
               }`}>
                 {type === 'danger' ? <AlertTriangle size={24} /> : <CheckCircle2 size={24} />}
               </div>
-              <button onClick={onClose} className="p-2 hover:bg-gray-50 rounded-xl text-gray-300 transition-colors">
+              <button onClick={onClose} className="p-2 hover:bg-muted rounded-xl text-muted-foreground transition-colors">
                 <X size={20} />
               </button>
             </div>
             
-            <h3 className="text-xl font-black text-gray-900 mb-2">{title}</h3>
-            <p className="text-sm text-gray-500 font-medium leading-relaxed">{message}</p>
+            <h3 className="text-xl font-black text-foreground mb-2">{title}</h3>
+            <p className="text-sm text-muted-foreground font-medium leading-relaxed">{message}</p>
             
             <div className="flex gap-3 mt-8">
               <button 
                 onClick={onClose}
-                className="flex-1 px-6 py-3 rounded-xl text-sm font-bold text-gray-500 hover:bg-gray-50 transition-all"
+                className="flex-1 px-6 py-3 rounded-xl text-sm font-bold text-muted-foreground hover:bg-muted transition-all"
               >
                 {cancelText}
               </button>
@@ -64,9 +64,9 @@ export function ConfirmModal({
                   onConfirm();
                   onClose();
                 }}
-                className={`flex-1 px-6 py-3 rounded-xl text-sm font-bold text-white shadow-lg transition-all active:scale-95 ${
-                  type === 'danger' ? 'bg-red-500 shadow-red-100 hover:bg-red-600' : 
-                  type === 'warning' ? 'bg-orange-500 shadow-orange-100 hover:bg-orange-600' : 'bg-gray-900 shadow-gray-200 hover:bg-gray-800'
+                className={`flex-1 px-6 py-3 rounded-xl text-sm font-bold text-white transition-all active:scale-95 ${
+                  type === 'danger' ? 'bg-red-500 hover:bg-red-600' : 
+                  type === 'warning' ? 'bg-orange-500 hover:bg-orange-600' : 'bg-primary hover:opacity-90'
                 }`}
               >
                 {confirmText}
