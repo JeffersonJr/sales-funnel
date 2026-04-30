@@ -42,10 +42,36 @@ export default function LeadsPage() {
 
   if (!mounted) return null;
 
-  const filteredLeads = leads.filter((l: any) => {
-    if (search && !l.name.toLowerCase().includes(search.toLowerCase()) && 
-        !l.company.toLowerCase().includes(search.toLowerCase()) && 
-        !l.email.toLowerCase().includes(search.toLowerCase())) return false;
+  // Merge registered leads with contacts inferred from deals' profiles
+  const dealContacts = deals.flatMap((d: any) =>
+    (d.profile?.contacts || []).map((c: any) => ({ ...c, dealTitle: d.title, dealId: d.id }))
+  );
+  const registeredEmails = new Set(leads.map((l: any) => l.email));
+  const inferredLeads = dealContacts
+    .filter((c: any) => c.email && !registeredEmails.has(c.email))
+    .reduce((acc: any[], c: any) => {
+      // dedupe by email
+      if (!acc.find((x: any) => x.email === c.email)) {
+        acc.push({
+          id: `inferred-${c.email}`,
+          name: c.name || c.email,
+          email: c.email,
+          phone: c.phone || "",
+          role: c.role || "Contato",
+          company: deals.find((d: any) => d.id === c.dealId)?.company || "",
+          inferred: true,
+        });
+      }
+      return acc;
+    }, []);
+
+  const allLeads = [...leads, ...inferredLeads];
+
+  const filteredLeads = allLeads.filter((l: any) => {
+    if (search && 
+        !(l.name || "").toLowerCase().includes(search.toLowerCase()) && 
+        !(l.company || "").toLowerCase().includes(search.toLowerCase()) && 
+        !(l.email || "").toLowerCase().includes(search.toLowerCase())) return false;
     
     if (filters.company && filters.company !== "" && l.company !== filters.company) return false;
     if (filters.role && filters.role !== "" && l.role !== filters.role) return false;
@@ -53,8 +79,8 @@ export default function LeadsPage() {
     return true;
   });
 
-  const availableCompanies = Array.from(new Set(leads.map((l: any) => l.company))).filter(Boolean);
-  const availableRoles = Array.from(new Set(leads.map((l: any) => l.role))).filter(Boolean);
+  const availableCompanies = Array.from(new Set(allLeads.map((l: any) => l.company))).filter(Boolean);
+  const availableRoles = Array.from(new Set(allLeads.map((l: any) => l.role))).filter(Boolean);
 
   const handleSave = (leadData: any) => {
     if (editingLead) {
@@ -193,7 +219,12 @@ export default function LeadsPage() {
                     <div className="flex items-center gap-4">
                       <Avatar name={lead.name} size="md" />
                       <div>
-                        <p className="text-sm font-black text-foreground">{lead.name}</p>
+                        <div className="flex items-center gap-2">
+                          <p className="text-sm font-black text-foreground">{lead.name}</p>
+                          {lead.inferred && (
+                            <span className="text-[9px] font-black bg-primary/10 text-primary px-2 py-0.5 rounded-full uppercase tracking-widest">Do Funil</span>
+                          )}
+                        </div>
                         <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{lead.role}</p>
                       </div>
                     </div>

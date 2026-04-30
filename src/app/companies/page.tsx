@@ -41,13 +41,33 @@ export default function CompaniesPage() {
 
   if (!mounted) return null;
 
-  const filteredCompanies = companies.filter((c: any) => {
-    if (search && !c.name.toLowerCase().includes(search.toLowerCase()) && !c.industry.toLowerCase().includes(search.toLowerCase())) return false;
+  // Merge registered companies with companies inferred from deals
+  const dealCompanyNames = Array.from(new Set(deals.map((d: any) => d.company).filter(Boolean))) as string[];
+  const registeredNames = new Set(companies.map((c: any) => c.name));
+  const inferredCompanies = dealCompanyNames
+    .filter((name: string) => !registeredNames.has(name))
+    .map((name: string) => {
+      const relatedDeal = deals.find((d: any) => d.company === name);
+      return {
+        id: `inferred-${name}`,
+        name,
+        industry: relatedDeal?.profile?.industry || "Sem setor",
+        website: relatedDeal?.profile?.website || "",
+        address: "",
+        description: "",
+        inferred: true,
+      };
+    });
+
+  const allCompanies = [...companies, ...inferredCompanies];
+
+  const filteredCompanies = allCompanies.filter((c: any) => {
+    if (search && !c.name.toLowerCase().includes(search.toLowerCase()) && !(c.industry || "").toLowerCase().includes(search.toLowerCase())) return false;
     if (filters.industry && filters.industry !== "" && c.industry !== filters.industry) return false;
     return true;
   });
 
-  const availableIndustries = Array.from(new Set(companies.map((c: any) => c.industry))).filter(Boolean);
+  const availableIndustries = Array.from(new Set(allCompanies.map((c: any) => c.industry))).filter(Boolean);
 
   const handleSave = (companyData: any) => {
     const { leadIds, ...pureCompanyData } = companyData;
@@ -203,8 +223,13 @@ export default function CompaniesPage() {
                         <Building2 size={24} />
                       </div>
                       <div>
-                        <p className="text-sm font-black text-foreground">{company.name}</p>
-                        <p className="text-[10px] font-bold text-primary uppercase tracking-wider">{company.website}</p>
+                        <div className="flex items-center gap-2">
+                          <p className="text-sm font-black text-foreground">{company.name}</p>
+                          {company.inferred && (
+                            <span className="text-[9px] font-black bg-primary/10 text-primary px-2 py-0.5 rounded-full uppercase tracking-widest">Do Funil</span>
+                          )}
+                        </div>
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{company.website}</p>
                       </div>
                     </div>
                   </td>
@@ -265,7 +290,7 @@ export default function CompaniesPage() {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 30, stiffness: 300 }}
-              className="fixed top-0 right-0 h-full w-full md:w-[600px] bg-white shadow-2xl z-[110] flex flex-col"
+              className="fixed top-0 right-0 h-full w-full md:w-[600px] bg-card shadow-2xl z-[110] flex flex-col border-l border-border"
             >
               <div className="p-8 border-b border-border flex justify-between items-center bg-muted/30">
                 <h2 className="text-xl font-black text-foreground">Detalhes da Empresa</h2>

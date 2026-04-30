@@ -608,14 +608,7 @@ export function KanbanBoard() {
               <Filter size={16} />
               <span className="text-xs font-black uppercase tracking-widest">Filtrar</span>
             </button>
-            <button 
-              onClick={handleResetData}
-              className="bg-card border border-border text-muted-foreground px-5 py-2.5 rounded-2xl text-xs font-black flex items-center gap-2 hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-500 transition-all"
-              title="Resetar dados para o padrão"
-            >
-              <RefreshCw size={16} />
-              Resetar
-            </button>
+
             <button 
               onClick={addStage}
               className="bg-card border border-border text-foreground px-5 py-2.5 rounded-2xl text-xs font-black flex items-center gap-2 hover:bg-muted transition-all"

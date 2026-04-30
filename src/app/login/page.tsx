@@ -49,8 +49,8 @@ export default function LoginPage() {
         className="w-full max-w-[440px] space-y-8"
       >
         <div className="text-center space-y-3">
-          <div className="inline-flex items-center justify-center w-24 h-24 rounded-[2rem] bg-transparent mb-4">
-            <img src="/fav gray.svg" alt="Logo" className="w-full h-full object-contain" />
+          <div className="flex items-center justify-center mb-6">
+            <img src="/logo gray.svg" alt="Logo" className="h-10 object-contain" />
           </div>
           <h1 className="text-4xl font-black text-gray-900 tracking-tight">Login.</h1>
           <p className="text-gray-400 font-bold text-sm uppercase tracking-widest">Acesse sua conta para gerenciar vendas</p>
