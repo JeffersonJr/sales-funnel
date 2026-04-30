@@ -141,6 +141,10 @@ export function DocumentTab({
     onUpdate({ ...deal, checklists: [...(deal.checklists || []), newCl] });
     setEditingChecklistTitleId(newId);
     toast.success("Checklist adicionado");
+
+    setTimeout(() => {
+      document.getElementById(`checklist-${newId}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
   };
 
   const updateChecklistTitle = (id: string, newName: string) => {
@@ -185,6 +189,10 @@ export function DocumentTab({
     };
     onUpdate({ ...deal, checklists: [...(deal.checklists || []), newCl] });
     toast.success(`Modelo "${template.name}" aplicado`);
+
+    setTimeout(() => {
+      document.getElementById(`checklist-${newCl.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
   };
 
   const addChecklistItem = (checklistId: string) => {
@@ -382,6 +390,8 @@ export function DocumentTab({
         onClose={() => setShowTagModal(false)}
         tags={availableTags}
         onUpdateTags={onUpdateTags}
+        dealTags={deal.tags || []}
+        onUpdateDealTags={(tags) => onUpdate({ ...deal, tags })}
       />
       {/* Cabeçalho do Negócio */}
       <div className="bg-white p-6 md:p-8 rounded-t-3xl border border-gray-100 shadow-sm mb-1 relative group/header">
@@ -530,13 +540,28 @@ export function DocumentTab({
             </div>
           </div>
           <div className="space-y-2 border-l border-gray-50 pl-6">
-            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Tags</p>
-            <div className="flex flex-wrap gap-1">
-              {deal.tags.map((tag: string) => (
-                <span key={tag} className="text-[9px] bg-gray-50 text-gray-500 px-2 py-1 rounded-md font-bold border border-gray-100">
-                  {tag}
-                </span>
-              ))}
+            <div className="flex items-center justify-between">
+              <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Tags</p>
+              <button onClick={() => setShowTagModal(true)} className="text-[10px] font-black text-blue-600 hover:text-blue-700 flex items-center gap-1 transition-colors">
+                <Edit2 size={10} /> Editar
+              </button>
+            </div>
+            <div className="flex flex-wrap gap-1.5 mt-1">
+              {(!deal.tags || deal.tags.length === 0) && (
+                <span className="text-[10px] text-gray-400 font-medium italic">Nenhuma tag</span>
+              )}
+              {deal.tags?.map((tagName: string) => {
+                const tagObj = availableTags.find((t: any) => t.name === tagName);
+                return (
+                  <span 
+                    key={tagName} 
+                    style={{ backgroundColor: tagObj?.color || "#111827" }}
+                    className="px-2.5 py-1 text-white rounded-md text-[9px] font-black uppercase tracking-widest shadow-sm"
+                  >
+                    {tagName}
+                  </span>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -572,56 +597,6 @@ export function DocumentTab({
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 md:gap-16">
             <div className="col-span-1 lg:col-span-2 space-y-8 md:space-y-12">
               <section>
-                <div className="flex items-center justify-between mb-8">
-                  <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest">Tags do Negócio</h3>
-                  <div className="flex gap-2">
-                    <button 
-                      onClick={() => setShowTagModal(true)}
-                      className="text-[10px] font-black text-blue-600 hover:underline"
-                    >
-                      Gerenciar Globais
-                    </button>
-                  </div>
-                </div>
-                <div className="flex flex-wrap gap-2 mb-10">
-                  {deal.tags?.map((tagName: string) => {
-                    const tagObj = availableTags.find((t: any) => t.name === tagName);
-                    return (
-                      <span 
-                        key={tagName} 
-                        style={{ backgroundColor: tagObj?.color || "#111827" }}
-                        className="flex items-center gap-1.5 px-3 py-1.5 text-white rounded-full text-[10px] font-black uppercase tracking-widest group shadow-sm"
-                      >
-                        {tagName}
-                        <button 
-                          onClick={() => {
-                            onUpdate({ ...deal, tags: deal.tags.filter((t: string) => t !== tagName) });
-                          }}
-                          className="hover:text-red-200 transition-colors"
-                        >
-                          <X size={10} />
-                        </button>
-                      </span>
-                    );
-                  })}
-                  <div className="relative">
-                      <select 
-                        onChange={(e) => {
-                          if (e.target.value && !deal.tags?.includes(e.target.value)) {
-                            onUpdate({ ...deal, tags: [...(deal.tags || []), e.target.value] });
-                          }
-                          e.target.value = "";
-                        }}
-                        className="px-3 py-1.5 bg-gray-50 border border-gray-100 text-gray-400 rounded-full text-[10px] font-black uppercase tracking-widest outline-none cursor-pointer hover:bg-gray-100 transition-all"
-                      >
-                        <option key="default" value="">+ Adicionar Tag</option>
-                        {availableTags.filter((t: any) => !deal.tags?.includes(t.name)).map((t: any, idx: number) => (
-                          <option key={t.id || `tag-${idx}`} value={t.name}>{t.name}</option>
-                        ))}
-                      </select>
-                  </div>
-                </div>
-
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-lg font-black text-gray-900 flex items-center gap-3">
                     Checklists de Execução
@@ -647,7 +622,7 @@ export function DocumentTab({
                 
                 <div className="space-y-6">
                   {deal.checklists?.map((cl: any) => (
-                    <div key={cl.id} className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100 group/cl">
+                    <div key={cl.id} id={`checklist-${cl.id}`} className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100 group/cl">
                       <div className="flex justify-between items-center mb-4">
                         <div className="flex items-center gap-3">
                           {editingChecklistTitleId === cl.id ? (

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Check, Building2, User, Target, ChevronRight } from "lucide-react";
+import { X, Check, Building2, User, Target, ChevronRight, Zap, TrendingUp, BarChart3, Users } from "lucide-react";
 
 export function OnboardingModal() {
   const [mounted, setMounted] = useState(false);
@@ -10,6 +10,7 @@ export function OnboardingModal() {
   const [step, setStep] = useState(1);
   const [industry, setIndustry] = useState("");
   const [role, setRole] = useState("");
+  const [goal, setGoal] = useState("");
 
   useEffect(() => {
     setMounted(true);
@@ -27,10 +28,18 @@ export function OnboardingModal() {
   const isNextDisabled = () => {
     if (step === 1) return !industry;
     if (step === 2) return !role;
+    if (step === 3) return !goal;
     return false;
   };
 
   if (!mounted || !isOpen) return null;
+
+  const goals = [
+    { id: "sales", label: "Aumentar Vendas", icon: TrendingUp, desc: "Foco em conversão e fechamento" },
+    { id: "leads", label: "Gerenciar Leads", icon: Users, desc: "Organização e nutrição de contatos" },
+    { id: "auto", label: "Automatizar Processos", icon: Zap, desc: "Economia de tempo com workflow" },
+    { id: "data", label: "Análise de Dados", icon: BarChart3, desc: "Insights e métricas de performance" },
+  ];
 
   return (
     <AnimatePresence>
@@ -44,8 +53,8 @@ export function OnboardingModal() {
           <div className="absolute top-0 left-0 right-0 h-1.5 bg-gray-100">
             <motion.div 
               className="h-full bg-blue-600"
-              initial={{ width: "33%" }}
-              animate={{ width: `${(step / 3) * 100}%` }}
+              initial={{ width: "25%" }}
+              animate={{ width: `${(step / 4) * 100}%` }}
             />
           </div>
 
@@ -112,24 +121,53 @@ export function OnboardingModal() {
           )}
 
           {step === 3 && (
+            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
+              <div className="w-16 h-16 bg-orange-50 text-orange-600 rounded-2xl flex items-center justify-center mb-8">
+                <Target size={32} />
+              </div>
+              <h2 className="text-4xl font-black text-gray-900 mb-4 tracking-tight">Seu foco principal</h2>
+              <p className="text-gray-500 font-medium mb-10 text-lg">O que você mais deseja alcançar com a plataforma?</p>
+              
+              <div className="grid grid-cols-2 gap-4 mb-10">
+                {goals.map((g) => (
+                  <button
+                    key={g.id}
+                    onClick={() => setGoal(g.label)}
+                    className={cn(
+                      "p-6 rounded-[2rem] border transition-all text-left group relative overflow-hidden",
+                      goal === g.label 
+                        ? "border-orange-500 bg-orange-50/50" 
+                        : "border-gray-100 bg-gray-50 hover:border-gray-200"
+                    )}
+                  >
+                    <g.icon size={24} className={cn("mb-3 transition-colors", goal === g.label ? "text-orange-600" : "text-gray-400 group-hover:text-gray-900")} />
+                    <p className={cn("text-sm font-black transition-colors", goal === g.label ? "text-orange-900" : "text-gray-900")}>{g.label}</p>
+                    <p className="text-[10px] font-medium text-gray-400 mt-1">{g.desc}</p>
+                  </button>
+                ))}
+              </div>
+            </motion.div>
+          )}
+
+          {step === 4 && (
             <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="text-center py-10">
               <div className="w-20 h-20 bg-green-50 text-green-600 rounded-[2rem] flex items-center justify-center mb-8 mx-auto">
-                <Target size={40} />
+                <Check size={40} />
               </div>
               <h2 className="text-4xl font-black text-gray-900 mb-4 tracking-tight">Tudo pronto!</h2>
-              <p className="text-gray-500 font-medium mb-12 text-lg">Seu funil foi otimizado para <span className="text-gray-900 font-black">{industry}</span>.</p>
+              <p className="text-gray-500 font-medium mb-12 text-lg">Seu funil foi otimizado para <span className="text-gray-900 font-black">{industry}</span> e focado em <span className="text-gray-900 font-black">{goal}</span>.</p>
               
               <div className="bg-gray-50 p-8 rounded-3xl mb-10 text-left border border-gray-100">
                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">O que configuramos para você:</p>
                  <ul className="space-y-3">
                     <li className="flex items-center gap-3 text-sm font-bold text-gray-700">
-                       <Check size={16} className="text-green-500" /> Pipeline Digital Ativado
+                       <Check size={16} className="text-green-500" /> Pipeline de {industry} Ativado
                     </li>
                     <li className="flex items-center gap-3 text-sm font-bold text-gray-700">
-                       <Check size={16} className="text-green-500" /> Integração WhatsApp Mockada
+                       <Check size={16} className="text-green-500" /> Automações de {goal} Prontas
                     </li>
                     <li className="flex items-center gap-3 text-sm font-bold text-gray-700">
-                       <Check size={16} className="text-green-500" /> Dashboard de Performance SaaS
+                       <Check size={16} className="text-green-500" /> Dashboard de Performance Integrado
                     </li>
                  </ul>
               </div>
@@ -145,13 +183,13 @@ export function OnboardingModal() {
             </button>
             <button 
               onClick={() => {
-                if (step < 3) setStep(step + 1);
+                if (step < 4) setStep(step + 1);
                 else handleComplete();
               }}
               disabled={isNextDisabled()}
               className="bg-gray-900 text-white px-8 py-4 rounded-2xl text-sm font-black flex items-center gap-2 hover:bg-gray-800 transition-all shadow-xl shadow-gray-200 disabled:opacity-30 disabled:cursor-not-allowed"
             >
-              {step === 3 ? "Começar a Vender" : "Próximo Passo"}
+              {step === 4 ? "Começar a Vender" : "Próximo Passo"}
               <ChevronRight size={18} />
             </button>
           </div>

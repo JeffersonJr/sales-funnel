@@ -20,7 +20,7 @@ interface Deal {
   tags: string[];
 }
 
-export function DealCard({ deal, onDelete, onUpdateStage }: { deal: Deal, onDelete?: () => void, onUpdateStage?: (id: string, stage: string) => void }) {
+export function DealCard({ deal, stageColor, onDelete, onUpdateStage }: { deal: Deal, stageColor?: string, onDelete?: () => void, onUpdateStage?: (id: string, stage: string) => void }) {
   const [mounted, setMounted] = React.useState(false);
   const [showMenu, setShowMenu] = React.useState(false);
   const menuRef = React.useRef<HTMLDivElement>(null);
@@ -55,17 +55,19 @@ export function DealCard({ deal, onDelete, onUpdateStage }: { deal: Deal, onDele
   return (
     <div
       ref={setNodeRef}
-      style={style}
       {...attributes}
       {...listeners}
       className={cn(
-        "bg-white p-4 rounded-xl shadow-sm border border-gray-100 cursor-grab active:cursor-grabbing card-hover",
-        isDragging && "opacity-50",
-        isStale && "border-l-4 border-l-red-500"
+        "bg-white dark:bg-card p-4 rounded-xl shadow-sm border border-gray-100 dark:border-white/5 cursor-grab active:cursor-grabbing card-hover overflow-hidden transition-all duration-300",
+        isDragging && "opacity-50"
       )}
+      style={{
+        ...style,
+        borderLeft: `4px solid ${stageColor || '#3b82f6'}`
+      }}
     >
       <div className="flex justify-between items-start mb-2">
-        <h3 className="text-sm font-black text-gray-900 truncate flex-1 group-hover:text-blue-600 transition-colors">{deal.title}</h3>
+        <h3 className="text-sm font-black text-gray-900 dark:text-white truncate flex-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors tracking-tight">{deal.title}</h3>
         <div className="flex gap-1 opacity-0 group-hover/deal:opacity-100 transition-opacity relative">
            <button 
             onClick={(e) => { e.stopPropagation(); onDelete?.(); }}
@@ -118,11 +120,11 @@ export function DealCard({ deal, onDelete, onUpdateStage }: { deal: Deal, onDele
       <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-4">{deal.company}</p>
 
       <div className="flex items-center gap-2 mb-4">
-        <div className="flex items-center gap-1 text-gray-900 bg-gray-50 px-2 py-1 rounded-lg text-xs font-black">
+        <div className="flex items-center gap-1 text-gray-900 dark:text-white bg-gray-50 dark:bg-white/5 px-2 py-1 rounded-lg text-xs font-black">
           {formatCurrency(deal.value)}
         </div>
         {isStale && (
-          <div className="flex items-center gap-1 text-red-500 bg-red-50 px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest">
+          <div className="flex items-center gap-1 text-red-500 bg-red-50 dark:bg-red-500/10 px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest">
             <AlertCircle size={10} />
             Estagnado
           </div>
@@ -134,7 +136,7 @@ export function DealCard({ deal, onDelete, onUpdateStage }: { deal: Deal, onDele
           {deal.tags?.slice(0, 3).map((tag) => (
             <span 
               key={tag} 
-              className="text-[9px] font-black uppercase tracking-widest bg-blue-50 text-blue-500 px-2 py-0.5 rounded-md border border-blue-100/50"
+              className="text-[9px] font-black uppercase tracking-widest bg-blue-50 dark:bg-blue-500/10 text-blue-500 dark:text-blue-400 px-2 py-0.5 rounded-md border border-blue-100/50 dark:border-blue-400/20"
             >
               {tag}
             </span>

@@ -17,6 +17,8 @@ interface TagManagementModalProps {
   onClose: () => void;
   tags: Tag[];
   onUpdateTags: (tags: Tag[]) => void;
+  dealTags?: string[];
+  onUpdateDealTags?: (tags: string[]) => void;
 }
 
 const TAG_COLORS = [
@@ -29,7 +31,7 @@ const TAG_COLORS = [
   "#64748b", // slate
 ];
 
-export function TagManagementModal({ isOpen, onClose, tags, onUpdateTags }: TagManagementModalProps) {
+export function TagManagementModal({ isOpen, onClose, tags, onUpdateTags, dealTags, onUpdateDealTags }: TagManagementModalProps) {
   const [newTag, setNewTag] = useState("");
   const [selectedColor, setSelectedColor] = useState(TAG_COLORS[0]);
   const [editingTag, setEditingTag] = useState<{ id: string, name: string, color: string } | null>(null);
@@ -60,6 +62,15 @@ export function TagManagementModal({ isOpen, onClose, tags, onUpdateTags }: TagM
     toast.success("Tag atualizada.");
   };
 
+  const toggleDealTag = (tagName: string) => {
+    if (!dealTags || !onUpdateDealTags) return;
+    if (dealTags.includes(tagName)) {
+      onUpdateDealTags(dealTags.filter(t => t !== tagName));
+    } else {
+      onUpdateDealTags([...dealTags, tagName]);
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -73,8 +84,10 @@ export function TagManagementModal({ isOpen, onClose, tags, onUpdateTags }: TagM
         >
           <div className="p-8 border-b border-gray-50 flex justify-between items-center bg-gray-50/50">
             <div>
-              <h2 className="text-xl font-black text-gray-900">Gerenciar Tags</h2>
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Tags globais do sistema</p>
+              <h2 className="text-xl font-black text-gray-900">{dealTags ? "Tags do Negócio" : "Gerenciar Tags"}</h2>
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">
+                {dealTags ? "Selecione ou crie novas tags" : "Tags globais do sistema"}
+              </p>
             </div>
             <button onClick={onClose} className="p-3 hover:bg-white bg-gray-100 rounded-2xl text-gray-400 hover:text-gray-900 transition-all">
               <X size={20} />
@@ -161,9 +174,23 @@ export function TagManagementModal({ isOpen, onClose, tags, onUpdateTags }: TagM
                       </div>
                     ) : (
                       <>
-                        <div className="flex items-center gap-3">
+                        <div 
+                          className={cn("flex items-center gap-3 flex-1", dealTags ? "cursor-pointer" : "")}
+                          onClick={() => dealTags ? toggleDealTag(tag.name) : null}
+                        >
+                          {dealTags && (
+                            <div className={cn(
+                              "w-5 h-5 rounded-md border flex items-center justify-center transition-colors",
+                              dealTags.includes(tag.name) ? "bg-gray-900 border-gray-900 text-white" : "border-gray-200"
+                            )}>
+                              {dealTags.includes(tag.name) && <Check size={12} />}
+                            </div>
+                          )}
                           <div className="w-3 h-3 rounded-full shadow-sm" style={{ backgroundColor: tag.color || "#3b82f6" }} />
-                          <span className="text-sm font-black text-gray-700 tracking-tight">{tag.name}</span>
+                          <span className={cn(
+                            "text-sm font-black tracking-tight",
+                            dealTags?.includes(tag.name) ? "text-gray-900" : "text-gray-500"
+                          )}>{tag.name}</span>
                         </div>
                         <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
                           <button onClick={() => setEditingTag({id: tag.id, name: tag.name, color: tag.color || "#3b82f6"})} className="p-2 bg-white text-gray-400 rounded-xl border border-gray-100 shadow-sm hover:text-blue-600 hover:border-blue-100 transition-all"><Edit2 size={16} /></button>

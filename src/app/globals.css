@@ -3,18 +3,74 @@
 @theme {
   --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   
-  --color-border: #f3f4f6;
-  --color-background: #ffffff;
-  --color-foreground: #020617;
+  --color-border: var(--border);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
   
-  --color-primary: #0f172a;
-  --color-primary-foreground: #f8fafc;
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
   
-  --color-muted: #f1f5f9;
-  --color-muted-foreground: #64748b;
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
   
-  --color-accent: #f1f5f9;
-  --color-accent-foreground: #0f172a;
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+}
+
+:root {
+  --background: #fcfcfc;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+  --primary: #0f172a;
+  --primary-foreground: #ffffff;
+  --muted: #f8fafc;
+  --muted-foreground: #64748b;
+  --accent: #f1f5f9;
+  --accent-foreground: #0f172a;
+  --border: #f1f5f9;
+  --base-font-size: 16px;
+}
+
+.dark {
+  --background: #09090b;
+  --foreground: #ffffff;
+  --card: #121215;
+  --card-foreground: #ffffff;
+  --popover: #121215;
+  --popover-foreground: #ffffff;
+  --primary: #ffffff;
+  --primary-foreground: #09090b;
+  --muted: #18181b;
+  --muted-foreground: #a1a1aa;
+  --accent: #27272a;
+  --accent-foreground: #ffffff;
+  --border: #27272a;
+}
+
+@layer base {
+  html {
+    font-size: var(--base-font-size);
+    transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-foreground;
+  }
 }
 
 @layer utilities {
@@ -27,24 +83,18 @@
   }
 }
 
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-white text-foreground font-sans antialiased;
-    background-color: #f9fafb;
-  }
-}
-
 .glass {
-  @apply bg-white/70 backdrop-blur-md border border-white/20;
+  @apply bg-card/70 backdrop-blur-md border border-border;
 }
 
 .card-hover {
-  @apply transition-all duration-200 hover:shadow-md hover:-translate-y-0.5;
+  @apply transition-all duration-300 hover:shadow-2xl hover:shadow-black/5 hover:-translate-y-1;
+}
+
+.dark .card-hover {
+  @apply hover:shadow-white/5;
 }
 
 .kanban-column {
-  @apply flex flex-col gap-3 p-3 bg-gray-50/50 rounded-xl min-w-[300px] h-full;
+  @apply flex flex-col gap-3 p-3 bg-gray-50/50 dark:bg-muted/30 rounded-xl min-w-[320px] h-full transition-colors;
 }

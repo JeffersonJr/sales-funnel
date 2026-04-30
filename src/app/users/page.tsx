@@ -12,12 +12,14 @@ import {
   Edit2,
   Trash2,
   Check,
-  X
+  X,
+  Filter
 } from "lucide-react";
 import { Avatar } from "@/components/common/Avatar";
 import { UserManagementModal } from "@/components/layout/UserManagementModal";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { FilterPanel } from "@/components/common/FilterPanel";
 
 export default function UsersPage() {
   const { users, setUsers, deals, setDeals } = useFunnel();
@@ -25,6 +27,8 @@ export default function UsersPage() {
   const [search, setSearch] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [editingUser, setEditingUser] = useState<any | null>(null);
+  const [showFilters, setShowFilters] = useState(false);
+  const [filters, setFilters] = useState<Record<string, any>>({});
 
   React.useEffect(() => {
     setMounted(true);
@@ -32,10 +36,22 @@ export default function UsersPage() {
 
   if (!mounted) return null;
 
-  const filteredUsers = users.filter((u: any) => 
-    u.name.toLowerCase().includes(search.toLowerCase()) ||
-    u.email.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredUsers = users.filter((u: any) => {
+    if (search && !u.name.toLowerCase().includes(search.toLowerCase()) && 
+        !u.email.toLowerCase().includes(search.toLowerCase())) return false;
+    
+    if (filters.role && filters.role !== "" && u.role !== filters.role) return false;
+    
+    if (filters.status && filters.status !== "") {
+      const isActive = u.active !== false;
+      const filterActive = filters.status === "active";
+      if (isActive !== filterActive) return false;
+    }
+    
+    return true;
+  });
+
+  const availableRoles = Array.from(new Set(users.map((u: any) => u.role))).filter(Boolean);
 
   const toggleUserStatus = (id: string) => {
     setUsers(users.map((u: any) => u.id === id ? { ...u, active: u.active === false ? true : false } : u));
@@ -58,8 +74,8 @@ export default function UsersPage() {
       </div>
 
       <div className="bg-white rounded-[3rem] border border-gray-100 shadow-xl shadow-gray-50/50 overflow-hidden">
-        <div className="p-8 border-b border-gray-50 bg-gray-50/30">
-          <div className="relative max-w-md">
+        <div className="p-8 border-b border-gray-50 bg-gray-50/30 flex flex-col md:flex-row items-stretch md:items-center gap-4">
+          <div className="relative flex-1 max-w-md">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
             <input 
               type="text"
@@ -69,7 +85,30 @@ export default function UsersPage() {
               className="w-full bg-white border border-gray-100 rounded-2xl py-4 pl-12 pr-4 text-sm font-bold focus:ring-2 focus:ring-gray-900/5 outline-none transition-all"
             />
           </div>
+          <div className="flex gap-2">
+            <button 
+              onClick={() => setShowFilters(!showFilters)}
+              className={cn(
+                "flex-1 md:flex-none px-6 py-4 rounded-2xl transition-all border flex items-center justify-center gap-2",
+                showFilters ? "bg-gray-900 text-white border-gray-900" : "bg-white text-gray-400 border-gray-100 hover:text-gray-900 hover:bg-gray-50"
+              )}
+            >
+              <Filter size={20} />
+              <span className="text-xs font-black uppercase tracking-widest">Filtrar</span>
+            </button>
+          </div>
         </div>
+
+        <FilterPanel 
+          isOpen={showFilters}
+          filters={[
+            { key: "role", label: "Nível de Acesso", type: "select", options: availableRoles.map((r: any) => ({ label: r, value: r })) },
+            { key: "status", label: "Status", type: "select", options: [{ label: "Ativo", value: "active" }, { label: "Inativo", value: "inactive" }] }
+          ]}
+          values={filters}
+          onChange={(k, v) => setFilters(prev => ({ ...prev, [k]: v }))}
+          onClear={() => setFilters({})}
+        />
 
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">

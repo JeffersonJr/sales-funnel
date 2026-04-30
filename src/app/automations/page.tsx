@@ -33,13 +33,17 @@ import {
   CalendarCheck,
   Globe,
   Library,
-  Settings
+  Settings,
+  Search,
+  Filter
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { ConfirmModal } from "@/components/common/ConfirmModal";
 import { TagManagementModal } from "@/components/deals/TagManagementModal";
+import { FilterPanel } from "@/components/common/FilterPanel";
+import { Tooltip } from "@/components/common/Tooltip";
 
 interface Action {
   id: string;
@@ -73,6 +77,9 @@ export default function AutomationsPage() {
   const [showTagModal, setShowTagModal] = useState(false);
   const [activeTab, setActiveTab] = useState<"active" | "templates">("active");
   const [deleteTarget, setDeleteTarget] = useState<{id: string, type: 'automation' | 'template'} | null>(null);
+  const [search, setSearch] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
+  const [filters, setFilters] = useState<Record<string, any>>({});
 
   React.useEffect(() => {
     setMounted(true);
@@ -266,6 +273,13 @@ export default function AutomationsPage() {
     setShowModal(true);
   };
 
+  const filteredAutomations = automations.filter((auto: any) => {
+    if (search && !auto.name.toLowerCase().includes(search.toLowerCase())) return false;
+    if (filters.trigger && filters.trigger !== "" && auto.triggerType !== filters.trigger) return false;
+    if (filters.action && filters.action !== "" && !auto.actions.some((a: any) => a.type === filters.action)) return false;
+    return true;
+  });
+
   if (!mounted) return null;
 
   return (
@@ -298,10 +312,47 @@ export default function AutomationsPage() {
             key="active"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="grid grid-cols-1 gap-6"
+            className="flex flex-col gap-6"
           >
-            {automations.map((auto: Automation) => {
+            <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-50 overflow-hidden">
+              <div className="p-6 border-b border-gray-50 bg-gray-50/30 flex flex-col md:flex-row items-stretch md:items-center gap-4">
+                <div className="relative flex-1">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={18} />
+                  <input 
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="Buscar automação..."
+                    className="w-full bg-white border border-gray-100 rounded-xl py-3 pl-12 pr-4 text-sm font-bold focus:ring-2 focus:ring-gray-900/5 outline-none transition-all"
+                  />
+                </div>
+                <div className="flex gap-2">
+                  <button 
+                    onClick={() => setShowFilters(!showFilters)}
+                    className={cn(
+                      "flex-1 md:flex-none px-5 py-3 rounded-xl transition-all border flex items-center justify-center gap-2",
+                      showFilters ? "bg-gray-900 text-white border-gray-900" : "bg-white text-gray-400 border-gray-100 hover:text-gray-900 hover:bg-gray-50"
+                    )}
+                  >
+                    <Filter size={20} />
+                    <span className="text-xs font-black uppercase tracking-widest">Filtrar</span>
+                  </button>
+                </div>
+              </div>
+              
+              <FilterPanel 
+                isOpen={showFilters}
+                filters={[
+                  { key: "trigger", label: "Gatilho", type: "select", options: triggerTypes.map(t => ({ label: t.label, value: t.id })) },
+                  { key: "action", label: "Ação", type: "select", options: actionTypes.map(a => ({ label: a.label, value: a.id })) }
+                ]}
+                values={filters}
+                onChange={(k, v) => setFilters(prev => ({ ...prev, [k]: v }))}
+                onClear={() => setFilters({})}
+              />
+            </div>
+            
+            <div className="grid grid-cols-1 gap-6">
+              {filteredAutomations.map((auto: Automation) => {
               const stage = stages.find((s: any) => s.id === auto.triggerStageId);
               const triggerTypeObj = triggerTypes.find(t => t.id === (auto.triggerType || 'stage_change'));
               
@@ -357,60 +408,73 @@ export default function AutomationsPage() {
                   </div>
 
                   <div className="flex items-center gap-4">
-                    <button 
-                      onClick={() => handleEdit(auto, false)}
-                      className="p-4 text-gray-300 hover:text-blue-600 hover:bg-blue-50 rounded-2xl transition-all"
-                      title="Editar Automação"
-                    >
-                      <Edit2 size={24} />
-                    </button>
-                    <button 
-                      onClick={() => duplicateAutomation(auto)}
-                      className="p-4 text-gray-300 hover:text-blue-500 hover:bg-blue-50 rounded-2xl transition-all"
-                      title="Duplicar Automação"
-                    >
-                      <Copy size={24} />
-                    </button>
-                    {!auto.savedAsTemplate && (
+                    <Tooltip content="Editar Automação">
                       <button 
-                        onClick={() => saveAsTemplate(auto)}
-                        className="p-4 text-gray-300 hover:text-purple-500 hover:bg-purple-50 rounded-2xl transition-all"
-                        title="Salvar na Biblioteca de Templates"
+                        onClick={() => handleEdit(auto, false)}
+                        className="p-4 text-gray-300 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-white/5 rounded-2xl transition-all"
                       >
-                        <Library size={24} />
+                        <Edit2 size={24} />
                       </button>
+                    </Tooltip>
+                    
+                    <Tooltip content="Duplicar Automação">
+                      <button 
+                        onClick={() => duplicateAutomation(auto)}
+                        className="p-4 text-gray-300 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-white/5 rounded-2xl transition-all"
+                      >
+                        <Copy size={24} />
+                      </button>
+                    </Tooltip>
+
+                    {!auto.savedAsTemplate && (
+                      <Tooltip content="Salvar como Template">
+                        <button 
+                          onClick={() => saveAsTemplate(auto)}
+                          className="p-4 text-gray-300 hover:text-purple-500 hover:bg-purple-50 dark:hover:bg-white/5 rounded-2xl transition-all"
+                        >
+                          <Library size={24} />
+                        </button>
+                      </Tooltip>
                     )}
-                    <button 
-                      onClick={() => toggleFavorite(auto)}
-                      className={cn(
-                        "p-4 rounded-2xl transition-all",
-                        auto.isFavorite ? "text-yellow-500 bg-yellow-50" : "text-gray-300 hover:text-yellow-500 hover:bg-yellow-50"
-                      )}
-                      title={auto.isFavorite ? "Remover dos Favoritos" : "Favoritar Automação"}
-                    >
-                      <Bookmark size={24} className={cn(auto.isFavorite && "fill-yellow-500")} />
-                    </button>
-                    <button 
-                      onClick={() => toggleStatus(auto.id)}
-                      className={cn(
-                        "p-4 rounded-2xl transition-all",
-                        auto.status === 'active' ? "text-orange-400 hover:bg-orange-50" : "text-green-500 hover:bg-green-50"
-                      )}
-                    >
-                      {auto.status === 'active' ? <Pause size={24} /> : <Play size={24} />}
-                    </button>
-                    <button 
-                      onClick={() => setDeleteTarget({ id: auto.id, type: 'automation' })}
-                      className="p-4 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-2xl transition-all"
-                    >
-                      <Trash2 size={24} />
-                    </button>
+
+                    <Tooltip content={auto.isFavorite ? "Remover dos Favoritos" : "Favoritar"}>
+                      <button 
+                        onClick={() => toggleFavorite(auto)}
+                        className={cn(
+                          "p-4 rounded-2xl transition-all",
+                          auto.isFavorite ? "text-yellow-500 bg-yellow-50 dark:bg-yellow-500/10" : "text-gray-300 hover:text-yellow-500 hover:bg-yellow-50 dark:hover:bg-white/5"
+                        )}
+                      >
+                        <Bookmark size={24} className={cn(auto.isFavorite && "fill-yellow-500")} />
+                      </button>
+                    </Tooltip>
+
+                    <Tooltip content={auto.status === 'active' ? "Pausar" : "Ativar"}>
+                      <button 
+                        onClick={() => toggleStatus(auto.id)}
+                        className={cn(
+                          "p-4 rounded-2xl transition-all",
+                          auto.status === 'active' ? "text-orange-400 hover:bg-orange-50 dark:hover:bg-white/5" : "text-green-500 hover:bg-green-50 dark:hover:bg-white/5"
+                        )}
+                      >
+                        {auto.status === 'active' ? <Pause size={24} /> : <Play size={24} />}
+                      </button>
+                    </Tooltip>
+
+                    <Tooltip content="Excluir">
+                      <button 
+                        onClick={() => setDeleteTarget({ id: auto.id, type: 'automation' })}
+                        className="p-4 text-gray-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-white/5 rounded-2xl transition-all"
+                      >
+                        <Trash2 size={24} />
+                      </button>
+                    </Tooltip>
                   </div>
                 </div>
               );
             })}
 
-            {automations.length === 0 && (
+            {filteredAutomations.length === 0 && (
               <div className="text-center py-32 bg-gray-50/50 rounded-[4rem] border-4 border-dashed border-gray-100">
                 <Zap size={64} className="text-gray-100 mx-auto mb-6" />
                 <h3 className="text-2xl font-black text-gray-900 mb-2">Sua esteira está parada</h3>
@@ -419,6 +483,7 @@ export default function AutomationsPage() {
                 </p>
               </div>
             )}
+            </div>
           </motion.div>
         ) : (
           <motion.div 

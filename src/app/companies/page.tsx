@@ -22,6 +22,7 @@ import { CompanyModal } from "@/components/companies/CompanyModal";
 import { ConfirmModal } from "@/components/common/ConfirmModal";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
+import { FilterPanel } from "@/components/common/FilterPanel";
 
 export default function CompaniesPage() {
   const { companies, setCompanies, deals, leads, setLeads } = useFunnel();
@@ -31,6 +32,8 @@ export default function CompaniesPage() {
   const [editingCompany, setEditingCompany] = useState<any | null>(null);
   const [selectedCompany, setSelectedCompany] = useState<any | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<any | null>(null);
+  const [showFilters, setShowFilters] = useState(false);
+  const [filters, setFilters] = useState<Record<string, any>>({});
 
   React.useEffect(() => {
     setMounted(true);
@@ -38,10 +41,13 @@ export default function CompaniesPage() {
 
   if (!mounted) return null;
 
-  const filteredCompanies = companies.filter((c: any) => 
-    c.name.toLowerCase().includes(search.toLowerCase()) ||
-    c.industry.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredCompanies = companies.filter((c: any) => {
+    if (search && !c.name.toLowerCase().includes(search.toLowerCase()) && !c.industry.toLowerCase().includes(search.toLowerCase())) return false;
+    if (filters.industry && filters.industry !== "" && c.industry !== filters.industry) return false;
+    return true;
+  });
+
+  const availableIndustries = Array.from(new Set(companies.map((c: any) => c.industry))).filter(Boolean);
 
   const handleSave = (companyData: any) => {
     const { leadIds, ...pureCompanyData } = companyData;
@@ -109,8 +115,8 @@ export default function CompaniesPage() {
       </div>
 
       <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-50 overflow-hidden">
-        <div className="p-6 border-b border-gray-50 bg-gray-50/30">
-          <div className="relative max-w-md">
+        <div className="p-6 border-b border-gray-50 bg-gray-50/30 flex flex-col md:flex-row items-stretch md:items-center gap-4">
+          <div className="relative flex-1">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={18} />
             <input 
               value={search}
@@ -119,7 +125,29 @@ export default function CompaniesPage() {
               className="w-full bg-white border border-gray-100 rounded-xl py-3 pl-12 pr-4 text-sm font-bold focus:ring-2 focus:ring-gray-900/5 outline-none transition-all"
             />
           </div>
+          <div className="flex gap-2">
+            <button 
+              onClick={() => setShowFilters(!showFilters)}
+              className={cn(
+                "flex-1 md:flex-none px-5 py-3 rounded-xl transition-all border flex items-center justify-center gap-2",
+                showFilters ? "bg-gray-900 text-white border-gray-900" : "bg-white text-gray-400 border-gray-100 hover:text-gray-900 hover:bg-gray-50"
+              )}
+            >
+              <Filter size={20} />
+              <span className="text-xs font-black uppercase tracking-widest">Filtrar</span>
+            </button>
+          </div>
         </div>
+
+        <FilterPanel 
+          isOpen={showFilters}
+          filters={[
+            { key: "industry", label: "Setor", type: "select", options: availableIndustries.map((i: any) => ({ label: i, value: i })) }
+          ]}
+          values={filters}
+          onChange={(k, v) => setFilters(prev => ({ ...prev, [k]: v }))}
+          onClear={() => setFilters({})}
+        />
 
         <div className="md:hidden p-4 space-y-4">
           {filteredCompanies.map((company: any) => (

@@ -23,6 +23,7 @@ import { LeadModal } from "@/components/leads/LeadModal";
 import { ConfirmModal } from "@/components/common/ConfirmModal";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
+import { FilterPanel } from "@/components/common/FilterPanel";
 
 export default function LeadsPage() {
   const { leads, setLeads, deals } = useFunnel();
@@ -32,6 +33,8 @@ export default function LeadsPage() {
   const [editingLead, setEditingLead] = useState<any | null>(null);
   const [selectedLead, setSelectedLead] = useState<any | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<any | null>(null);
+  const [showFilters, setShowFilters] = useState(false);
+  const [filters, setFilters] = useState<Record<string, any>>({});
 
   React.useEffect(() => {
     setMounted(true);
@@ -39,11 +42,19 @@ export default function LeadsPage() {
 
   if (!mounted) return null;
 
-  const filteredLeads = leads.filter((l: any) => 
-    l.name.toLowerCase().includes(search.toLowerCase()) ||
-    l.company.toLowerCase().includes(search.toLowerCase()) ||
-    l.email.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredLeads = leads.filter((l: any) => {
+    if (search && !l.name.toLowerCase().includes(search.toLowerCase()) && 
+        !l.company.toLowerCase().includes(search.toLowerCase()) && 
+        !l.email.toLowerCase().includes(search.toLowerCase())) return false;
+    
+    if (filters.company && filters.company !== "" && l.company !== filters.company) return false;
+    if (filters.role && filters.role !== "" && l.role !== filters.role) return false;
+    
+    return true;
+  });
+
+  const availableCompanies = Array.from(new Set(leads.map((l: any) => l.company))).filter(Boolean);
+  const availableRoles = Array.from(new Set(leads.map((l: any) => l.role))).filter(Boolean);
 
   const handleSave = (leadData: any) => {
     if (editingLead) {
@@ -101,11 +112,29 @@ export default function LeadsPage() {
             />
           </div>
           <div className="flex gap-2">
-            <button className="flex-1 md:flex-none p-3 text-gray-400 hover:bg-white rounded-xl transition-all border border-transparent hover:border-gray-100 flex items-center justify-center">
+            <button 
+              onClick={() => setShowFilters(!showFilters)}
+              className={cn(
+                "flex-1 md:flex-none px-5 py-3 rounded-xl transition-all border flex items-center justify-center gap-2",
+                showFilters ? "bg-gray-900 text-white border-gray-900" : "bg-white text-gray-400 border-gray-100 hover:text-gray-900 hover:bg-gray-50"
+              )}
+            >
               <Filter size={20} />
+              <span className="text-xs font-black uppercase tracking-widest">Filtrar</span>
             </button>
           </div>
         </div>
+
+        <FilterPanel 
+          isOpen={showFilters}
+          filters={[
+            { key: "company", label: "Empresa", type: "select", options: availableCompanies.map((c: any) => ({ label: c, value: c })) },
+            { key: "role", label: "Cargo", type: "select", options: availableRoles.map((r: any) => ({ label: r, value: r })) }
+          ]}
+          values={filters}
+          onChange={(k, v) => setFilters(prev => ({ ...prev, [k]: v }))}
+          onClear={() => setFilters({})}
+        />
 
         <div className="md:hidden p-4 space-y-4">
           {filteredLeads.map((lead: any) => (

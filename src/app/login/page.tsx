@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Mail, Lock, ArrowRight, Zap, ShieldCheck } from "lucide-react";
+import { Mail, Lock, ArrowRight, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 
@@ -49,8 +49,8 @@ export default function LoginPage() {
         className="w-full max-w-[440px] space-y-8"
       >
         <div className="text-center space-y-3">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-[2rem] bg-gray-900 text-white shadow-2xl shadow-gray-200 mb-4">
-            <Zap size={32} fill="currentColor" />
+          <div className="inline-flex items-center justify-center w-24 h-24 rounded-[2rem] bg-transparent mb-4">
+            <img src="/fav gray.svg" alt="Logo" className="w-full h-full object-contain" />
           </div>
           <h1 className="text-4xl font-black text-gray-900 tracking-tight">Login.</h1>
           <p className="text-gray-400 font-bold text-sm uppercase tracking-widest">Acesse sua conta para gerenciar vendas</p>

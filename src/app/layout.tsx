@@ -13,6 +13,9 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Leads.site | Sales Funnel Orchestrator",
   description: "Modern Sales Funnel & Automation Engine",
+  icons: {
+    icon: "/favicon.svg",
+  },
 };
 
 export default function RootLayout({
@@ -22,6 +25,24 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="h-full" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  const theme = localStorage.getItem('app-theme') || 'light';
+                  const fontSize = localStorage.getItem('app-font-size') || '16';
+                  if (theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                    document.documentElement.classList.add('dark');
+                  }
+                  document.documentElement.style.setProperty('--base-font-size', fontSize + 'px');
+                } catch (e) {}
+              })()
+            `,
+          }}
+        />
+      </head>
       <body className={`${inter.className} h-full antialiased`} suppressHydrationWarning>
         <AuthProvider>
           <PermissionsProvider>

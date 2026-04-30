@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useFunnel } from "@/context/FunnelContext";
 import { 
-  User, 
+  User as UserIcon, 
   Mail, 
   Shield, 
   Camera, 
@@ -12,17 +12,39 @@ import {
   Bell,
   Check,
   Save,
-  Globe
+  Globe,
+  Plus,
+  X,
+  Upload,
+  Smartphone,
+  MessageSquare,
+  Zap
 } from "lucide-react";
 import { Avatar } from "@/components/common/Avatar";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChangePasswordModal } from "@/components/layout/ChangePasswordModal";
 
 export default function ProfilePage() {
   const { user } = useFunnel();
   const [mounted, setMounted] = useState(false);
   const [activeTab, setActiveTab] = useState("general");
+  const [showAvatarModal, setShowAvatarModal] = useState(false);
+  const [showPassModal, setShowPassModal] = useState(false);
+  
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [currentAvatar, setCurrentAvatar] = useState("https://api.dicebear.com/7.x/avataaars/svg?seed=Jefferson");
+
+  const popAvatars = [
+    { name: "The Bat", url: "https://api.dicebear.com/7.x/avataaars/svg?seed=Batman" },
+    { name: "Web Slinger", url: "https://api.dicebear.com/7.x/avataaars/svg?seed=Spider" },
+    { name: "Dark Lord", url: "https://api.dicebear.com/7.x/avataaars/svg?seed=Vader" },
+    { name: "Space Master", url: "https://api.dicebear.com/7.x/avataaars/svg?seed=Skywalker" },
+    { name: "Iron Hero", url: "https://api.dicebear.com/7.x/avataaars/svg?seed=Stark" },
+    { name: "Magic Wizard", url: "https://api.dicebear.com/7.x/avataaars/svg?seed=Gandalf" },
+  ];
 
   React.useEffect(() => {
     setMounted(true);
@@ -30,115 +52,119 @@ export default function ProfilePage() {
 
   if (!mounted) return null;
 
-  // Use session user or fallback to first user for demo
   const currentUser = user || {
     name: "Jefferson Jr",
     email: "contato@jeffersonjunior.com.br",
-    role: "Administrador",
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Jefferson"
+    role: "Administrador"
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      toast.success("Foto enviada com sucesso!");
+      setShowAvatarModal(false);
+    }
   };
 
   return (
-    <div className="p-10 max-w-5xl mx-auto">
+    <div className="p-6 md:p-12 max-w-6xl mx-auto transition-colors duration-300">
       <div className="mb-12">
-        <h1 className="text-4xl font-black text-gray-900 tracking-tight">Meu Perfil</h1>
+        <h1 className="text-4xl font-black text-gray-900 dark:text-white tracking-tight">Meu Perfil</h1>
         <p className="text-gray-400 font-medium mt-2">Gerencie suas informações pessoais e preferências de conta</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-        {/* Profile Card */}
-        <div className="md:col-span-1 space-y-6">
-          <div className="bg-white rounded-[3rem] border border-gray-100 shadow-xl p-10 text-center relative overflow-hidden group">
-            <div className="absolute top-0 left-0 right-0 h-24 bg-gray-900" />
-            <div className="relative mt-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+        {/* Sidebar */}
+        <div className="space-y-8">
+          <div className="bg-white dark:bg-card rounded-[3rem] border border-gray-100 dark:border-border shadow-xl dark:shadow-none p-10 text-center relative overflow-hidden group">
+            <div className="absolute top-0 left-0 right-0 h-28 bg-gray-900 dark:bg-muted" />
+            <div className="relative mt-6">
               <div className="relative inline-block">
-                <Avatar name={currentUser.name} size="xl" className="w-32 h-32 border-8 border-white shadow-2xl" />
-                <button className="absolute bottom-0 right-0 p-3 bg-blue-600 text-white rounded-2xl shadow-xl hover:scale-110 transition-all border-4 border-white">
+                <div className="w-32 h-32 rounded-full border-8 border-white dark:border-card shadow-2xl overflow-hidden bg-gray-50 dark:bg-muted">
+                   <img src={currentAvatar} alt="Avatar" className="w-full h-full object-cover" />
+                </div>
+                <button 
+                  onClick={() => setShowAvatarModal(true)}
+                  className="absolute bottom-0 right-0 p-3 bg-blue-600 text-white rounded-2xl shadow-xl hover:scale-110 transition-all border-4 border-white dark:border-card"
+                >
                   <Camera size={18} />
                 </button>
               </div>
-              <h2 className="text-2xl font-black text-gray-900 mt-6">{currentUser.name}</h2>
+              <h2 className="text-2xl font-black text-gray-900 dark:text-white mt-6">{currentUser.name}</h2>
               <div className="flex items-center justify-center gap-2 mt-2">
                 <Shield size={14} className="text-blue-500" />
-                <span className="text-[10px] font-black uppercase tracking-widest text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
+                <span className="text-[10px] font-black uppercase tracking-widest text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-3 py-1 rounded-full">
                   {currentUser.role}
                 </span>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-[2.5rem] border border-gray-100 p-8 space-y-4">
-            <button 
-              onClick={() => setActiveTab("general")}
-              className={cn(
-                "w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-sm font-bold transition-all",
-                activeTab === "general" ? "bg-gray-900 text-white" : "text-gray-400 hover:bg-gray-50"
-              )}
-            >
-              <User size={18} /> Dados Gerais
-            </button>
-            <button 
-              onClick={() => setActiveTab("security")}
-              className={cn(
-                "w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-sm font-bold transition-all",
-                activeTab === "security" ? "bg-gray-900 text-white" : "text-gray-400 hover:bg-gray-50"
-              )}
-            >
-              <Lock size={18} /> Segurança
-            </button>
-            <button 
-              onClick={() => setActiveTab("notifications")}
-              className={cn(
-                "w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-sm font-bold transition-all",
-                activeTab === "notifications" ? "bg-gray-900 text-white" : "text-gray-400 hover:bg-gray-50"
-              )}
-            >
-              <Bell size={18} /> Notificações
-            </button>
+          <div className="bg-white dark:bg-card rounded-[2.5rem] border border-gray-100 dark:border-border p-4 space-y-2">
+            {[
+              { id: "general", label: "Dados Gerais", icon: UserIcon },
+              { id: "security", label: "Segurança", icon: Lock },
+              { id: "notifications", label: "Notificações", icon: Bell },
+            ].map((tab) => (
+              <button 
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={cn(
+                  "w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-sm font-bold transition-all",
+                  activeTab === tab.id 
+                    ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900 shadow-lg" 
+                    : "text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-muted"
+                )}
+              >
+                <tab.icon size={18} /> {tab.label}
+              </button>
+            ))}
           </div>
         </div>
 
         {/* Content Area */}
-        <div className="md:col-span-2">
+        <div className="lg:col-span-2">
           <motion.div 
             key={activeTab}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-white rounded-[3rem] border border-gray-100 shadow-xl p-12"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="bg-white dark:bg-card rounded-[3rem] border border-gray-100 dark:border-border shadow-xl dark:shadow-none p-12"
           >
             {activeTab === "general" && (
-              <div className="space-y-8">
-                <h3 className="text-xl font-black text-gray-900">Informações Pessoais</h3>
+              <div className="space-y-10">
+                <div className="flex justify-between items-center">
+                   <h3 className="text-2xl font-black text-gray-900 dark:text-white">Informações Pessoais</h3>
+                   <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Atualizado em abr 2026</span>
+                </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Nome Completo</label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-1">Nome Completo</label>
                     <input 
                       type="text" 
                       defaultValue={currentUser.name}
-                      className="w-full bg-gray-50 border border-transparent rounded-2xl px-6 py-4 text-sm font-bold focus:bg-white focus:border-blue-500 outline-none transition-all"
+                      className="w-full bg-gray-50 dark:bg-muted/50 border border-transparent dark:border-border rounded-2xl px-6 py-4 text-sm font-bold focus:bg-white dark:focus:bg-card focus:border-blue-500 outline-none transition-all dark:text-white"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">E-mail</label>
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-1">E-mail</label>
                     <input 
                       type="email" 
                       defaultValue={currentUser.email}
-                      className="w-full bg-gray-50 border border-transparent rounded-2xl px-6 py-4 text-sm font-bold focus:bg-white focus:border-blue-500 outline-none transition-all"
+                      className="w-full bg-gray-50 dark:bg-muted/50 border border-transparent dark:border-border rounded-2xl px-6 py-4 text-sm font-bold focus:bg-white dark:focus:bg-card focus:border-blue-500 outline-none transition-all dark:text-white"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Telefone</label>
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-1">WhatsApp / Telefone</label>
                     <input 
                       type="text" 
                       placeholder="+55 11 99999-9999"
-                      className="w-full bg-gray-50 border border-transparent rounded-2xl px-6 py-4 text-sm font-bold focus:bg-white focus:border-blue-500 outline-none transition-all"
+                      className="w-full bg-gray-50 dark:bg-muted/50 border border-transparent dark:border-border rounded-2xl px-6 py-4 text-sm font-bold focus:bg-white dark:focus:bg-card focus:border-blue-500 outline-none transition-all dark:text-white"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Idioma</label>
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-1">Idioma de Interface</label>
                     <div className="relative">
-                      <select className="w-full bg-gray-50 border border-transparent rounded-2xl px-6 py-4 text-sm font-bold focus:bg-white focus:border-blue-500 outline-none transition-all appearance-none">
+                      <select className="w-full bg-gray-50 dark:bg-muted/50 border border-transparent dark:border-border rounded-2xl px-6 py-4 text-sm font-bold focus:bg-white dark:focus:bg-card focus:border-blue-500 outline-none transition-all appearance-none dark:text-white">
                         <option>Português (Brasil)</option>
                         <option>English (US)</option>
                         <option>Español</option>
@@ -148,10 +174,10 @@ export default function ProfilePage() {
                   </div>
                 </div>
 
-                <div className="pt-8 border-t border-gray-50">
+                <div className="pt-8 border-t border-gray-50 dark:border-border flex justify-end">
                   <button 
                     onClick={() => toast.success("Perfil atualizado com sucesso!")}
-                    className="bg-blue-600 text-white px-10 py-5 rounded-2xl font-black text-sm flex items-center gap-3 hover:bg-blue-700 transition-all shadow-xl shadow-blue-100"
+                    className="bg-blue-600 text-white px-10 py-5 rounded-2xl font-black text-sm flex items-center gap-3 hover:bg-blue-700 transition-all shadow-xl shadow-blue-100 dark:shadow-none"
                   >
                     <Save size={20} /> Salvar Alterações
                   </button>
@@ -160,50 +186,182 @@ export default function ProfilePage() {
             )}
 
             {activeTab === "security" && (
-              <div className="space-y-8">
-                <h3 className="text-xl font-black text-gray-900">Segurança da Conta</h3>
+              <div className="space-y-10">
+                <h3 className="text-2xl font-black text-gray-900 dark:text-white">Configurações de Segurança</h3>
                 
-                <div className="space-y-6">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Senha Atual</label>
-                    <input type="password" placeholder="••••••••" className="w-full bg-gray-50 border border-transparent rounded-2xl px-6 py-4 text-sm font-bold focus:bg-white focus:border-blue-500 outline-none transition-all" />
-                  </div>
-                  <div className="grid grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Nova Senha</label>
-                      <input type="password" placeholder="••••••••" className="w-full bg-gray-50 border border-transparent rounded-2xl px-6 py-4 text-sm font-bold focus:bg-white focus:border-blue-500 outline-none transition-all" />
+                <div className="grid gap-6">
+                  <div className="bg-white dark:bg-muted/30 p-8 rounded-[2.5rem] border border-gray-100 dark:border-border flex items-center justify-between shadow-sm">
+                    <div className="flex items-center gap-6">
+                       <div className="w-14 h-14 bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-2xl flex items-center justify-center">
+                          <Lock size={24} />
+                       </div>
+                       <div>
+                          <p className="text-sm font-black text-gray-900 dark:text-white">Sua Senha de Acesso</p>
+                          <p className="text-xs font-bold text-gray-400 mt-1">Alterada pela última vez em janeiro de 2026</p>
+                       </div>
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Confirmar Nova Senha</label>
-                      <input type="password" placeholder="••••••••" className="w-full bg-gray-50 border border-transparent rounded-2xl px-6 py-4 text-sm font-bold focus:bg-white focus:border-blue-500 outline-none transition-all" />
+                    <button 
+                      onClick={() => setShowPassModal(true)}
+                      className="px-6 py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl text-[10px] font-black uppercase tracking-widest hover:opacity-90 transition-all"
+                    >
+                      Alterar Senha
+                    </button>
+                  </div>
+
+                  <div className="bg-white dark:bg-muted/30 p-8 rounded-[2.5rem] border border-gray-100 dark:border-border flex items-center justify-between shadow-sm">
+                    <div className="flex items-center gap-6">
+                       <div className="w-14 h-14 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-2xl flex items-center justify-center">
+                          <Shield size={24} />
+                       </div>
+                       <div>
+                          <p className="text-sm font-black text-gray-900 dark:text-white">Verificação em Duas Etapas</p>
+                          <p className="text-xs font-bold text-gray-400 mt-1">Proteção adicional para logins via SMS ou App</p>
+                       </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-[10px] font-black uppercase text-gray-400">Ativado</span>
+                      <div className="w-12 h-6 bg-green-500 rounded-full relative">
+                        <div className="absolute right-1 top-1 w-4 h-4 bg-white rounded-full shadow-sm" />
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-orange-50 p-6 rounded-[2rem] border border-orange-100 flex items-start gap-4">
-                  <div className="p-3 bg-white rounded-xl text-orange-500 shadow-sm">
-                    <Shield size={24} />
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-black text-orange-900 uppercase tracking-tight">Autenticação em Dois Fatores</h4>
-                    <p className="text-xs text-orange-700 font-medium mt-1 leading-relaxed">Aumente a segurança da sua conta adicionando uma camada extra de proteção.</p>
-                    <button className="text-xs font-black text-orange-600 mt-4 hover:underline">ATIVAR AGORA</button>
-                  </div>
+                <div className="pt-8 border-t border-gray-50 dark:border-border">
+                   <div className="bg-gray-50 dark:bg-muted/20 p-8 rounded-[2.5rem] flex items-start gap-6">
+                      <Shield className="text-blue-500 shrink-0" size={32} />
+                      <div>
+                         <h4 className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-tight">Sessões Ativas</h4>
+                         <p className="text-xs text-gray-500 dark:text-gray-400 font-medium mt-1">Atualmente logado em 2 dispositivos (São Paulo, BR).</p>
+                         <button className="text-[10px] font-black text-red-500 uppercase tracking-widest mt-4 hover:underline">Encerrar todas as outras sessões</button>
+                      </div>
+                   </div>
+                </div>
+              </div>
+            )}
+
+            {activeTab === "notifications" && (
+              <div className="space-y-10">
+                <h3 className="text-2xl font-black text-gray-900 dark:text-white">Preferências de Notificação</h3>
+                
+                <div className="space-y-4">
+                  {[
+                    { id: 'n1', label: "Novos Leads", desc: "Receba alertas instantâneos quando um novo lead for capturado.", icon: UserIcon, color: "text-blue-500", bg: "bg-blue-50" },
+                    { id: 'n2', label: "Mudança de Etapa", desc: "Seja avisado quando um negócio for movido no pipeline.", icon: Zap, color: "text-orange-500", bg: "bg-orange-50" },
+                    { id: 'n3', label: "Mensagens do Cliente", desc: "Notificações de chats do WhatsApp, Instagram e Webchat.", icon: MessageSquare, color: "text-green-500", bg: "bg-green-50" },
+                  ].map((n) => (
+                    <div key={n.id} className="flex items-center justify-between p-8 bg-gray-50 dark:bg-muted/20 rounded-[2.5rem] border border-transparent dark:border-border group">
+                      <div className="flex items-center gap-6">
+                        <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center", n.bg, "dark:bg-opacity-10", n.color)}>
+                          <n.icon size={20} />
+                        </div>
+                        <div>
+                          <p className="text-sm font-black text-gray-900 dark:text-white">{n.label}</p>
+                          <p className="text-xs font-bold text-gray-400 mt-0.5">{n.desc}</p>
+                        </div>
+                      </div>
+                      <div className="flex gap-4">
+                         <div className="flex flex-col items-center gap-1">
+                            <span className="text-[8px] font-black text-gray-400 uppercase">Push</span>
+                            <div className="w-10 h-5 bg-blue-600 rounded-full relative"><div className="absolute right-0.5 top-0.5 w-4 h-4 bg-white rounded-full" /></div>
+                         </div>
+                         <div className="flex flex-col items-center gap-1">
+                            <span className="text-[8px] font-black text-gray-400 uppercase">E-mail</span>
+                            <div className="w-10 h-5 bg-gray-200 dark:bg-muted rounded-full relative"><div className="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full" /></div>
+                         </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
 
-                <div className="pt-8 border-t border-gray-50">
-                  <button 
-                    onClick={() => toast.success("Senha alterada com sucesso!")}
-                    className="bg-gray-900 text-white px-10 py-5 rounded-2xl font-black text-sm flex items-center gap-3 hover:bg-gray-800 transition-all shadow-xl shadow-gray-200"
-                  >
-                    <Lock size={20} /> Atualizar Senha
-                  </button>
+                <div className="p-8 bg-blue-50 dark:bg-blue-900/20 rounded-[2.5rem] border border-blue-100 dark:border-blue-900 flex items-center gap-6">
+                   <Smartphone className="text-blue-600 dark:text-blue-400 shrink-0" size={28} />
+                   <div>
+                      <p className="text-sm font-black text-blue-900 dark:text-blue-200">Alertas Mobile</p>
+                      <p className="text-xs font-medium text-blue-700 dark:text-blue-400 mt-1">Habilite as notificações no navegador para receber alertas mesmo com a aba fechada.</p>
+                      <button className="text-[10px] font-black text-blue-600 dark:text-blue-400 mt-4 uppercase tracking-widest hover:underline">Habilitar no Navegador</button>
+                   </div>
                 </div>
               </div>
             )}
           </motion.div>
         </div>
       </div>
+
+      {/* Avatar Picker Modal */}
+      <AnimatePresence>
+        {showAvatarModal && (
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[100] flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="bg-white dark:bg-card rounded-[3rem] w-full max-w-2xl shadow-2xl overflow-hidden border border-gray-100 dark:border-border"
+            >
+              <div className="p-8 border-b border-gray-50 dark:border-border flex justify-between items-center">
+                <h3 className="text-xl font-black text-gray-900 dark:text-white">Alterar Foto de Perfil</h3>
+                <button onClick={() => setShowAvatarModal(false)} className="text-gray-400 hover:text-gray-900 dark:hover:text-white"><X size={24} /></button>
+              </div>
+              
+              <div className="p-10 space-y-10">
+                {/* Upload Section */}
+                <div className="text-center">
+                  <input 
+                    type="file" 
+                    ref={fileInputRef} 
+                    className="hidden" 
+                    accept="image/*"
+                    onChange={handleFileUpload}
+                  />
+                  <button 
+                    onClick={() => fileInputRef.current?.click()}
+                    className="w-full py-12 border-2 border-dashed border-gray-200 dark:border-border rounded-[2.5rem] flex flex-col items-center gap-4 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/10 transition-all group"
+                  >
+                    <div className="w-16 h-16 bg-blue-50 dark:bg-blue-900/30 text-blue-600 rounded-3xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <Upload size={32} />
+                    </div>
+                    <div>
+                      <p className="text-sm font-black text-gray-900 dark:text-white">Enviar foto da galeria</p>
+                      <p className="text-xs font-bold text-gray-400 mt-1">JPG, PNG ou SVG até 5MB</p>
+                    </div>
+                  </button>
+                </div>
+
+                {/* Pop Culture Selection */}
+                <div>
+                   <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-6 ml-1 text-center">Ou escolha um Avatar Premium</p>
+                   <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
+                      {popAvatars.map((av) => (
+                        <button 
+                          key={av.name}
+                          onClick={() => {
+                            setCurrentAvatar(av.url);
+                            setShowAvatarModal(false);
+                            toast.success(`Avatar ${av.name} selecionado!`);
+                          }}
+                          className="group flex flex-col items-center gap-2"
+                        >
+                          <div className={cn(
+                            "w-full aspect-square rounded-2xl border-2 transition-all p-1",
+                            currentAvatar === av.url ? "border-blue-500 scale-105" : "border-gray-100 dark:border-border group-hover:border-gray-300"
+                          )}>
+                             <img src={av.url} alt={av.name} className="w-full h-full rounded-xl" />
+                          </div>
+                          <span className="text-[8px] font-black text-gray-400 uppercase text-center">{av.name}</span>
+                        </button>
+                      ))}
+                   </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      <ChangePasswordModal 
+        isOpen={showPassModal}
+        onClose={() => setShowPassModal(false)}
+      />
     </div>
   );
 }

@@ -6,8 +6,8 @@ import { useEffect, useState } from "react";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { TopHeader } from "@/components/layout/TopHeader";
 import { MobileNav } from "./MobileNav";
-
 import { useAuth } from "@/context/AuthContext";
+import { cn } from "@/lib/utils";
 
 export function AppWrapper({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
@@ -29,8 +29,8 @@ export function AppWrapper({ children }: { children: React.ReactNode }) {
 
   if (isLoading) {
     return (
-      <div className="h-screen flex items-center justify-center bg-white">
-        <div className="w-10 h-10 border-4 border-gray-100 border-t-gray-900 rounded-full animate-spin" />
+      <div className="h-screen flex items-center justify-center bg-white dark:bg-background">
+        <div className="w-10 h-10 border-4 border-gray-100 dark:border-border border-t-gray-900 dark:border-t-white rounded-full animate-spin" />
       </div>
     );
   }
@@ -42,7 +42,7 @@ export function AppWrapper({ children }: { children: React.ReactNode }) {
   if (!user) return null;
 
   return (
-    <div className="flex h-screen md:h-full bg-[#fcfcfc] overflow-hidden">
+    <div className="flex h-screen md:h-full bg-background dark:bg-background text-foreground overflow-hidden transition-colors duration-300">
       <div className="hidden md:block">
         <Sidebar />
       </div>

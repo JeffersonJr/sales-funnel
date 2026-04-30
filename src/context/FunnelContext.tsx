@@ -27,9 +27,58 @@ export function FunnelProvider({ children }: { children: React.ReactNode }) {
       else if (fallback) setter(fallback);
     };
 
-    load("funnel_deals", setDeals, mockDb.deals);
+    const savedStages = localStorage.getItem("funnel_stages");
+    let initialStages = mockDb.stages;
+    if (savedStages) {
+      initialStages = JSON.parse(savedStages);
+      let migrated = false;
+      initialStages = initialStages.map((s: any) => {
+        let updated = { ...s };
+        if (s.id === "closed" || s.title === "Fechado") {
+          migrated = true;
+          updated = { ...updated, id: "won", title: "Ganho" };
+        }
+        
+        if (!updated.color) {
+          migrated = true;
+          if (updated.id === "won") updated.color = "#22c55e";
+          else if (updated.id === "lost") updated.color = "#ef4444";
+          else updated.color = "#3b82f6";
+        }
+        return updated;
+      });
+      
+      if (!initialStages.some((s: any) => s.id === "lost")) {
+        initialStages.push({ id: "lost", title: "Perdido", color: "#ef4444" });
+        migrated = true;
+      }
+      
+      if (migrated) {
+        localStorage.setItem("funnel_stages", JSON.stringify(initialStages));
+      }
+    }
+    setStages(initialStages);
+
+    const savedDeals = localStorage.getItem("funnel_deals");
+    let initialDeals = mockDb.deals;
+    if (savedDeals) {
+      initialDeals = JSON.parse(savedDeals);
+      let migratedDeals = false;
+      initialDeals = initialDeals.map((d: any) => {
+        if (d.stage === "closed") {
+          migratedDeals = true;
+          return { ...d, stage: "won" };
+        }
+        return d;
+      });
+      
+      if (migratedDeals) {
+        localStorage.setItem("funnel_deals", JSON.stringify(initialDeals));
+      }
+    }
+    setDeals(initialDeals);
+
     load("funnel_users", setUsers, mockDb.users);
-    load("funnel_stages", setStages, mockDb.stages);
     load("funnel_templates", setTemplates, mockDb.templates);
     load("funnel_tags", setAvailableTags, [
       { id: "1", name: "Valor Alto", color: "#ef4444" },

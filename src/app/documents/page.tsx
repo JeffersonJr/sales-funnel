@@ -13,18 +13,28 @@ import {
   File as FileIcon,
   Plus,
   Clock,
-  HardDrive
+  HardDrive,
+  Filter,
+  ArrowUpCircle,
+  ArrowDownCircle,
+  MessageSquare
 } from "lucide-react";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { ConfirmModal } from "@/components/common/ConfirmModal";
 import { toast } from "sonner";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { FilterPanel } from "@/components/common/FilterPanel";
 
 export default function DocumentsPage() {
   const { deals } = useFunnel();
   const [mounted, setMounted] = useState(false);
   const [search, setSearch] = useState("");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<any | null>(null);
+  const [showFilters, setShowFilters] = useState(false);
+  const [filters, setFilters] = useState<Record<string, any>>({});
+  const [showStorageModal, setShowStorageModal] = useState(false);
+  const [showContactModal, setShowContactModal] = useState(false);
 
   React.useEffect(() => {
     setMounted(true);
@@ -37,10 +47,16 @@ export default function DocumentsPage() {
     (deal.documents || []).map((doc: any) => ({ ...doc, dealTitle: deal.title, dealId: deal.id }))
   );
 
-  const filteredDocs = allDocuments.filter((doc: any) => 
-    doc.name.toLowerCase().includes(search.toLowerCase()) ||
-    doc.dealTitle.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredDocs = allDocuments.filter((doc: any) => {
+    if (search && !doc.name.toLowerCase().includes(search.toLowerCase()) && 
+        !doc.dealTitle.toLowerCase().includes(search.toLowerCase())) return false;
+    
+    if (filters.deal && filters.deal !== "" && doc.dealTitle !== filters.deal) return false;
+    
+    return true;
+  });
+
+  const availableDeals = Array.from(new Set(allDocuments.map((d: any) => d.dealTitle))).filter(Boolean);
 
   const handleDelete = () => {
     // In a real system, we'd update the specific deal's documents
@@ -62,24 +78,35 @@ export default function DocumentsPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
         {[
-          { label: "Armazenamento", value: "2.4 GB / 10 GB", icon: HardDrive, color: "text-blue-500", bg: "bg-blue-50" },
-          { label: "Total de Arquivos", value: allDocuments.length, icon: FileIcon, color: "text-purple-500", bg: "bg-purple-50" },
-          { label: "Propostas Geradas", value: allDocuments.filter((d: any) => d.name.toLowerCase().includes('proposta')).length, icon: Clock, color: "text-green-500", bg: "bg-green-50" },
+          { label: "Armazenamento", value: "2.4 GB / 10 GB", icon: HardDrive, color: "text-blue-500", bg: "bg-blue-50 dark:bg-blue-900/30", action: true },
+          { label: "Total de Arquivos", value: allDocuments.length, icon: FileIcon, color: "text-purple-500", bg: "bg-purple-50 dark:bg-purple-900/30" },
+          { label: "Propostas Geradas", value: allDocuments.filter((d: any) => d.name.toLowerCase().includes('proposta')).length, icon: Clock, color: "text-green-500", bg: "bg-green-50 dark:bg-green-900/30" },
         ].map((stat) => (
-          <div key={stat.label} className="bg-white p-6 rounded-[2.5rem] border border-gray-100 flex items-center gap-6 shadow-sm">
-            <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center", stat.bg)}>
-              <stat.icon className={stat.color} size={24} />
+          <div key={stat.label} className="bg-white dark:bg-card p-6 rounded-[2.5rem] border border-gray-100 dark:border-border flex items-center justify-between shadow-sm">
+            <div className="flex items-center gap-6">
+              <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center", stat.bg)}>
+                <stat.icon className={stat.color} size={24} />
+              </div>
+              <div>
+                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{stat.label}</p>
+                <p className="text-lg font-black text-gray-900 dark:text-white">{stat.value}</p>
+              </div>
             </div>
-            <div>
-              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{stat.label}</p>
-              <p className="text-lg font-black text-gray-900">{stat.value}</p>
-            </div>
+            {stat.action && (
+              <button 
+                onClick={() => setShowStorageModal(true)}
+                className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-all"
+                title="Gerenciar Armazenamento"
+              >
+                <Plus size={20} />
+              </button>
+            )}
           </div>
         ))}
       </div>
 
       <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-50 overflow-hidden">
-        <div className="p-6 border-b border-gray-50 bg-gray-50/30 flex items-center gap-4">
+        <div className="p-6 border-b border-gray-50 bg-gray-50/30 flex flex-col md:flex-row items-stretch md:items-center gap-4">
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={18} />
             <input 
@@ -89,7 +116,29 @@ export default function DocumentsPage() {
               className="w-full bg-white border border-gray-100 rounded-xl py-3 pl-12 pr-4 text-sm font-bold focus:ring-2 focus:ring-gray-900/5 outline-none transition-all"
             />
           </div>
+          <div className="flex gap-2">
+            <button 
+              onClick={() => setShowFilters(!showFilters)}
+              className={cn(
+                "flex-1 md:flex-none px-5 py-3 rounded-xl transition-all border flex items-center justify-center gap-2",
+                showFilters ? "bg-gray-900 text-white border-gray-900" : "bg-white text-gray-400 border-gray-100 hover:text-gray-900 hover:bg-gray-50"
+              )}
+            >
+              <Filter size={20} />
+              <span className="text-xs font-black uppercase tracking-widest">Filtrar</span>
+            </button>
+          </div>
         </div>
+
+        <FilterPanel 
+          isOpen={showFilters}
+          filters={[
+            { key: "deal", label: "Negócio Relacionado", type: "select", options: availableDeals.map((d: any) => ({ label: d, value: d })) }
+          ]}
+          values={filters}
+          onChange={(k, v) => setFilters(prev => ({ ...prev, [k]: v }))}
+          onClear={() => setFilters({})}
+        />
 
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
@@ -161,6 +210,65 @@ export default function DocumentsPage() {
         </div>
       </div>
 
+      {/* Storage Management Modal */}
+      <AnimatePresence>
+        {showStorageModal && (
+          <div className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-white dark:bg-card rounded-[2.5rem] w-full max-w-md shadow-2xl overflow-hidden border border-gray-100 dark:border-border"
+            >
+              <div className="p-8 border-b border-gray-50 dark:border-border flex justify-between items-center">
+                <h2 className="text-xl font-black text-gray-900 dark:text-white">Armazenamento</h2>
+                <button onClick={() => setShowStorageModal(false)} className="text-gray-400 hover:text-gray-900 dark:hover:text-white"><X size={20} /></button>
+              </div>
+              <div className="p-8 space-y-4">
+                <Link 
+                  href="/checkout/storage"
+                  className="w-full flex items-center gap-4 p-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-[2rem] hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-all group"
+                >
+                  <div className="w-12 h-12 bg-blue-600 text-white rounded-xl flex items-center justify-center shadow-lg shadow-blue-200 dark:shadow-none">
+                    <ArrowUpCircle size={24} />
+                  </div>
+                  <div className="text-left">
+                    <p className="text-sm font-black text-gray-900 dark:text-white">Aumentar Limite</p>
+                    <p className="text-xs font-bold text-blue-600 dark:text-blue-400">Expandir para 50 GB ou mais</p>
+                  </div>
+                </Link>
+
+                <button 
+                  onClick={() => { setShowStorageModal(false); setShowContactModal(true); }}
+                  className="w-full flex items-center gap-4 p-6 bg-gray-50 dark:bg-muted/50 border border-gray-100 dark:border-border rounded-[2rem] hover:bg-gray-100 dark:hover:bg-muted transition-all group"
+                >
+                  <div className="w-12 h-12 bg-gray-200 dark:bg-muted text-gray-500 dark:text-gray-400 rounded-xl flex items-center justify-center">
+                    <ArrowDownCircle size={24} />
+                  </div>
+                  <div className="text-left">
+                    <p className="text-sm font-black text-gray-900 dark:text-white">Reduzir Limite</p>
+                    <p className="text-xs font-bold text-gray-400">Solicitar downgrade de plano</p>
+                  </div>
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Contact Team Modal */}
+      <ConfirmModal 
+        isOpen={showContactModal}
+        onClose={() => setShowContactModal(false)}
+        onConfirm={() => {
+           setShowContactModal(false);
+           toast.success("Solicitação enviada! Nossa equipe entrará em contato.");
+        }}
+        title="Falar com Especialista"
+        message="Para reduzir seu limite de armazenamento ou fazer um downgrade de plano, nossa equipe de sucesso do cliente precisa analisar seu uso atual. Deseja abrir um chamado?"
+        confirmText="Abrir Chamado"
+      />
+
       <ConfirmModal 
         isOpen={!!showDeleteConfirm}
         onClose={() => setShowDeleteConfirm(null)}
@@ -171,3 +279,5 @@ export default function DocumentsPage() {
     </div>
   );
 }
+
+const X = ({ size, className }: any) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>;
