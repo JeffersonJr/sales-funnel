@@ -384,7 +384,7 @@ export function DocumentTab({
         onUpdateTags={onUpdateTags}
       />
       {/* Cabeçalho do Negócio */}
-      <div className="bg-white p-8 rounded-t-3xl border border-gray-100 shadow-sm mb-1 relative group/header">
+      <div className="bg-white p-6 md:p-8 rounded-t-3xl border border-gray-100 shadow-sm mb-1 relative group/header">
         <div className="flex justify-between items-start mb-8">
           <div className="space-y-3 w-full max-w-2xl">
             <div className="flex items-center gap-3">
@@ -470,7 +470,7 @@ export function DocumentTab({
           </div>
         </div>
 
-        <div className="grid grid-cols-5 gap-6 pt-8 border-t border-gray-50">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-6 pt-8 border-t border-gray-50">
           <div className="space-y-1">
             <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Valor do Negócio</p>
             {isEditingHeader ? (
@@ -543,7 +543,7 @@ export function DocumentTab({
       </div>
 
       {/* Navegação por Abas */}
-      <div className="flex bg-white border-x border-b border-gray-100 px-8 sticky top-0 z-10 shadow-sm">
+      <div className="flex bg-white border-x border-b border-gray-100 px-4 md:px-8 sticky top-0 z-10 shadow-sm overflow-x-auto scrollbar-hide">
         {[
           { id: "details", label: "Visão Geral", icon: Layout },
           { id: "profile", label: "Perfil & Contatos", icon: Building2 },
@@ -554,7 +554,7 @@ export function DocumentTab({
             key={tab.id}
             onClick={() => setActiveSubTab(tab.id as any)}
             className={cn(
-              "flex items-center gap-2 py-5 px-6 border-b-2 transition-all text-sm font-bold",
+              "flex items-center gap-2 py-5 px-4 md:px-6 border-b-2 transition-all text-sm font-bold whitespace-nowrap",
               activeSubTab === tab.id 
                 ? "border-gray-900 text-gray-900" 
                 : "border-transparent text-gray-400 hover:text-gray-600"
@@ -567,10 +567,10 @@ export function DocumentTab({
       </div>
 
       {/* Conteúdo das Abas */}
-      <div className="bg-white p-10 rounded-b-3xl border-x border-b border-gray-100 shadow-sm min-h-[600px]">
+      <div className="bg-white p-6 md:p-10 rounded-b-3xl border-x border-b border-gray-100 shadow-sm min-h-[600px]">
         {activeSubTab === "details" && (
-          <div className="grid grid-cols-3 gap-16">
-            <div className="col-span-2 space-y-12">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 md:gap-16">
+            <div className="col-span-1 lg:col-span-2 space-y-8 md:space-y-12">
               <section>
                 <div className="flex items-center justify-between mb-8">
                   <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest">Tags do Negócio</h3>
@@ -900,16 +900,16 @@ export function DocumentTab({
         )}
 
         {activeSubTab === "profile" && (
-          <div className="grid grid-cols-3 gap-16">
-            <div className="col-span-2 space-y-12">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 lg:gap-16">
+            <div className="col-span-1 lg:col-span-2 space-y-12">
                <section>
-                  <div className="flex items-center gap-8 mb-10">
+                  <div className="flex flex-col md:flex-row items-center md:items-start gap-8 mb-10">
                     <div className="w-24 h-24 bg-gray-50 rounded-[2.5rem] flex items-center justify-center text-gray-300 border border-gray-100 shadow-inner">
                       <Building2 size={48} />
                     </div>
-                    <div className="space-y-2">
+                    <div className="space-y-2 text-center md:text-left">
                       <h2 className="text-4xl font-black text-gray-900 tracking-tight">{deal.profile.name}</h2>
-                      <div className="flex gap-3 text-sm font-bold text-gray-400">
+                      <div className="flex flex-wrap justify-center md:justify-start gap-3 text-sm font-bold text-gray-400">
                         <span>{deal.profile.industry}</span>
                         <span className="text-gray-200">•</span>
                         <a href={deal.profile.website} target="_blank" className="text-blue-500 hover:underline flex items-center gap-1">
@@ -919,7 +919,7 @@ export function DocumentTab({
                     </div>
                   </div>
                   
-                  <div className="grid grid-cols-2 gap-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                      <div className="p-6 bg-gray-50/50 rounded-2xl border border-gray-100">
                         <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Sobre a Conta</p>
                         <p className="text-sm text-gray-600 leading-relaxed">Cliente estratégico focado em {deal.profile.industry}. Relacionamento iniciado via {deal.leadSource}.</p>
@@ -950,7 +950,7 @@ export function DocumentTab({
                       <Plus size={14} /> Novo Contato
                     </button>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {deal.profile.contacts?.map((contact: any) => (
                       <div 
                         key={contact.id} 

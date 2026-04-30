@@ -42,7 +42,7 @@ export function AppWrapper({ children }: { children: React.ReactNode }) {
   if (!user) return null;
 
   return (
-    <div className="flex h-full bg-[#fcfcfc] overflow-hidden">
+    <div className="flex h-screen md:h-full bg-[#fcfcfc] overflow-hidden">
       <div className="hidden md:block">
         <Sidebar />
       </div>

@@ -60,7 +60,7 @@ export function LeadModal({ isOpen, onClose, onSave, initialData }: LeadModalPro
 
           <div className="p-8 space-y-6">
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="col-span-2">
                   <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Nome Completo</label>
                   <div className="relative">

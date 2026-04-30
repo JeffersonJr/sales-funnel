@@ -94,7 +94,7 @@ export default function CompaniesPage() {
   };
 
   return (
-    <div className="p-8 max-w-7xl mx-auto">
+    <div className="p-6 md:p-8 max-w-7xl mx-auto">
       <div className="flex justify-between items-end mb-12">
         <div className="flex-1">
           <h1 className="text-3xl md:text-4xl font-black text-gray-900 tracking-tight">Empresas</h1>
@@ -246,8 +246,8 @@ export default function CompaniesPage() {
                 </button>
               </div>
 
-              <div className="flex-1 overflow-auto p-10">
-                <div className="flex items-start gap-6 mb-12">
+              <div className="flex-1 overflow-auto p-6 md:p-10">
+                <div className="flex flex-col md:flex-row items-center md:items-start text-center md:text-left gap-6 mb-12">
                   <div className="w-20 h-20 bg-gray-900 rounded-[2rem] flex items-center justify-center text-white shadow-xl shadow-gray-200">
                     <Building2 size={40} />
                   </div>
@@ -268,7 +268,7 @@ export default function CompaniesPage() {
                   </p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-12">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
                   <section className="space-y-6">
                     <div className="flex justify-between items-center">
                       <h4 className="text-sm font-black text-gray-900 uppercase tracking-widest">Colaboradores</h4>

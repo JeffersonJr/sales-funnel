@@ -23,12 +23,23 @@ import {
   ListChecks,
   History,
   Layout,
-  Bookmark
+  Bookmark,
+  Tag,
+  Clock,
+  FileText,
+  MailOpen,
+  MousePointerClick,
+  CalendarPlus,
+  CalendarCheck,
+  Globe,
+  Library,
+  Settings
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { ConfirmModal } from "@/components/common/ConfirmModal";
+import { TagManagementModal } from "@/components/deals/TagManagementModal";
 
 interface Action {
   id: string;
@@ -39,20 +50,27 @@ interface Action {
 interface Automation {
   id: string;
   name: string;
-  triggerStageId: string;
+  triggerType?: string;
+  triggerStageId?: string;
+  triggerTagId?: string;
+  triggerDays?: number;
   actions: Action[];
   status: "active" | "paused";
   isTemplate?: boolean;
+  savedAsTemplate?: boolean;
+  isFavorite?: boolean;
 }
 
 export default function AutomationsPage() {
   const { 
     automations, setAutomations, 
     stages, 
+    availableTags, setAvailableTags,
     automationTemplates, setAutomationTemplates 
   } = useFunnel();
   const [mounted, setMounted] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [showTagModal, setShowTagModal] = useState(false);
   const [activeTab, setActiveTab] = useState<"active" | "templates">("active");
   const [deleteTarget, setDeleteTarget] = useState<{id: string, type: 'automation' | 'template'} | null>(null);
 
@@ -66,16 +84,36 @@ export default function AutomationsPage() {
   const [isEditingTemplate, setIsEditingTemplate] = useState(false);
   const [newRule, setNewRule] = useState<Partial<Automation>>({
     name: "",
+    triggerType: "stage_change",
     triggerStageId: stages[0]?.id || "",
     actions: [],
     status: "active"
   });
+
+  const triggerTypes = [
+    { id: "stage_change", label: "Movido para Coluna", icon: Layout },
+    { id: "new_deal", label: "Novo Negócio Criado", icon: Plus },
+    { id: "deal_won", label: "Negócio Ganho", icon: Zap },
+    { id: "deal_lost", label: "Negócio Perdido", icon: Trash2 },
+    { id: "deal_stale", label: "Negócio Estagnado", icon: Clock },
+    { id: "activity_created", label: "Atividade Marcada", icon: CalendarPlus },
+    { id: "activity_completed", label: "Atividade Concluída", icon: CalendarCheck },
+    { id: "tag_added", label: "Tag Adicionada", icon: Tag },
+    { id: "tag_removed", label: "Tag Removida", icon: Tag },
+    { id: "form_submitted", label: "Novo Lead (Formulário)", icon: MousePointerClick },
+    { id: "email_opened", label: "E-mail Aberto", icon: MailOpen },
+    { id: "document_signed", label: "Proposta Assinada", icon: FileText },
+  ];
 
   const actionTypes = [
     { id: "whatsapp", label: "Enviar WhatsApp", icon: MessageCircle, color: "text-green-500", bg: "bg-green-50", description: "Envia mensagem automática para o lead" },
     { id: "email", label: "Enviar E-mail", icon: Mail, color: "text-blue-500", bg: "bg-blue-50", description: "Dispara e-mail personalizado" },
     { id: "activity", label: "Criar Atividade", icon: ListChecks, color: "text-purple-500", bg: "bg-purple-50", description: "Agenda tarefa para o responsável" },
     { id: "notification", label: "Notificar Equipe", icon: Bell, color: "text-orange-500", bg: "bg-orange-50", description: "Envia push para usuários do sistema" },
+    { id: "move_stage", label: "Mover Coluna", icon: ArrowRight, color: "text-indigo-500", bg: "bg-indigo-50", description: "Move o card para outra etapa do funil" },
+    { id: "add_tag", label: "Adicionar Tag", icon: Tag, color: "text-pink-500", bg: "bg-pink-50", description: "Aplica uma tag automaticamente" },
+    { id: "remove_tag", label: "Remover Tag", icon: Tag, color: "text-red-500", bg: "bg-red-50", description: "Remove uma tag do card" },
+    { id: "webhook", label: "Disparar Webhook", icon: Globe, color: "text-cyan-500", bg: "bg-cyan-50", description: "Envia dados para n8n, Zapier ou API" },
   ];
 
   const handleSave = () => {
@@ -145,7 +183,12 @@ export default function AutomationsPage() {
   const saveAsTemplate = (auto: Automation) => {
     const newTmpl = { ...auto, id: `tmpl-${Date.now()}`, isTemplate: true };
     setAutomationTemplates([...automationTemplates, newTmpl]);
+    setAutomations(automations.map((a: any) => a.id === auto.id ? { ...a, savedAsTemplate: true } : a));
     toast.success("Salvo como template!");
+  };
+
+  const toggleFavorite = (auto: Automation) => {
+    setAutomations(automations.map((a: any) => a.id === auto.id ? { ...a, isFavorite: !a.isFavorite } : a));
   };
 
   const resetModal = () => {
@@ -155,17 +198,27 @@ export default function AutomationsPage() {
     setIsEditingTemplate(false);
     setNewRule({
       name: "",
+      triggerType: "stage_change",
       triggerStageId: stages[0]?.id || "",
+      triggerTagId: undefined,
+      triggerDays: 3,
       actions: [],
       status: "active"
     });
   };
 
   const addAction = (type: string) => {
+    let defaultConfig: any = {};
+    if (type === 'activity') defaultConfig = { title: "Nova Atividade" };
+    else if (type === 'whatsapp' || type === 'email' || type === 'notification') defaultConfig = { message: "" };
+    else if (type === 'move_stage') defaultConfig = { stageId: stages[0]?.id || "" };
+    else if (type === 'add_tag' || type === 'remove_tag') defaultConfig = { tagId: availableTags[0]?.id || "" };
+    else if (type === 'webhook') defaultConfig = { url: "https://" };
+
     const newAction: Action = {
       id: Math.random().toString(36).substr(2, 9),
       type,
-      config: type === 'activity' ? { title: "Nova Atividade" } : { message: "" }
+      config: defaultConfig
     };
     setNewRule({ ...newRule, actions: [...(newRule.actions || []), newAction] });
   };
@@ -204,7 +257,10 @@ export default function AutomationsPage() {
       ...tmpl,
       id: undefined,
       isTemplate: false,
-      triggerStageId: stages[0]?.id || ""
+      triggerType: tmpl.triggerType || "stage_change",
+      triggerStageId: tmpl.triggerStageId || stages[0]?.id || "",
+      triggerTagId: tmpl.triggerTagId,
+      triggerDays: tmpl.triggerDays || 3
     });
     setStep(1);
     setShowModal(true);
@@ -247,6 +303,18 @@ export default function AutomationsPage() {
           >
             {automations.map((auto: Automation) => {
               const stage = stages.find((s: any) => s.id === auto.triggerStageId);
+              const triggerTypeObj = triggerTypes.find(t => t.id === (auto.triggerType || 'stage_change'));
+              
+              let triggerLabel = triggerTypeObj?.label || "Movido para Coluna";
+              if ((auto.triggerType === 'stage_change' || !auto.triggerType) && stage) {
+                triggerLabel = `Coluna: ${stage.title}`;
+              } else if (auto.triggerType === 'tag_added' || auto.triggerType === 'tag_removed') {
+                const t = availableTags.find((tag: any) => tag.id === auto.triggerTagId);
+                triggerLabel = `Tag: ${t?.name || 'Qualquer'}`;
+              } else if (auto.triggerType === 'deal_stale') {
+                triggerLabel = `Estagnado há ${auto.triggerDays || 3} dias`;
+              }
+
               return (
                 <div 
                   key={auto.id} 
@@ -270,11 +338,14 @@ export default function AutomationsPage() {
                         ) : (
                           <span className="text-[10px] bg-gray-100 text-gray-400 px-3 py-1 rounded-full uppercase tracking-widest font-black">Pausada</span>
                         )}
+                        {auto.savedAsTemplate && (
+                          <span className="text-[9px] bg-purple-50 text-purple-600 px-3 py-1 rounded-full uppercase tracking-widest font-black border border-purple-100 flex items-center gap-1"><Library size={10} /> Template</span>
+                        )}
                       </h3>
                       <div className="flex items-center gap-4 mt-2">
                         <div className="flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-widest">
                           <MousePointer2 size={12} />
-                          Trigger: <span className="text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">{stage?.title}</span>
+                          Trigger: <span className="text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">{triggerLabel}</span>
                         </div>
                         <div className="w-1 h-1 bg-gray-200 rounded-full" />
                         <div className="flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-widest">
@@ -300,12 +371,24 @@ export default function AutomationsPage() {
                     >
                       <Copy size={24} />
                     </button>
+                    {!auto.savedAsTemplate && (
+                      <button 
+                        onClick={() => saveAsTemplate(auto)}
+                        className="p-4 text-gray-300 hover:text-purple-500 hover:bg-purple-50 rounded-2xl transition-all"
+                        title="Salvar na Biblioteca de Templates"
+                      >
+                        <Library size={24} />
+                      </button>
+                    )}
                     <button 
-                      onClick={() => saveAsTemplate(auto)}
-                      className="p-4 text-gray-300 hover:text-purple-500 hover:bg-purple-50 rounded-2xl transition-all"
-                      title="Salvar como Template"
+                      onClick={() => toggleFavorite(auto)}
+                      className={cn(
+                        "p-4 rounded-2xl transition-all",
+                        auto.isFavorite ? "text-yellow-500 bg-yellow-50" : "text-gray-300 hover:text-yellow-500 hover:bg-yellow-50"
+                      )}
+                      title={auto.isFavorite ? "Remover dos Favoritos" : "Favoritar Automação"}
                     >
-                      <Bookmark size={24} />
+                      <Bookmark size={24} className={cn(auto.isFavorite && "fill-yellow-500")} />
                     </button>
                     <button 
                       onClick={() => toggleStatus(auto.id)}
@@ -396,7 +479,7 @@ export default function AutomationsPage() {
       {/* Robust Automation Creator Modal */}
       <AnimatePresence>
         {showModal && (
-          <div className="fixed inset-0 bg-gray-900/60 backdrop-blur-xl z-[200] flex items-center justify-center p-4">
+          <div className="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
             <motion.div 
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -465,28 +548,96 @@ export default function AutomationsPage() {
 
                     <div className="space-y-6">
                       <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 text-blue-600 flex items-center gap-2">
-                        <MousePointer2 size={12} /> Trigger (Gatilho)
+                        <MousePointer2 size={12} /> Evento Gatilho
                       </label>
-                      <p className="text-sm font-bold text-gray-900 mb-4">Quando o negócio for movido para a coluna:</p>
-                      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                        {stages.map((s: any) => (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {triggerTypes.map((t) => (
                           <button
-                            key={s.id}
-                            onClick={() => setNewRule({...newRule, triggerStageId: s.id})}
+                            key={t.id}
+                            onClick={() => setNewRule({...newRule, triggerType: t.id})}
                             className={cn(
-                              "p-6 rounded-3xl border-2 text-left transition-all",
-                              newRule.triggerStageId === s.id 
-                                ? "border-blue-600 bg-blue-50/50 shadow-xl shadow-blue-100/50" 
+                              "p-4 rounded-2xl border-2 text-left transition-all flex items-center gap-4",
+                              newRule.triggerType === t.id 
+                                ? "border-blue-600 bg-blue-50/50 shadow-md shadow-blue-100/50" 
                                 : "border-gray-50 bg-gray-50 hover:border-gray-200"
                             )}
                           >
-                            <div className={cn("w-8 h-8 rounded-full mb-3 flex items-center justify-center font-black text-xs", newRule.triggerStageId === s.id ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-400")}>
-                              {stages.indexOf(s) + 1}
+                            <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-colors", newRule.triggerType === t.id ? "bg-blue-600 text-white" : "bg-white text-gray-400 shadow-sm border border-gray-100")}>
+                              <t.icon size={20} />
                             </div>
-                            <span className={cn("text-xs font-black uppercase tracking-widest", newRule.triggerStageId === s.id ? "text-blue-900" : "text-gray-400")}>{s.title}</span>
+                            <span className={cn("text-sm font-black tracking-tight", newRule.triggerType === t.id ? "text-blue-900" : "text-gray-600")}>{t.label}</span>
                           </button>
                         ))}
                       </div>
+
+                      {newRule.triggerType === "stage_change" && (
+                        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="mt-6 pt-6 border-t border-gray-50">
+                          <p className="text-sm font-bold text-gray-900 mb-4">Qual coluna vai disparar o gatilho?</p>
+                          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                            {stages.map((s: any) => (
+                              <button
+                                key={s.id}
+                                onClick={() => setNewRule({...newRule, triggerStageId: s.id})}
+                                className={cn(
+                                  "p-6 rounded-3xl border-2 text-left transition-all",
+                                  newRule.triggerStageId === s.id 
+                                    ? "border-blue-600 bg-blue-50/50 shadow-xl shadow-blue-100/50" 
+                                    : "border-gray-50 bg-gray-50 hover:border-gray-200"
+                                )}
+                              >
+                                <div className={cn("w-8 h-8 rounded-full mb-3 flex items-center justify-center font-black text-xs", newRule.triggerStageId === s.id ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-400")}>
+                                  {stages.indexOf(s) + 1}
+                                </div>
+                                <span className={cn("text-xs font-black uppercase tracking-widest", newRule.triggerStageId === s.id ? "text-blue-900" : "text-gray-400")}>{s.title}</span>
+                              </button>
+                            ))}
+                          </div>
+                        </motion.div>
+                      )}
+
+                      {(newRule.triggerType === "tag_added" || newRule.triggerType === "tag_removed") && (
+                        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="mt-6 pt-6 border-t border-gray-50">
+                          <div className="flex items-center justify-between mb-4">
+                            <p className="text-sm font-bold text-gray-900">Qual tag deve disparar a automação?</p>
+                            <button 
+                              onClick={() => setShowTagModal(true)}
+                              className="text-[10px] font-black uppercase tracking-widest text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg flex items-center gap-1 transition-all"
+                            >
+                              <Settings size={12} /> Gerenciar Tags
+                            </button>
+                          </div>
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            {availableTags.map((tag: any) => (
+                              <button
+                                key={tag.id}
+                                onClick={() => setNewRule({...newRule, triggerTagId: tag.id})}
+                                className={cn(
+                                  "p-4 rounded-2xl border-2 text-left transition-all flex items-center gap-3",
+                                  newRule.triggerTagId === tag.id 
+                                    ? "border-blue-600 bg-blue-50/50 shadow-md" 
+                                    : "border-gray-50 bg-gray-50 hover:border-gray-200"
+                                )}
+                              >
+                                <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: tag.color }} />
+                                <span className={cn("text-[10px] font-black tracking-widest uppercase truncate", newRule.triggerTagId === tag.id ? "text-blue-900" : "text-gray-500")}>{tag.name}</span>
+                              </button>
+                            ))}
+                          </div>
+                        </motion.div>
+                      )}
+
+                      {newRule.triggerType === "deal_stale" && (
+                        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="mt-6 pt-6 border-t border-gray-50">
+                          <p className="text-sm font-bold text-gray-900 mb-4">Quantos dias sem interação?</p>
+                          <input 
+                            type="number"
+                            min="1"
+                            value={newRule.triggerDays || 3}
+                            onChange={(e) => setNewRule({...newRule, triggerDays: parseInt(e.target.value) || 3})}
+                            className="w-full md:w-1/3 bg-white border border-gray-100 rounded-xl py-4 px-6 text-xl font-black text-gray-900 outline-none focus:ring-4 focus:ring-blue-100 transition-all"
+                          />
+                        </motion.div>
+                      )}
                     </div>
                   </motion.div>
                 ) : (
@@ -525,7 +676,43 @@ export default function AutomationsPage() {
                                 <input 
                                   value={action.config.title}
                                   onChange={(e) => updateActionConfig(action.id, { ...action.config, title: e.target.value })}
-                                  className="w-full bg-white border border-gray-100 rounded-xl py-3 px-5 text-sm font-bold outline-none"
+                                  className="w-full bg-white border border-gray-100 rounded-xl py-3 px-5 text-sm font-bold outline-none focus:ring-2 focus:ring-blue-100 transition-all"
+                                />
+                              </div>
+                            ) : action.type === 'move_stage' ? (
+                              <div className="space-y-3">
+                                <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Para qual coluna mover?</label>
+                                <select 
+                                  value={action.config.stageId}
+                                  onChange={(e) => updateActionConfig(action.id, { ...action.config, stageId: e.target.value })}
+                                  className="w-full bg-white border border-gray-100 rounded-xl py-3 px-5 text-sm font-bold outline-none focus:ring-2 focus:ring-blue-100 transition-all cursor-pointer"
+                                >
+                                  {stages.map((s: any) => (
+                                    <option key={s.id} value={s.id}>{s.title}</option>
+                                  ))}
+                                </select>
+                              </div>
+                            ) : action.type === 'add_tag' || action.type === 'remove_tag' ? (
+                              <div className="space-y-3">
+                                <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Qual Tag?</label>
+                                <select 
+                                  value={action.config.tagId}
+                                  onChange={(e) => updateActionConfig(action.id, { ...action.config, tagId: e.target.value })}
+                                  className="w-full bg-white border border-gray-100 rounded-xl py-3 px-5 text-sm font-bold outline-none focus:ring-2 focus:ring-blue-100 transition-all cursor-pointer"
+                                >
+                                  {availableTags.map((tag: any) => (
+                                    <option key={tag.id} value={tag.id}>{tag.name}</option>
+                                  ))}
+                                </select>
+                              </div>
+                            ) : action.type === 'webhook' ? (
+                              <div className="space-y-3">
+                                <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest">URL do Webhook (POST)</label>
+                                <input 
+                                  value={action.config.url}
+                                  onChange={(e) => updateActionConfig(action.id, { ...action.config, url: e.target.value })}
+                                  className="w-full bg-white border border-gray-100 rounded-xl py-3 px-5 text-sm font-bold outline-none focus:ring-2 focus:ring-blue-100 transition-all font-mono"
+                                  placeholder="https://..."
                                 />
                               </div>
                             ) : (
@@ -534,7 +721,7 @@ export default function AutomationsPage() {
                                 <textarea 
                                   value={action.config.message}
                                   onChange={(e) => updateActionConfig(action.id, { ...action.config, message: e.target.value })}
-                                  className="w-full bg-white border border-gray-100 rounded-xl py-4 px-5 text-sm font-bold outline-none min-h-[100px] resize-none"
+                                  className="w-full bg-white border border-gray-100 rounded-xl py-4 px-5 text-sm font-bold outline-none min-h-[100px] resize-none focus:ring-2 focus:ring-blue-100 transition-all"
                                   placeholder="Digite sua mensagem personalizada..."
                                 />
                               </div>
@@ -599,6 +786,13 @@ export default function AutomationsPage() {
         message={deleteTarget?.type === 'template' 
           ? "Tem certeza que deseja remover este modelo da sua biblioteca? Esta ação não afetará as automações ativas criadas a partir dele." 
           : "Tem certeza que deseja excluir esta automação? Esta ação não poderá ser desfeita e o fluxo de trabalho será interrompido imediatamente."}
+      />
+
+      <TagManagementModal
+        isOpen={showTagModal}
+        onClose={() => setShowTagModal(false)}
+        tags={availableTags}
+        onUpdateTags={setAvailableTags}
       />
     </div>
   );

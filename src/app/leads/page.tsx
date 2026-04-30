@@ -75,7 +75,7 @@ export default function LeadsPage() {
   };
 
   return (
-    <div className="p-8 max-w-7xl mx-auto">
+    <div className="p-6 md:p-8 max-w-7xl mx-auto">
       <div className="flex justify-between items-end mb-12">
         <div className="flex-1">
           <h1 className="text-3xl md:text-4xl font-black text-gray-900 tracking-tight">Contatos & Leads</h1>
@@ -240,7 +240,7 @@ export default function LeadsPage() {
                   <p className="text-blue-600 font-black text-xs uppercase tracking-widest mt-1">{selectedLead.role} @ {selectedLead.company}</p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 mb-12">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
                   <div className="bg-gray-50 p-6 rounded-[2rem] border border-gray-100">
                     <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">E-mail</p>
                     <p className="text-sm font-bold text-gray-700">{selectedLead.email}</p>

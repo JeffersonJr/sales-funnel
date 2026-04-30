@@ -376,9 +376,9 @@ export function KanbanBoard() {
   };
 
   return (
-    <div className="p-8 h-full flex flex-col bg-[#fcfcfc]">
+    <div className="flex flex-col h-full bg-[#fcfcfc] p-6 md:p-10 scrollbar-hide">
       <OnboardingModal />
-      <header className="flex justify-between items-center mb-8 px-2">
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10 px-2">
         <div>
           <h1 className="text-2xl font-black text-gray-900 tracking-tight">Pipeline de Vendas</h1>
           <div className="flex items-center gap-2 text-xs font-bold text-gray-400 mt-1">
@@ -387,7 +387,7 @@ export function KanbanBoard() {
           </div>
         </div>
         {!selectedDeal && (
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-3">
             <button 
               onClick={handleResetData}
               className="bg-white border border-gray-100 text-gray-400 px-5 py-2.5 rounded-2xl text-xs font-black flex items-center gap-2 hover:bg-red-50 hover:text-red-500 transition-all shadow-sm"
@@ -436,7 +436,7 @@ export function KanbanBoard() {
           />
         </div>
       ) : (
-        <div className="flex-1 overflow-x-auto overflow-y-hidden scrollbar-hide -mx-8 px-8">
+        <div className="flex-1 overflow-x-auto overflow-y-hidden scrollbar-hide -mx-6 md:-mx-8 px-6 md:px-8">
           <div className="flex gap-6 h-full min-w-full pb-4 items-start w-fit">
             <DndContext
               sensors={sensors}

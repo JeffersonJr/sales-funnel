@@ -78,15 +78,15 @@ export default function SettingsPage() {
   if (!mounted) return null;
 
   return (
-    <div className="p-8 max-w-6xl mx-auto">
+    <div className="p-6 md:p-8 max-w-6xl mx-auto">
       <div className="mb-12">
         <h1 className="text-4xl font-black text-gray-900 tracking-tight">Configurações</h1>
         <p className="text-gray-400 font-medium mt-2">Personalize o sistema e gerencie permissões da equipe</p>
       </div>
 
-      <div className="flex gap-12">
+      <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
         {/* Sidebar Tabs */}
-        <div className="w-64 space-y-2">
+        <div className="w-full lg:w-64 flex lg:flex-col overflow-x-auto lg:overflow-visible scrollbar-hide gap-1 md:gap-2 pb-2 lg:pb-0">
           {[
             { id: "users", label: "Usuários & Acessos", icon: Users },
             { id: "groups", label: "Grupos & Equipes", icon: Users2 },
@@ -99,10 +99,10 @@ export default function SettingsPage() {
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
               className={cn(
-                "w-full flex items-center gap-3 px-6 py-4 rounded-2xl text-sm font-bold transition-all",
+                "flex items-center gap-3 px-4 py-3 rounded-2xl transition-all font-bold text-sm whitespace-nowrap lg:whitespace-normal",
                 activeTab === tab.id 
-                  ? "bg-gray-900 text-white shadow-xl shadow-gray-200" 
-                  : "text-gray-400 hover:bg-gray-100 hover:text-gray-900"
+                  ? "bg-gray-900 text-white shadow-lg shadow-gray-200" 
+                  : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
               )}
             >
               <tab.icon size={18} />
@@ -112,7 +112,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Content Area */}
-        <div className="flex-1">
+        <div className="flex-1 min-w-0">
           {activeTab === "users" && (
             <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-8">
               <div className="flex justify-between items-center">
