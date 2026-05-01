@@ -41,19 +41,19 @@ export function LeadModal({ isOpen, onClose, onSave, initialData }: LeadModalPro
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-[200] flex items-center justify-center p-4">
+      <div className="fixed inset-0 bg-foreground/40 backdrop-blur-sm z-[200] flex items-center justify-center p-4">
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
-          className="bg-white rounded-[2.5rem] w-full max-w-lg shadow-2xl overflow-hidden"
+          className="bg-card rounded-[2.5rem] w-full max-w-lg shadow-2xl overflow-hidden border border-border"
         >
-          <div className="p-8 border-b border-gray-50 flex justify-between items-center bg-gray-50/50">
+          <div className="p-8 border-b border-border flex justify-between items-center bg-muted/30">
             <div>
-              <h2 className="text-xl font-black text-gray-900">{initialData ? "Editar Contato" : "Novo Contato"}</h2>
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Gerencie informações do lead</p>
+              <h2 className="text-xl font-black text-foreground">{initialData ? "Editar Contato" : "Novo Contato"}</h2>
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1">Gerencie informações do lead</p>
             </div>
-            <button onClick={onClose} className="p-2 hover:bg-gray-200 rounded-xl text-gray-400 transition-colors">
+            <button onClick={onClose} className="p-2 hover:bg-muted rounded-xl text-muted-foreground hover:text-foreground transition-colors">
               <X size={20} />
             </button>
           </div>
@@ -62,61 +62,61 @@ export function LeadModal({ isOpen, onClose, onSave, initialData }: LeadModalPro
             <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="col-span-2">
-                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Nome Completo</label>
+                  <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2 ml-1">Nome Completo</label>
                   <div className="relative">
-                    <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={18} />
+                    <User className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/60" size={18} />
                     <input 
                       value={form.name}
                       onChange={(e) => setForm({...form, name: e.target.value})}
-                      className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-4 pl-12 pr-4 text-sm font-bold focus:ring-2 focus:ring-gray-900/5 outline-none transition-all"
+                      className="w-full bg-muted/50 border border-border rounded-2xl py-4 pl-12 pr-4 text-sm font-bold text-foreground focus:ring-2 focus:ring-primary/10 outline-none transition-all"
                       placeholder="Ex: João Silva"
                     />
                   </div>
                 </div>
 
                 <div className="col-span-1">
-                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">E-mail</label>
+                  <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2 ml-1">E-mail</label>
                   <div className="relative">
-                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={18} />
+                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/60" size={18} />
                     <input 
                       value={form.email}
                       onChange={(e) => setForm({...form, email: e.target.value})}
-                      className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-4 pl-12 pr-4 text-sm font-bold focus:ring-2 focus:ring-gray-900/5 outline-none transition-all"
+                      className="w-full bg-muted/50 border border-border rounded-2xl py-4 pl-12 pr-4 text-sm font-bold text-foreground focus:ring-2 focus:ring-primary/10 outline-none transition-all"
                       placeholder="joao@empresa.com"
                     />
                   </div>
                 </div>
 
                 <div className="col-span-1">
-                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Telefone</label>
+                  <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2 ml-1">Telefone</label>
                   <div className="relative">
-                    <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={18} />
+                    <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/60" size={18} />
                     <input 
                       value={form.phone}
                       onChange={(e) => setForm({...form, phone: maskPhone(e.target.value)})}
-                      className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-4 pl-12 pr-4 text-sm font-bold focus:ring-2 focus:ring-gray-900/5 outline-none transition-all"
+                      className="w-full bg-muted/50 border border-border rounded-2xl py-4 pl-12 pr-4 text-sm font-bold text-foreground focus:ring-2 focus:ring-primary/10 outline-none transition-all"
                       placeholder="(11) 99999-9999"
                     />
                   </div>
                 </div>
 
                 <div className="col-span-1">
-                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Cargo</label>
+                  <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2 ml-1">Cargo</label>
                   <div className="relative">
-                    <Briefcase className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={18} />
+                    <Briefcase className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/60" size={18} />
                     <input 
                       value={form.role}
                       onChange={(e) => setForm({...form, role: e.target.value})}
-                      className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-4 pl-12 pr-4 text-sm font-bold focus:ring-2 focus:ring-gray-900/5 outline-none transition-all"
+                      className="w-full bg-muted/50 border border-border rounded-2xl py-4 pl-12 pr-4 text-sm font-bold text-foreground focus:ring-2 focus:ring-primary/10 outline-none transition-all"
                       placeholder="Ex: Diretor Comercial"
                     />
                   </div>
                 </div>
 
                 <div className="col-span-1">
-                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Empresa</label>
+                  <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2 ml-1">Empresa</label>
                   <div className="relative">
-                    <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-300" size={16} />
+                    <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/60" size={16} />
                     <div className="flex gap-1.5">
                       <select 
                         value={form.companyId || ""}
@@ -135,7 +135,7 @@ export function LeadModal({ isOpen, onClose, onSave, initialData }: LeadModalPro
                             setShowQuickAddCompany(false);
                           }
                         }}
-                        className="flex-1 bg-gray-50 border border-gray-100 rounded-2xl py-4 pl-9 pr-2 text-[13px] font-bold focus:ring-2 focus:ring-gray-900/5 outline-none transition-all appearance-none"
+                        className="flex-1 bg-muted/50 border border-border rounded-2xl py-4 pl-9 pr-2 text-[13px] font-bold text-foreground focus:ring-2 focus:ring-primary/10 outline-none transition-all appearance-none"
                       >
                         <option value="">Nenhuma / Outra</option>
                         {companies.map((c: any) => (
@@ -154,7 +154,7 @@ export function LeadModal({ isOpen, onClose, onSave, initialData }: LeadModalPro
                               setShowQuickAddCompany(true);
                             }
                           }}
-                          className="p-3 bg-gray-50 border border-gray-100 rounded-2xl text-gray-400 hover:text-gray-900 transition-all"
+                          className="p-3 bg-muted border border-border rounded-2xl text-muted-foreground hover:text-foreground transition-all"
                         >
                           <Edit2 size={16} />
                         </button>
@@ -169,7 +169,7 @@ export function LeadModal({ isOpen, onClose, onSave, initialData }: LeadModalPro
                       initial={{ height: 0, opacity: 0, y: -10 }}
                       animate={{ height: "auto", opacity: 1, y: 0 }}
                       exit={{ height: 0, opacity: 0, y: -10 }}
-                      className="col-span-2 mt-2 p-6 bg-gradient-to-br from-purple-50/80 to-blue-50/80 backdrop-blur-md border border-purple-100 rounded-[2rem] space-y-4 overflow-hidden shadow-inner"
+                      className="col-span-2 mt-2 p-6 bg-gradient-to-br from-purple-50/80 to-blue-50/80 dark:from-purple-500/10 dark:to-blue-500/10 backdrop-blur-md border border-purple-100 dark:border-purple-500/20 rounded-[2rem] space-y-4 overflow-hidden shadow-inner"
                     >
                       <div className="flex justify-between items-center">
                         <p className="text-[10px] font-black text-purple-600 uppercase tracking-widest">
@@ -177,7 +177,7 @@ export function LeadModal({ isOpen, onClose, onSave, initialData }: LeadModalPro
                         </p>
                         <button 
                           onClick={() => setShowQuickAddCompany(false)}
-                          className="text-[10px] font-black text-gray-400 hover:text-gray-600"
+                          className="text-[10px] font-black text-muted-foreground hover:text-foreground"
                         >
                           Fechar
                         </button>
@@ -189,7 +189,7 @@ export function LeadModal({ isOpen, onClose, onSave, initialData }: LeadModalPro
                             value={quickCompany.name}
                             onChange={(e) => setQuickCompany({...quickCompany, name: e.target.value})}
                             placeholder="Ex: TechCorp"
-                            className="w-full bg-white border border-purple-100 rounded-2xl px-4 py-3 text-sm font-bold outline-none"
+                            className="w-full bg-card border border-border rounded-2xl px-4 py-3 text-sm font-bold text-foreground outline-none focus:ring-2 focus:ring-purple-500/20"
                           />
                         </div>
                         <div className="space-y-1.5">
@@ -198,7 +198,7 @@ export function LeadModal({ isOpen, onClose, onSave, initialData }: LeadModalPro
                             value={quickCompany.industry}
                             onChange={(e) => setQuickCompany({...quickCompany, industry: e.target.value})}
                             placeholder="Ex: SaaS"
-                            className="w-full bg-white border border-purple-100 rounded-2xl px-4 py-3 text-sm font-bold outline-none"
+                            className="w-full bg-card border border-border rounded-2xl px-4 py-3 text-sm font-bold text-foreground outline-none focus:ring-2 focus:ring-purple-500/20"
                           />
                         </div>
                         <div className="space-y-1.5">
@@ -207,7 +207,7 @@ export function LeadModal({ isOpen, onClose, onSave, initialData }: LeadModalPro
                             value={quickCompany.website}
                             onChange={(e) => setQuickCompany({...quickCompany, website: e.target.value})}
                             placeholder="Ex: techcorp.com"
-                            className="w-full bg-white border border-purple-100 rounded-2xl px-4 py-3 text-sm font-bold outline-none"
+                            className="w-full bg-card border border-border rounded-2xl px-4 py-3 text-sm font-bold text-foreground outline-none focus:ring-2 focus:ring-purple-500/20"
                           />
                         </div>
                       </div>
@@ -236,7 +236,7 @@ export function LeadModal({ isOpen, onClose, onSave, initialData }: LeadModalPro
                           setQuickCompany({ name: "", industry: "", website: "" });
                           setEditingCompanyId(null);
                         }}
-                        className="w-full bg-purple-600 text-white py-4 rounded-2xl text-xs font-black shadow-xl shadow-purple-200 hover:bg-purple-700 transition-all active:scale-95"
+                        className="w-full bg-purple-600 text-white py-4 rounded-2xl text-xs font-black shadow-xl shadow-purple-200 dark:shadow-purple-900/30 hover:bg-purple-700 transition-all active:scale-95"
                       >
                         {editingCompanyId ? "Salvar Alterações" : "Salvar e Vincular"}
                       </button>
@@ -249,7 +249,7 @@ export function LeadModal({ isOpen, onClose, onSave, initialData }: LeadModalPro
                     <input 
                       value={form.company}
                       onChange={(e) => setForm({...form, company: e.target.value})}
-                      className="w-full mt-2 bg-gray-50 border border-gray-100 rounded-2xl py-3 px-4 text-xs font-bold outline-none"
+                      className="w-full mt-2 bg-muted/50 border border-border rounded-2xl py-3 px-4 text-xs font-bold text-foreground outline-none focus:ring-2 focus:ring-primary/10"
                       placeholder="Ou digite o nome da empresa"
                     />
                   </div>
@@ -260,13 +260,13 @@ export function LeadModal({ isOpen, onClose, onSave, initialData }: LeadModalPro
             <div className="flex gap-3 pt-4">
               <button 
                 onClick={onClose}
-                className="flex-1 py-4 text-sm font-black text-gray-400 uppercase tracking-widest hover:text-gray-900 transition-colors"
+                className="flex-1 py-4 text-sm font-black text-muted-foreground uppercase tracking-widest hover:text-foreground transition-colors"
               >
                 Cancelar
               </button>
               <button 
                 onClick={() => onSave(form)}
-                className="flex-[2] bg-gray-900 text-white py-4 rounded-2xl font-black text-sm shadow-xl shadow-gray-200 flex items-center justify-center gap-2 hover:bg-gray-800 transition-all"
+                className="flex-[2] bg-foreground text-background py-4 rounded-2xl font-black text-sm shadow-xl shadow-black/10 flex items-center justify-center gap-2 hover:opacity-90 transition-all"
               >
                 <Save size={18} /> {initialData ? "Salvar Alterações" : "Criar Contato"}
               </button>

@@ -30,8 +30,8 @@ export function AppWrapper({ children }: { children: React.ReactNode }) {
 
   if (isLoading) {
     return (
-      <div className="h-screen flex items-center justify-center bg-white dark:bg-background">
-        <div className="w-10 h-10 border-4 border-gray-100 dark:border-border border-t-gray-900 dark:border-t-white rounded-full animate-spin" />
+      <div className="h-screen flex items-center justify-center bg-background">
+        <div className="w-10 h-10 border-4 border-border border-t-foreground rounded-full animate-spin" />
       </div>
     );
   }

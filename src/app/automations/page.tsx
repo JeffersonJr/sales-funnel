@@ -411,7 +411,7 @@ export default function AutomationsPage() {
                     <Tooltip content="Editar Automação">
                       <button 
                         onClick={() => handleEdit(auto, false)}
-                        className="p-4 text-gray-300 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-white/5 rounded-2xl transition-all"
+                        className="p-4 text-muted-foreground hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-white/5 rounded-2xl transition-all"
                       >
                         <Edit2 size={24} />
                       </button>
@@ -420,7 +420,7 @@ export default function AutomationsPage() {
                     <Tooltip content="Duplicar Automação">
                       <button 
                         onClick={() => duplicateAutomation(auto)}
-                        className="p-4 text-gray-300 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-white/5 rounded-2xl transition-all"
+                        className="p-4 text-muted-foreground hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-white/5 rounded-2xl transition-all"
                       >
                         <Copy size={24} />
                       </button>
@@ -430,7 +430,7 @@ export default function AutomationsPage() {
                       <Tooltip content="Salvar como Template">
                         <button 
                           onClick={() => saveAsTemplate(auto)}
-                          className="p-4 text-gray-300 hover:text-purple-500 hover:bg-purple-50 dark:hover:bg-white/5 rounded-2xl transition-all"
+                          className="p-4 text-muted-foreground hover:text-purple-500 hover:bg-purple-50 dark:hover:bg-white/5 rounded-2xl transition-all"
                         >
                           <Library size={24} />
                         </button>
@@ -442,7 +442,7 @@ export default function AutomationsPage() {
                         onClick={() => toggleFavorite(auto)}
                         className={cn(
                           "p-4 rounded-2xl transition-all",
-                          auto.isFavorite ? "text-yellow-500 bg-yellow-50 dark:bg-yellow-500/10" : "text-gray-300 hover:text-yellow-500 hover:bg-yellow-50 dark:hover:bg-white/5"
+                          auto.isFavorite ? "text-yellow-500 bg-yellow-50 dark:bg-yellow-500/10" : "text-muted-foreground hover:text-yellow-500 hover:bg-yellow-50 dark:hover:bg-white/5"
                         )}
                       >
                         <Bookmark size={24} className={cn(auto.isFavorite && "fill-yellow-500")} />
@@ -464,7 +464,7 @@ export default function AutomationsPage() {
                     <Tooltip content="Excluir">
                       <button 
                         onClick={() => setDeleteTarget({ id: auto.id, type: 'automation' })}
-                        className="p-4 text-gray-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-white/5 rounded-2xl transition-all"
+                        className="p-4 text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-white/5 rounded-2xl transition-all"
                       >
                         <Trash2 size={24} />
                       </button>
@@ -498,14 +498,14 @@ export default function AutomationsPage() {
                 <div className="absolute top-6 right-6 flex gap-1">
                   <button 
                     onClick={() => handleEdit(tmpl, true)}
-                    className="p-1.5 text-gray-200 hover:text-blue-500 opacity-0 group-hover:opacity-100 transition-all bg-gray-50 hover:bg-blue-50 rounded-lg"
+                    className="p-1.5 text-muted-foreground hover:text-blue-500 opacity-0 group-hover:opacity-100 transition-all bg-muted hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-lg"
                     title="Editar Template"
                   >
                     <Edit2 size={14} />
                   </button>
                   <button 
                     onClick={() => setDeleteTarget({ id: tmpl.id, type: 'template' })}
-                    className="p-1.5 text-gray-200 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all bg-gray-50 hover:bg-red-50 rounded-lg"
+                    className="p-1.5 text-muted-foreground hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all bg-muted hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg"
                   >
                     <Trash2 size={14} />
                   </button>
@@ -551,23 +551,23 @@ export default function AutomationsPage() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-white dark:bg-[#121215] rounded-[4rem] w-full max-w-4xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] border border-transparent dark:border-white/5"
+              className="bg-card rounded-[4rem] w-full max-w-4xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] border border-border"
             >
-              <div className="p-10 border-b border-gray-50 flex justify-between items-center bg-gray-50/30">
+              <div className="p-10 border-b border-border flex justify-between items-center bg-muted/20">
                 <div className="flex items-center gap-6">
-                  <div className="w-12 h-12 bg-gray-900 dark:bg-blue-600 text-white rounded-2xl flex items-center justify-center">
+                  <div className="w-12 h-12 bg-foreground text-background rounded-2xl flex items-center justify-center">
                     <Zap size={24} />
                   </div>
                   <div>
-                    <h2 className="text-2xl font-black text-gray-900 dark:text-white">Configurador de Workflow</h2>
+                    <h2 className="text-2xl font-black text-foreground">Configurador de Workflow</h2>
                     <div className="flex items-center gap-2 mt-1">
-                      <span className={cn("w-2 h-2 rounded-full", step >= 1 ? "bg-blue-500" : "bg-gray-200")} />
-                      <span className={cn("w-2 h-2 rounded-full", step >= 2 ? "bg-blue-500" : "bg-gray-200")} />
-                      <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">Passo {step} de 2</span>
+                      <span className={cn("w-2 h-2 rounded-full", step >= 1 ? "bg-blue-500" : "bg-border")} />
+                      <span className={cn("w-2 h-2 rounded-full", step >= 2 ? "bg-blue-500" : "bg-border")} />
+                      <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-2">Passo {step} de 2</span>
                     </div>
                   </div>
                 </div>
-                <button onClick={resetModal} className="p-3 hover:bg-gray-200 rounded-2xl text-gray-400 transition-colors">
+                <button onClick={resetModal} className="p-3 hover:bg-muted rounded-2xl text-muted-foreground hover:text-foreground transition-colors">
                   <X size={28} />
                 </button>
               </div>
@@ -586,29 +586,29 @@ export default function AutomationsPage() {
                     </div>
 
                     <div className="space-y-6">
-                      <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Tipo de Automação</label>
+                      <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Tipo de Automação</label>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <button 
                           onClick={() => setIsEditingTemplate(false)}
                           className={cn(
                             "p-8 rounded-[2.5rem] border-2 transition-all text-left group relative overflow-hidden",
-                            !isEditingTemplate ? "border-blue-600 bg-blue-600 text-white shadow-2xl" : "border-gray-100 dark:border-white/5 bg-white dark:bg-white/5 text-gray-500 dark:text-gray-400 hover:border-gray-200 dark:hover:border-white/10"
+                            !isEditingTemplate ? "border-blue-600 bg-blue-600 text-white shadow-2xl" : "border-border bg-muted text-muted-foreground hover:border-primary/30 hover:bg-muted/80"
                           )}
                         >
-                          <Zap size={24} className={cn("mb-4", !isEditingTemplate ? "text-white" : "text-gray-300 dark:text-gray-600")} />
-                          <h4 className={cn("font-black text-sm uppercase tracking-tight", !isEditingTemplate ? "text-white" : "text-gray-900 dark:text-white")}>Fluxo Operacional</h4>
-                          <p className={cn("text-[10px] font-medium mt-1", !isEditingTemplate ? "text-blue-100" : "text-gray-400 dark:text-gray-500")}>Ativa imediatamente no funil</p>
+                          <Zap size={24} className={cn("mb-4", !isEditingTemplate ? "text-white" : "text-muted-foreground")} />
+                          <h4 className={cn("font-black text-sm uppercase tracking-tight", !isEditingTemplate ? "text-white" : "text-foreground")}>Fluxo Operacional</h4>
+                          <p className={cn("text-[10px] font-medium mt-1", !isEditingTemplate ? "text-blue-100" : "text-muted-foreground")}>Ativa imediatamente no funil</p>
                         </button>
                         <button 
                           onClick={() => setIsEditingTemplate(true)}
                           className={cn(
                             "p-8 rounded-[2.5rem] border-2 transition-all text-left group relative overflow-hidden",
-                            isEditingTemplate ? "border-blue-600 bg-blue-600 text-white shadow-xl" : "border-gray-100 dark:border-white/5 bg-white dark:bg-white/5 text-gray-500 dark:text-gray-400 hover:border-gray-200 dark:hover:border-white/10"
+                            isEditingTemplate ? "border-blue-600 bg-blue-600 text-white shadow-xl" : "border-border bg-muted text-muted-foreground hover:border-primary/30 hover:bg-muted/80"
                           )}
                         >
-                          <Bookmark size={24} className={cn("mb-4", isEditingTemplate ? "text-white" : "text-gray-300 dark:text-gray-600")} />
-                          <h4 className={cn("font-black text-sm uppercase tracking-tight", isEditingTemplate ? "text-white" : "text-gray-900 dark:text-white")}>Modelo (Template)</h4>
-                          <p className={cn("text-[10px] font-medium mt-1", isEditingTemplate ? "text-blue-100" : "text-gray-400 dark:text-gray-500")}>Salva na biblioteca de modelos</p>
+                          <Bookmark size={24} className={cn("mb-4", isEditingTemplate ? "text-white" : "text-muted-foreground")} />
+                          <h4 className={cn("font-black text-sm uppercase tracking-tight", isEditingTemplate ? "text-white" : "text-foreground")}>Modelo (Template)</h4>
+                          <p className={cn("text-[10px] font-medium mt-1", isEditingTemplate ? "text-blue-100" : "text-muted-foreground")}>Salva na biblioteca de modelos</p>
                         </button>
                       </div>
                     </div>
@@ -711,8 +711,8 @@ export default function AutomationsPage() {
                   <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-12">
                     <div className="flex justify-between items-center">
                       <div>
-                        <h3 className="text-xl font-black text-gray-900">Ações em Sequência</h3>
-                        <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mt-1">Defina o que acontece após o trigger</p>
+                        <h3 className="text-xl font-black text-foreground">Ações em Sequência</h3>
+                        <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest mt-1">Defina o que acontece após o trigger</p>
                       </div>
                     </div>
 
@@ -797,17 +797,17 @@ export default function AutomationsPage() {
                         );
                       })}
 
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8 pt-8 border-t border-gray-50">
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8 pt-8 border-t border-border">
                         {actionTypes.map((type) => (
                           <button
                             key={type.id}
                             onClick={() => addAction(type.id)}
-                            className="p-6 rounded-[2rem] bg-white border border-gray-100 hover:border-blue-500 hover:shadow-xl hover:shadow-gray-100 transition-all flex flex-col items-center text-center group"
+                            className="p-6 rounded-[2rem] bg-card border border-border hover:border-blue-500 hover:shadow-xl hover:shadow-black/5 transition-all flex flex-col items-center text-center group"
                           >
-                            <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform", type.bg)}>
+                            <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform", type.bg, "dark:bg-muted")}>
                               <type.icon className={type.color} size={24} />
                             </div>
-                            <span className="text-[9px] font-black uppercase tracking-widest text-gray-900">{type.label}</span>
+                            <span className="text-[9px] font-black uppercase tracking-widest text-foreground">{type.label}</span>
                           </button>
                         ))}
                       </div>
@@ -816,10 +816,10 @@ export default function AutomationsPage() {
                 )}
               </div>
 
-              <div className="p-10 border-t border-gray-50 bg-gray-50/30 flex justify-between gap-6">
+              <div className="p-10 border-t border-border bg-muted/20 flex justify-between gap-6">
                 <button 
                   onClick={() => step === 1 ? resetModal() : setStep(1)}
-                  className="px-10 py-5 text-sm font-black text-gray-400 uppercase tracking-widest hover:text-gray-900 transition-colors"
+                  className="px-10 py-5 text-sm font-black text-muted-foreground uppercase tracking-widest hover:text-foreground transition-colors"
                 >
                   {step === 1 ? "Cancelar" : "Voltar"}
                 </button>
@@ -827,14 +827,14 @@ export default function AutomationsPage() {
                   {step === 1 ? (
                     <button 
                       onClick={() => setStep(2)}
-                      className="bg-gray-900 text-white px-12 py-5 rounded-[1.5rem] font-black text-sm flex items-center gap-2 shadow-xl shadow-gray-200"
+                      className="bg-foreground text-background px-12 py-5 rounded-[1.5rem] font-black text-sm flex items-center gap-2 shadow-xl shadow-black/10"
                     >
                       Continuar <ArrowRight size={18} />
                     </button>
                   ) : (
                     <button 
                       onClick={handleSave}
-                      className="bg-blue-600 text-white px-12 py-5 rounded-[1.5rem] font-black text-sm flex items-center gap-2 shadow-xl shadow-blue-100"
+                      className="bg-blue-600 text-white px-12 py-5 rounded-[1.5rem] font-black text-sm flex items-center gap-2 shadow-xl shadow-blue-200 dark:shadow-blue-900/30"
                     >
                       <Zap size={18} /> {editingId ? "Salvar Alterações" : (isEditingTemplate ? "Criar Template" : "Ativar Fluxo")}
                     </button>

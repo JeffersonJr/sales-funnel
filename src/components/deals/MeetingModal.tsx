@@ -61,9 +61,9 @@ export function MeetingModal({ isOpen, onClose, onSchedule, contacts, initialDat
   }, [initialData, isOpen]);
 
   const types = [
-    { id: "online", label: "Reunião Online", icon: Video, color: "text-blue-500", bg: "bg-blue-50" },
-    { id: "cafe", label: "Café / Almoço", icon: Coffee, color: "text-orange-500", bg: "bg-orange-50" },
-    { id: "presencial", label: "Presencial", icon: MapPin, color: "text-purple-500", bg: "bg-purple-50" },
+    { id: "online", label: "Reunião Online", icon: Video, color: "text-blue-500", bg: "bg-blue-50 dark:bg-blue-500/10" },
+    { id: "cafe", label: "Café / Almoço", icon: Coffee, color: "text-orange-500", bg: "bg-orange-50 dark:bg-orange-500/10" },
+    { id: "presencial", label: "Presencial", icon: MapPin, color: "text-purple-500", bg: "bg-purple-50 dark:bg-purple-500/10" },
   ];
 
   const handleSchedule = () => {
@@ -86,19 +86,19 @@ export function MeetingModal({ isOpen, onClose, onSchedule, contacts, initialDat
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-[110] flex items-center justify-center p-4">
+      <div className="fixed inset-0 bg-foreground/40 backdrop-blur-sm z-[110] flex items-center justify-center p-4">
         <motion.div 
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="bg-white rounded-[2.5rem] w-full max-w-xl shadow-2xl overflow-hidden flex flex-col"
+          className="bg-card rounded-[2.5rem] w-full max-w-xl shadow-2xl overflow-hidden flex flex-col border border-border"
         >
-          <div className="p-8 border-b border-gray-50 flex justify-between items-center">
+          <div className="p-8 border-b border-border flex justify-between items-center bg-muted/30">
             <div>
-              <h2 className="text-xl font-black text-gray-900">Agendar Atividade</h2>
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Passo {step} de 2</p>
+              <h2 className="text-xl font-black text-foreground">Agendar Atividade</h2>
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1">Passo {step} de 2</p>
             </div>
-            <button onClick={onClose} className="p-2 hover:bg-gray-50 rounded-xl text-gray-300 transition-colors">
+            <button onClick={onClose} className="p-2 hover:bg-muted rounded-xl text-muted-foreground hover:text-foreground transition-colors">
               <X size={20} />
             </button>
           </div>
@@ -107,19 +107,19 @@ export function MeetingModal({ isOpen, onClose, onSchedule, contacts, initialDat
             {step === 1 ? (
               <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-8">
                 <div>
-                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">O que será feito?</label>
+                  <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-3">O que será feito?</label>
                   <input 
                     autoFocus
                     type="text" 
                     value={form.title}
                     onChange={(e) => setForm({...form, title: e.target.value})}
                     placeholder="Ex: Demo da plataforma, Alinhamento de proposta..."
-                    className="w-full p-4 rounded-2xl border border-gray-100 bg-gray-50 text-sm font-bold focus:ring-2 focus:ring-gray-900/5 transition-all outline-none"
+                    className="w-full p-4 rounded-2xl border border-border bg-muted/50 text-sm font-bold text-foreground focus:ring-2 focus:ring-primary/10 transition-all outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Tipo de Atividade</label>
+                  <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-3">Tipo de Atividade</label>
                   <div className="grid grid-cols-3 gap-3">
                     {types.map((t) => (
                       <button
@@ -128,11 +128,11 @@ export function MeetingModal({ isOpen, onClose, onSchedule, contacts, initialDat
                         className={cn(
                           "p-4 rounded-2xl border flex flex-col items-center gap-3 transition-all",
                           form.type === t.id 
-                            ? "border-gray-900 bg-gray-900 text-white shadow-xl shadow-gray-200" 
-                            : "border-gray-100 bg-gray-50 text-gray-400 hover:border-gray-200"
+                            ? "border-primary bg-primary text-primary-foreground shadow-xl shadow-primary/20" 
+                            : "border-border bg-muted/50 text-muted-foreground hover:border-primary/30 hover:bg-muted"
                         )}
                       >
-                        <t.icon size={24} className={cn(form.type === t.id ? "text-white" : t.color)} />
+                        <t.icon size={24} className={cn(form.type === t.id ? "text-primary-foreground" : t.color)} />
                         <span className="text-[10px] font-black uppercase tracking-tight">{t.label}</span>
                       </button>
                     ))}
@@ -141,27 +141,27 @@ export function MeetingModal({ isOpen, onClose, onSchedule, contacts, initialDat
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-2"><Calendar size={12} /> Data</label>
+                    <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-3 flex items-center gap-2"><Calendar size={12} /> Data</label>
                     <input 
                       type="date" 
                       value={form.date}
                       onChange={(e) => setForm({...form, date: e.target.value})}
-                      className="w-full p-4 rounded-2xl border border-gray-100 bg-gray-50 text-sm font-bold outline-none"
+                      className="w-full p-4 rounded-2xl border border-border bg-muted/50 text-sm font-bold text-foreground outline-none focus:ring-2 focus:ring-primary/10"
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-2"><Clock size={12} /> Horário</label>
+                    <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-3 flex items-center gap-2"><Clock size={12} /> Horário</label>
                     <input 
                       type="time" 
                       value={form.time}
                       onChange={(e) => setForm({...form, time: e.target.value})}
-                      className="w-full p-4 rounded-2xl border border-gray-100 bg-gray-50 text-sm font-bold outline-none"
+                      className="w-full p-4 rounded-2xl border border-border bg-muted/50 text-sm font-bold text-foreground outline-none focus:ring-2 focus:ring-primary/10"
                     />
                   </div>
                 </div>
                 <div className="flex flex-col gap-6 pt-4">
-                  <label className="flex items-center gap-4 p-5 rounded-2xl border border-gray-100 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-all group/opt">
-                    <div className={cn("w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all", form.isImportant ? "bg-red-500 border-red-500" : "bg-white border-gray-200")}>
+                  <label className="flex items-center gap-4 p-5 rounded-2xl border border-border bg-muted/30 cursor-pointer hover:bg-muted transition-all group/opt">
+                    <div className={cn("w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all", form.isImportant ? "bg-red-500 border-red-500" : "bg-card border-border")}>
                       {form.isImportant && <Check size={14} className="text-white" />}
                     </div>
                     <input 
@@ -171,23 +171,23 @@ export function MeetingModal({ isOpen, onClose, onSchedule, contacts, initialDat
                       onChange={(e) => setForm({...form, isImportant: e.target.checked})}
                     />
                     <div className="flex flex-col">
-                      <span className="text-sm font-black text-gray-900">Atividade Importante</span>
-                      <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Priorizar no pipeline</span>
+                      <span className="text-sm font-black text-foreground">Atividade Importante</span>
+                      <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">Priorizar no pipeline</span>
                     </div>
                   </label>
 
                   <div className="space-y-3">
-                    <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest">Status da Atividade</label>
+                    <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest">Status da Atividade</label>
                     <div className="flex gap-2">
                        <button 
                         onClick={() => setForm({...form, status: "pending"})}
-                        className={cn("flex-1 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm", form.status === 'pending' ? "bg-orange-500 text-white shadow-orange-100" : "bg-white text-gray-400 border border-gray-100")}
+                        className={cn("flex-1 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm", form.status === 'pending' ? "bg-orange-500 text-white shadow-orange-100 dark:shadow-orange-900/30" : "bg-muted text-muted-foreground border border-border hover:text-foreground")}
                        >
                          Pendente
                        </button>
                        <button 
                         onClick={() => setForm({...form, status: "completed"})}
-                        className={cn("flex-1 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm", form.status === 'completed' ? "bg-green-500 text-white shadow-green-100" : "bg-white text-gray-400 border border-gray-100")}
+                        className={cn("flex-1 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm", form.status === 'completed' ? "bg-green-500 text-white shadow-green-100 dark:shadow-green-900/30" : "bg-muted text-muted-foreground border border-border hover:text-foreground")}
                        >
                          Realizada
                        </button>
@@ -199,7 +199,7 @@ export function MeetingModal({ isOpen, onClose, onSchedule, contacts, initialDat
             ) : (
               <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-8">
                 <div>
-                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-2"><Users size={12} /> Participantes</label>
+                  <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-3 flex items-center gap-2"><Users size={12} /> Participantes</label>
                   <div className="grid grid-cols-1 gap-2">
                     {contacts.map((contact) => (
                       <button
@@ -216,8 +216,8 @@ export function MeetingModal({ isOpen, onClose, onSchedule, contacts, initialDat
                         className={cn(
                           "p-3 rounded-xl border flex items-center justify-between transition-all",
                           form.participants.includes(contact.id)
-                            ? "border-blue-600 bg-blue-50 text-blue-700"
-                            : "border-gray-100 bg-gray-50 text-gray-500 hover:border-gray-200"
+                            ? "border-blue-600 bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400"
+                            : "border-border bg-muted/30 text-muted-foreground hover:border-primary/30 hover:bg-muted"
                         )}
                       >
                         <div className="flex items-center gap-3">
@@ -231,29 +231,29 @@ export function MeetingModal({ isOpen, onClose, onSchedule, contacts, initialDat
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Observações / Agenda</label>
+                  <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-3">Observações / Agenda</label>
                   <textarea 
                     value={form.description}
                     onChange={(e) => setForm({...form, description: e.target.value})}
                     placeholder="Quais os principais tópicos da reunião?"
-                    className="w-full p-4 rounded-2xl border border-gray-100 bg-gray-50 text-sm font-bold outline-none min-h-[100px] resize-none"
+                    className="w-full p-4 rounded-2xl border border-border bg-muted/50 text-sm font-bold text-foreground outline-none min-h-[100px] resize-none focus:ring-2 focus:ring-primary/10"
                   />
                 </div>
               </motion.div>
             )}
           </div>
 
-          <div className="p-8 bg-gray-50 flex justify-between items-center">
+          <div className="p-8 bg-muted/20 border-t border-border flex justify-between items-center">
             <button 
               onClick={() => step === 2 && setStep(1)}
-              className={cn("text-xs font-black text-gray-400 uppercase tracking-widest hover:text-gray-900 transition-colors", step === 1 && "invisible")}
+              className={cn("text-xs font-black text-muted-foreground uppercase tracking-widest hover:text-foreground transition-colors", step === 1 && "invisible")}
             >
               Voltar
             </button>
             <button 
               onClick={() => step === 1 ? setStep(2) : handleSchedule()}
               disabled={step === 1 && (!form.title || !form.date || !form.time)}
-              className="bg-gray-900 text-white px-8 py-3 rounded-2xl text-xs font-black flex items-center gap-2 hover:bg-gray-800 transition-all shadow-xl shadow-gray-200 disabled:opacity-30"
+              className="bg-foreground text-background px-8 py-3 rounded-2xl text-xs font-black flex items-center gap-2 hover:opacity-90 transition-all shadow-xl shadow-black/10 disabled:opacity-30"
             >
               {step === 1 ? "Próximo Passo" : "Confirmar Agendamento"}
               <ChevronRight size={16} />

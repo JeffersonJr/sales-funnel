@@ -41,32 +41,32 @@ export default function NotificationsPage() {
   return (
     <div className="p-8 max-w-4xl mx-auto min-h-screen pb-20">
       <div className="flex items-center gap-4 mb-12">
-        <Link href="/" className="p-3 bg-white dark:bg-card border border-gray-100 dark:border-border rounded-2xl text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all shadow-sm">
+        <Link href="/" className="p-3 bg-card border border-border rounded-2xl text-muted-foreground hover:text-foreground transition-all shadow-sm">
           <ArrowLeft size={20} />
         </Link>
         <div>
-          <h1 className="text-4xl font-black text-gray-900 dark:text-white tracking-tight">Notificações</h1>
-          <p className="text-gray-400 font-medium mt-1">Fique por dentro de tudo o que acontece no seu funil</p>
+          <h1 className="text-4xl font-black text-foreground tracking-tight">Notificações</h1>
+          <p className="text-muted-foreground font-medium mt-1">Fique por dentro de tudo o que acontece no seu funil</p>
         </div>
       </div>
 
-      <div className="bg-white dark:bg-card rounded-[2.5rem] border border-gray-100 dark:border-border shadow-xl shadow-gray-50 dark:shadow-none overflow-hidden">
-        <div className="p-8 border-b border-gray-50 dark:border-border flex justify-between items-center bg-gray-50/30 dark:bg-muted/30">
+      <div className="bg-card rounded-[2.5rem] border border-border shadow-xl shadow-black/5 overflow-hidden">
+        <div className="p-8 border-b border-border flex justify-between items-center bg-muted/30">
           <div className="flex items-center gap-3">
-             <span className="text-sm font-black text-gray-900 dark:text-white">Central de Alertas</span>
+             <span className="text-sm font-black text-foreground">Central de Alertas</span>
              <span className="px-2.5 py-0.5 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[10px] font-black uppercase tracking-widest rounded-full">
                {notifications.filter(n => !n.read).length} Novas
              </span>
           </div>
           <button 
             onClick={markAllRead}
-            className="text-[10px] font-black text-gray-400 uppercase tracking-widest hover:text-blue-600 transition-colors"
+            className="text-[10px] font-black text-muted-foreground uppercase tracking-widest hover:text-blue-600 transition-colors"
           >
             Marcar todas como lidas
           </button>
         </div>
 
-        <div className="divide-y divide-gray-50 dark:divide-border">
+        <div className="divide-y divide-border">
           {notifications.map((n, i) => (
             <motion.div 
               initial={{ opacity: 0, y: 10 }}
@@ -74,7 +74,7 @@ export default function NotificationsPage() {
               transition={{ delay: i * 0.05 }}
               key={n.id} 
               className={cn(
-                "p-8 flex gap-6 hover:bg-gray-50 dark:hover:bg-muted/50 transition-all group relative",
+                "p-8 flex gap-6 hover:bg-muted/50 transition-all group relative",
                 !n.read && "bg-blue-50/30 dark:bg-blue-900/10"
               )}
             >
@@ -88,10 +88,10 @@ export default function NotificationsPage() {
 
               <div className="flex-1 min-w-0">
                 <div className="flex justify-between items-start mb-1">
-                   <h3 className="text-lg font-black text-gray-900 dark:text-white">{n.title}</h3>
-                   <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest whitespace-nowrap ml-4">{n.time}</span>
+                   <h3 className="text-lg font-black text-foreground">{n.title}</h3>
+                   <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest whitespace-nowrap ml-4">{n.time}</span>
                 </div>
-                <p className="text-sm font-medium text-gray-500 dark:text-muted-foreground leading-relaxed">
+                <p className="text-sm font-medium text-muted-foreground leading-relaxed">
                   {n.desc}
                 </p>
                 <div className="flex items-center gap-4 mt-4">
@@ -103,7 +103,7 @@ export default function NotificationsPage() {
                   </Link>
                   <button 
                     onClick={() => deleteNotification(n.id)}
-                    className="p-2 text-gray-300 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+                    className="p-2 text-muted-foreground hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
                   >
                     <Trash2 size={16} />
                   </button>
@@ -113,10 +113,10 @@ export default function NotificationsPage() {
           ))}
           {notifications.length === 0 && (
             <div className="py-24 text-center">
-              <div className="w-20 h-20 bg-gray-50 dark:bg-muted rounded-[2rem] flex items-center justify-center mx-auto mb-6">
-                <Bell size={40} className="text-gray-200" />
+              <div className="w-20 h-20 bg-muted rounded-[2rem] flex items-center justify-center mx-auto mb-6">
+                <Bell size={40} className="text-muted-foreground/40" />
               </div>
-              <p className="text-gray-400 font-bold">Você não tem notificações no momento.</p>
+              <p className="text-muted-foreground font-bold">Você não tem notificações no momento.</p>
             </div>
           )}
         </div>

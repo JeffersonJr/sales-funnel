@@ -133,8 +133,8 @@ export function TagManagementModal({ isOpen, onClose, tags, onUpdateTags, dealTa
               <AnimatePresence>
                 {tags.length === 0 && (
                   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-8">
-                    <Tag className="mx-auto mb-3 text-gray-200" size={32} />
-                    <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Nenhuma tag criada</p>
+                    <Tag className="mx-auto mb-3 text-muted-foreground/40" size={32} />
+                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Nenhuma tag criada</p>
                   </motion.div>
                 )}
                 {tags.map(tag => (

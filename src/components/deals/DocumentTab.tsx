@@ -419,7 +419,7 @@ export function DocumentTab({
                   <option key={s.id} value={s.id}>{s.title}</option>
                 ))}
               </select>
-              <span className="text-[10px] text-gray-400 font-medium">Entrada: {format(parseISO(deal.createdAt), "dd/MM/yy", { locale: ptBR })}</span>
+              <span className="text-[10px] text-muted-foreground font-medium">Entrada: {format(parseISO(deal.createdAt), "dd/MM/yy", { locale: ptBR })}</span>
             </div>
             
             {isEditingHeader ? (
@@ -548,7 +548,7 @@ export function DocumentTab({
             </div>
             <div className="flex flex-wrap gap-1.5 mt-1">
               {(!deal.tags || deal.tags.length === 0) && (
-                <span className="text-[10px] text-gray-400 font-medium italic">Nenhuma tag</span>
+                <span className="text-[10px] text-muted-foreground font-medium italic">Nenhuma tag</span>
               )}
               {deal.tags?.map((tagName: string) => {
                 const tagObj = availableTags.find((t: any) => t.name === tagName);
@@ -604,7 +604,7 @@ export function DocumentTab({
                   <div className="flex gap-2">
                     <select 
                       onChange={(e) => applyTemplate(e.target.value)}
-                      className="text-[10px] font-bold text-gray-400 bg-gray-50 px-3 py-1.5 rounded-lg border-none focus:ring-1 focus:ring-gray-200 outline-none"
+                      className="text-[10px] font-bold text-muted-foreground bg-muted px-3 py-1.5 rounded-lg border border-border focus:ring-1 focus:ring-primary/20 outline-none"
                     >
                       <option key="default-template" value="">Aplicar Modelo...</option>
                       {templates.map((t: any, idx: number) => (
@@ -631,12 +631,12 @@ export function DocumentTab({
                               defaultValue={cl.name}
                               onBlur={(e) => updateChecklistTitle(cl.id, e.target.value)}
                               onKeyDown={(e) => e.key === "Enter" && updateChecklistTitle(cl.id, (e.target as HTMLInputElement).value)}
-                              className="text-sm font-black text-gray-900 bg-transparent border-b border-blue-500 outline-none"
+                              className="text-sm font-black text-foreground bg-transparent border-b border-blue-500 outline-none"
                             />
                           ) : (
                             <h4 
                               onClick={() => setEditingChecklistTitleId(cl.id)}
-                              className="text-sm font-bold text-gray-900 flex items-center gap-2 cursor-text hover:text-blue-600 transition-colors"
+                              className="text-sm font-bold text-foreground flex items-center gap-2 cursor-text hover:text-blue-600 transition-colors"
                             >
                                {cl.name}
                                {cl.templateId && <span className="text-[10px] bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full flex items-center gap-1 font-black"><RefreshCw size={8} /> GLOBAL</span>}
@@ -645,7 +645,7 @@ export function DocumentTab({
                           {!cl.templateId && (
                              <button 
                               onClick={() => saveAsTemplate(cl)}
-                              className="p-1 text-gray-300 hover:text-orange-500 transition-colors opacity-0 group-hover/cl:opacity-100"
+                               className="p-1 text-muted-foreground hover:text-orange-500 transition-colors opacity-0 group-hover/cl:opacity-100"
                               title="Transformar em Modelo Global"
                             >
                               <Bookmark size={14} />
@@ -653,8 +653,8 @@ export function DocumentTab({
                           )}
                         </div>
                         <div className="flex items-center gap-2 opacity-0 group-hover/cl:opacity-100 transition-all">
-                          <button onClick={() => addChecklistItem(cl.id)} className="text-[10px] font-bold text-gray-400 hover:text-gray-900 uppercase">Adicionar Item</button>
-                          <button onClick={() => deleteChecklist(cl.id)} className="text-gray-300 hover:text-red-500"><Trash2 size={14} /></button>
+                          <button onClick={() => addChecklistItem(cl.id)} className="text-[10px] font-bold text-muted-foreground hover:text-foreground uppercase">Adicionar Item</button>
+                          <button onClick={() => deleteChecklist(cl.id)} className="text-muted-foreground hover:text-red-500"><Trash2 size={14} /></button>
                         </div>
                       </div>
                       <div className="space-y-3">
@@ -666,7 +666,7 @@ export function DocumentTab({
                              <div className="flex items-center gap-3 flex-1">
                                <div 
                                  onClick={() => toggleChecklistItem(cl.id, item.text)}
-                                 className={cn("w-5 h-5 rounded-md border flex items-center justify-center transition-colors cursor-pointer", item.checked ? "bg-green-500 border-green-500 text-white" : "border-gray-200")}
+                                 className={cn("w-5 h-5 rounded-md border flex items-center justify-center transition-colors cursor-pointer", item.checked ? "bg-green-500 border-green-500 text-white" : "border-border")}
                                >
                                  {item.checked && <CheckCircle2 size={12} />}
                                </div>
@@ -685,7 +685,7 @@ export function DocumentTab({
                                       setEditingItem({clId: cl.id, index: i});
                                       setEditingItemText(item.text);
                                     }}
-                                    className={cn("text-sm font-medium cursor-text flex-1", item.checked ? "text-gray-400 line-through" : "text-gray-700")}
+                                     className={cn("text-sm font-medium cursor-text flex-1", item.checked ? "text-muted-foreground line-through" : "text-foreground")}
                                   >
                                     {item.text}
                                   </span>
@@ -693,7 +693,7 @@ export function DocumentTab({
                              </div>
                              <div className="flex items-center gap-2 opacity-0 group-item:opacity-100 transition-all">
                                 {cl.templateId && <div className="text-[9px] font-black text-blue-300 mr-2">EDITANDO GLOBAL</div>}
-                                <button onClick={() => deleteChecklistItem(cl.id, i)} className="text-gray-200 hover:text-red-500"><X size={14} /></button>
+                                 <button onClick={() => deleteChecklistItem(cl.id, i)} className="text-muted-foreground hover:text-red-500"><X size={14} /></button>
                              </div>
                           </div>
                         ))}
@@ -738,17 +738,17 @@ export function DocumentTab({
                       <div className="flex justify-between items-center mb-3">
                         <div className="flex items-center gap-2">
                           <span className="text-xs font-black text-foreground">{note.author}</span>
-                          {note.edited && <span className="text-[9px] text-gray-400 font-bold uppercase italic">(editada)</span>}
+                          {note.edited && <span className="text-[9px] text-muted-foreground font-bold uppercase italic">(editada)</span>}
                         </div>
                         <div className="flex items-center gap-4">
-                          <span className="text-[10px] text-gray-400 font-medium">{format(parseISO(note.date), "dd MMM, HH:mm", { locale: ptBR })}</span>
+                          <span className="text-[10px] text-muted-foreground font-medium">{format(parseISO(note.date), "dd MMM, HH:mm", { locale: ptBR })}</span>
                           <div className="flex gap-2 opacity-0 group-hover/note:opacity-100 transition-all">
                             <button 
                               onClick={() => {
                                 setEditingNote(note);
                                 setEditingNoteText(note.text);
                               }}
-                              className="text-gray-300 hover:text-blue-500"
+                              className="text-muted-foreground hover:text-blue-500"
                             >
                               <Edit2 size={12} />
                             </button>
@@ -756,7 +756,7 @@ export function DocumentTab({
                               onClick={() => {
                                 setShowConfirmDelete({ type: 'note', id: note.id });
                               }}
-                              className="text-gray-300 hover:text-red-500"
+                              className="text-muted-foreground hover:text-red-500"
                             >
                               <Trash2 size={12} />
                             </button>
@@ -769,10 +769,10 @@ export function DocumentTab({
                           <textarea 
                             value={editingNoteText}
                             onChange={(e) => setEditingNoteText(e.target.value)}
-                            className="w-full bg-gray-50 p-3 rounded-xl border border-blue-100 text-sm outline-none resize-none min-h-[80px]"
+                            className="w-full bg-muted/50 p-3 rounded-xl border border-border text-sm text-foreground outline-none resize-none min-h-[80px] focus:ring-2 focus:ring-primary/10"
                           />
                           <div className="flex justify-end gap-2">
-                            <button onClick={() => setEditingNote(null)} className="text-[10px] font-bold text-gray-400">Cancelar</button>
+                             <button onClick={() => setEditingNote(null)} className="text-[10px] font-bold text-muted-foreground hover:text-foreground">Cancelar</button>
                             <button 
                               onClick={() => {
                                 onUpdate({
@@ -822,10 +822,10 @@ export function DocumentTab({
               </section>
 
               <section>
-                <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-6">Próximos Compromissos</h3>
+                <h3 className="text-xs font-black text-muted-foreground uppercase tracking-widest mb-6">Próximos Compromissos</h3>
                 <div className="space-y-4">
                     {deal.activities?.map((act: any) => (
-                      <div key={act.id} className="p-4 bg-white border border-gray-100 rounded-2xl hover:border-gray-200 transition-all shadow-sm group/act">
+                      <div key={act.id} className="p-4 bg-muted/30 border border-border rounded-2xl hover:border-primary/30 transition-all shadow-sm group/act">
                         <div className="flex justify-between items-start mb-2">
                            <div className="flex items-center gap-2">
                              <div className={cn("p-1.5 rounded-lg text-muted-foreground", act.isImportant ? "bg-red-500/10 text-red-500" : "bg-muted")}>
@@ -847,27 +847,27 @@ export function DocumentTab({
                              <div className="flex gap-1 opacity-0 group-hover/act:opacity-100 transition-all">
                                 <button 
                                   onClick={() => toggleActivityStatus(act.id)} 
-                                  className={cn("p-1 transition-all", act.status === 'completed' ? "text-green-500" : "text-gray-300 hover:text-green-500")}
+                                  className={cn("p-1 transition-all", act.status === 'completed' ? "text-green-500" : "text-muted-foreground hover:text-green-500")}
                                   title={act.status === 'completed' ? "Desmarcar como realizada" : "Marcar como realizada"}
                                 >
                                   <CheckCircle2 size={12} />
                                 </button>
-                                <button onClick={() => setEditingActivity(act)} className="p-1 text-gray-300 hover:text-blue-500"><Edit2 size={12} /></button>
-                                <button onClick={() => setShowConfirmDelete({ type: 'activity', id: act.id })} className="p-1 text-gray-300 hover:text-red-500"><Trash2 size={12} /></button>
+                                <button onClick={() => setEditingActivity(act)} className="p-1 text-muted-foreground hover:text-blue-500"><Edit2 size={12} /></button>
+                                <button onClick={() => setShowConfirmDelete({ type: 'activity', id: act.id })} className="p-1 text-muted-foreground hover:text-red-500"><Trash2 size={12} /></button>
                              </div>
                            </div>
                         </div>
                         <p className="text-sm font-black text-foreground mb-1">{act.title}</p>
-                        <p className="text-[10px] font-bold text-gray-400 flex items-center gap-1">
+                         <p className="text-[10px] font-bold text-muted-foreground flex items-center gap-1">
                            <Clock size={10} />
                            {format(parseISO(act.date), "eeee, dd 'de' MMMM 'às' HH:mm", { locale: ptBR })}
                         </p>
                         {act.description && (
-                          <p className="text-[10px] text-gray-500 mt-3 bg-gray-50 p-2 rounded-lg italic">"{act.description}"</p>
+                           <p className="text-[10px] text-muted-foreground mt-3 bg-muted/50 p-2 rounded-lg italic">"{act.description}"</p>
                         )}
                       </div>
                     ))}
-                   {deal.activities?.length === 0 && <p className="text-xs text-gray-400 italic text-center py-6">Nenhum agendamento.</p>}
+                   {deal.activities?.length === 0 && <p className="text-xs text-muted-foreground italic text-center py-6">Nenhum agendamento.</p>}
                 </div>
               </section>
             </div>
@@ -884,9 +884,9 @@ export function DocumentTab({
                     </div>
                     <div className="space-y-2 text-center md:text-left">
                       <h2 className="text-4xl font-black text-foreground tracking-tight">{deal.profile.name}</h2>
-                      <div className="flex flex-wrap justify-center md:justify-start gap-3 text-sm font-bold text-gray-400">
-                        <span>{deal.profile.industry}</span>
-                        <span className="text-gray-200">•</span>
+                       <div className="flex flex-wrap justify-center md:justify-start gap-3 text-sm font-bold text-muted-foreground">
+                         <span>{deal.profile.industry}</span>
+                         <span className="text-border">•</span>
                         <a href={deal.profile.website} target="_blank" className="text-primary hover:underline flex items-center gap-1">
                           {deal.profile.website} <ExternalLink size={12} />
                         </a>
@@ -934,8 +934,8 @@ export function DocumentTab({
                          <div className="flex items-center gap-4 flex-1" onClick={() => setSelectedPerson(contact)}>
                             <Avatar name={contact.name} size="lg" />
                             <div className="min-w-0">
-                               <p className="text-sm font-black text-gray-900 truncate group-hover:text-blue-600 transition-colors">{contact.name}</p>
-                               <p className="text-xs font-bold text-gray-400">{contact.role}</p>
+                                <p className="text-sm font-black text-foreground truncate group-hover:text-blue-600 transition-colors">{contact.name}</p>
+                                <p className="text-xs font-bold text-muted-foreground">{contact.role}</p>
                             </div>
                          </div>
                          <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
@@ -944,8 +944,8 @@ export function DocumentTab({
                                 e.stopPropagation();
                                 setEditingContact(contact);
                               }}
-                              className="p-2 text-gray-300 hover:text-blue-500"
-                            >
+                               className="p-2 text-muted-foreground hover:text-blue-500"
+                             >
                               <Edit2 size={14} />
                             </button>
                             <button 
@@ -953,8 +953,8 @@ export function DocumentTab({
                                 e.stopPropagation();
                                 setShowConfirmDelete({ type: 'contact', id: contact.id });
                               }}
-                              className="p-2 text-gray-300 hover:text-red-500"
-                            >
+                               className="p-2 text-muted-foreground hover:text-red-500"
+                             >
                               <Trash2 size={14} />
                             </button>
                          </div>
@@ -1064,7 +1064,7 @@ export function DocumentTab({
         {activeSubTab === "documents" && (
            <div className="space-y-6">
               <div className="flex justify-between items-center mb-4">
-                 <h3 className="text-lg font-black text-gray-900">Arquivo de Documentos</h3>
+                 <h3 className="text-lg font-black text-foreground">Arquivo de Documentos</h3>
                  <input 
                     type="file" 
                     ref={fileInputRef} 
@@ -1073,7 +1073,7 @@ export function DocumentTab({
                   />
                   <button 
                     onClick={() => fileInputRef.current?.click()}
-                    className="bg-gray-50 text-gray-600 px-4 py-2 rounded-xl text-xs font-bold hover:bg-gray-100 transition-all flex items-center gap-2"
+                    className="bg-muted text-foreground px-4 py-2 rounded-xl text-xs font-bold hover:bg-accent transition-all flex items-center gap-2 border border-border"
                   >
                    <Plus size={14} /> Enviar Arquivo
                  </button>
@@ -1082,7 +1082,7 @@ export function DocumentTab({
                 {deal.documents?.map((doc: any) => (
                   <div key={doc.id} className="p-4 bg-background border border-border rounded-2xl flex items-center justify-between group hover:border-primary/30 transition-all">
                     <div className="flex items-center gap-4">
-                      <div className="p-3 bg-gray-50 rounded-xl text-gray-400 group-hover:text-blue-500 group-hover:bg-blue-50 transition-all">
+                      <div className="p-3 bg-muted rounded-xl text-muted-foreground group-hover:text-blue-500 group-hover:bg-blue-50 dark:group-hover:bg-blue-500/10 transition-all">
                         <FileText size={24} />
                       </div>
                       <div>
@@ -1091,8 +1091,8 @@ export function DocumentTab({
                       </div>
                     </div>
                     <div className="flex gap-2">
-                      <button onClick={() => deleteDocument(doc.id)} className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"><Trash2 size={16} /></button>
-                      <button className="p-2 text-gray-300 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition-all"><Download size={16} /></button>
+                      <button onClick={() => deleteDocument(doc.id)} className="p-2 text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-all"><Trash2 size={16} /></button>
+                      <button className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-xl transition-all"><Download size={16} /></button>
                     </div>
                   </div>
                 ))}
@@ -1124,14 +1124,14 @@ export function DocumentTab({
                     </div>
                     <div className="flex-1 bg-background p-5 rounded-2xl border border-border group-hover:bg-muted transition-all">
                       <div className="flex justify-between items-start mb-2">
-                        <p className="text-sm text-gray-900 font-black leading-tight">{log.action}</p>
-                        <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest whitespace-nowrap ml-4">
+                        <p className="text-sm text-foreground font-black leading-tight">{log.action}</p>
+                        <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest whitespace-nowrap ml-4">
                           {format(parseISO(log.date), "dd MMM, HH:mm", { locale: ptBR })}
                         </span>
                       </div>
                       <div className="flex items-center gap-2 mt-3">
-                         <div className="w-4 h-4 rounded-full bg-gray-200" />
-                         <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                         <div className="w-4 h-4 rounded-full bg-muted-foreground/20" />
+                         <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
                            {log.user}
                          </p>
                       </div>
@@ -1144,8 +1144,8 @@ export function DocumentTab({
                    <div className="w-20 h-20 bg-card rounded-[2rem] flex items-center justify-center mx-auto mb-6">
                      <History size={32} className="text-muted-foreground/20" />
                    </div>
-                   <p className="text-sm font-black text-gray-900 mb-1">Nenhuma atividade</p>
-                   <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">O histórico do negócio aparecerá aqui</p>
+                   <p className="text-sm font-black text-foreground mb-1">Nenhuma atividade</p>
+                   <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest">O histórico do negócio aparecerá aqui</p>
                 </div>
               )}
            </div>
@@ -1160,18 +1160,18 @@ export function DocumentTab({
               initial={{ opacity: 0, y: 100 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 100 }}
-              className="bg-white rounded-[2rem] w-full max-w-4xl h-[80vh] flex flex-col shadow-2xl overflow-hidden"
+              className="bg-card rounded-[2rem] w-full max-w-4xl h-[80vh] flex flex-col shadow-2xl overflow-hidden border border-border"
             >
-              <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+              <div className="p-6 border-b border-border flex justify-between items-center bg-muted/30">
                 <div className="flex items-center gap-3">
-                   <div className="p-2 bg-gray-900 text-white rounded-xl">
+                   <div className="p-2 bg-foreground text-background rounded-xl">
                       <FileText size={18} />
                    </div>
-                   <h2 className="text-sm font-black text-gray-900">Visualização da Proposta: {deal.title}.pdf</h2>
+                   <h2 className="text-sm font-black text-foreground">Visualização da Proposta: {deal.title}.pdf</h2>
                 </div>
                 <div className="flex gap-2">
-                   <button onClick={() => setShowPdfPreview(false)} className="px-4 py-2 text-xs font-bold text-gray-500 hover:text-gray-900">Cancelar</button>
-                   <button onClick={() => { toast.success("Proposta enviada!"); setShowPdfPreview(false); }} className="bg-gray-900 text-white px-6 py-2 rounded-xl text-xs font-black hover:bg-gray-800 flex items-center gap-2">
+                   <button onClick={() => setShowPdfPreview(false)} className="px-4 py-2 text-xs font-bold text-muted-foreground hover:text-foreground">Cancelar</button>
+                   <button onClick={() => { toast.success("Proposta enviada!"); setShowPdfPreview(false); }} className="bg-foreground text-background px-6 py-2 rounded-xl text-xs font-black hover:opacity-90 flex items-center gap-2">
                       <Wand2 size={14} /> Enviar Proposta
                    </button>
                 </div>

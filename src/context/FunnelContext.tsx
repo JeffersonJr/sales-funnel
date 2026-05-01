@@ -206,18 +206,72 @@ export function FunnelProvider({ children }: { children: React.ReactNode }) {
     document.documentElement.style.setProperty("--base-font-size", `${newSize}px`);
   };
 
-  const addFunnel = (name: string) => {
+  const addFunnel = (name: string, stageTemplate: string = "vendas") => {
     const newFunnel = { id: `f-${Date.now()}`, name };
     setFunnels([...funnels, newFunnel]);
-    
-    // Add default stages for new funnel
-    const defaultStages = [
-      { id: `lead-${Date.now()}`, title: "Lead", color: "#64748b", funnelId: newFunnel.id },
-      { id: `discovery-${Date.now()}`, title: "Descoberta", color: "#3b82f6", funnelId: newFunnel.id },
-      { id: `proposal-${Date.now()}`, title: "Proposta", color: "#8b5cf6", funnelId: newFunnel.id },
-      { id: `won-${Date.now()}`, title: "Ganho", color: "#22c55e", funnelId: newFunnel.id },
-      { id: `lost-${Date.now()}`, title: "Perdido", color: "#ef4444", funnelId: newFunnel.id }
-    ];
+
+    const ts = Date.now();
+    const makeId = (key: string) => `${key}-${ts}-${Math.random().toString(36).slice(2,6)}`;
+
+    const templateStages: Record<string, { title: string; color: string }[]> = {
+      vendas: [
+        { title: "Lead Captado",    color: "#64748b" },
+        { title: "Qualificação",    color: "#3b82f6" },
+        { title: "Reunião Agendada",color: "#f59e0b" },
+        { title: "Proposta Enviada",color: "#8b5cf6" },
+        { title: "Negociação",      color: "#ec4899" },
+        { title: "Contrato Assinado",color:"#22c55e" },
+        { title: "Perdido",         color: "#ef4444" },
+      ],
+      locacao: [
+        { title: "Interesse Recebido", color: "#64748b" },
+        { title: "Visita Agendada",    color: "#3b82f6" },
+        { title: "Visita Realizada",   color: "#f59e0b" },
+        { title: "Proposta de Locação",color: "#8b5cf6" },
+        { title: "Análise de Crédito", color: "#ec4899" },
+        { title: "Contrato Assinado",  color: "#22c55e" },
+        { title: "Chaves Entregues",   color: "#10b981" },
+        { title: "Perdido",            color: "#ef4444" },
+      ],
+      recrutamento: [
+        { title: "Candidatura",       color: "#64748b" },
+        { title: "Triagem de CV",     color: "#3b82f6" },
+        { title: "Entrevista RH",     color: "#f59e0b" },
+        { title: "Entrevista Técnica",color: "#8b5cf6" },
+        { title: "Proposta Salarial", color: "#ec4899" },
+        { title: "Contratado",        color: "#22c55e" },
+        { title: "Reprovado",         color: "#ef4444" },
+      ],
+      cs: [
+        { title: "Onboarding",        color: "#3b82f6" },
+        { title: "Implementação",     color: "#f59e0b" },
+        { title: "Adoção",            color: "#8b5cf6" },
+        { title: "Expansão",          color: "#10b981" },
+        { title: "Renovação",         color: "#22c55e" },
+        { title: "Churn",             color: "#ef4444" },
+      ],
+      parceiro: [
+        { title: "Prospecção",        color: "#64748b" },
+        { title: "Apresentação",      color: "#3b82f6" },
+        { title: "Due Diligence",     color: "#f59e0b" },
+        { title: "Proposta de Parceria", color: "#8b5cf6" },
+        { title: "Homologação",       color: "#ec4899" },
+        { title: "Parceiro Ativo",    color: "#22c55e" },
+        { title: "Inativo",           color: "#ef4444" },
+      ],
+      blank: [
+        { title: "Nova Etapa", color: "#3b82f6" },
+      ],
+    };
+
+    const chosen = templateStages[stageTemplate] ?? templateStages["vendas"];
+    const defaultStages = chosen.map(({ title, color }) => ({
+      id: makeId(title.toLowerCase().replace(/\s+/g, "-")),
+      title,
+      color,
+      funnelId: newFunnel.id,
+    }));
+
     setStages([...stages, ...defaultStages]);
     setActiveFunnelId(newFunnel.id);
     return newFunnel;

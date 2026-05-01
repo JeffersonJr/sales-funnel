@@ -77,7 +77,7 @@ function KanbanColumn({ id, title, color, deals, onSelectedDeal, onDeleteStage, 
                 ))}
               </div>
               <div className="flex justify-end gap-2">
-                 <button onClick={() => setIsEditingTitle(false)} className="text-[10px] font-bold text-gray-400">Cancelar</button>
+                 <button onClick={() => setIsEditingTitle(false)} className="text-[10px] font-bold text-muted-foreground hover:text-foreground">Cancelar</button>
                  <button onClick={handleTitleSubmit} className="text-[10px] font-bold text-blue-600">Salvar</button>
               </div>
             </div>
@@ -152,6 +152,7 @@ export function KanbanBoard() {
   const [showManageFunnels, setShowManageFunnels] = useState(false);
   const [showNewFunnelModal, setShowNewFunnelModal] = useState(false);
   const [newFunnelName, setNewFunnelName] = useState("");
+  const [newFunnelTemplate, setNewFunnelTemplate] = useState("vendas");
   const [editingFunnelId, setEditingFunnelId] = useState<string | null>(null);
   const [editingFunnelName, setEditingFunnelName] = useState("");
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
@@ -384,8 +385,9 @@ export function KanbanBoard() {
 
   const handleAddFunnel = () => {
     if (!newFunnelName.trim()) return;
-    addFunnel(newFunnelName);
+    addFunnel(newFunnelName, newFunnelTemplate);
     setNewFunnelName("");
+    setNewFunnelTemplate("vendas");
     toast.success("Novo funil criado!");
   };
 
@@ -515,12 +517,12 @@ export function KanbanBoard() {
             
             <AnimatePresence>
               {showNewFunnelModal && (
-                <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+                <div className="fixed inset-0 bg-foreground/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
                   <motion.div 
                     initial={{ opacity: 0, scale: 0.95, y: 20 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                    className="bg-card w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden border border-border flex flex-col"
+                    className="bg-card w-full max-w-xl rounded-[2.5rem] shadow-2xl overflow-hidden border border-border flex flex-col"
                   >
                     <div className="p-6 border-b border-border bg-muted/30 flex justify-between items-center">
                       <div className="flex items-center gap-3">
@@ -528,21 +530,22 @@ export function KanbanBoard() {
                           <Plus size={20} />
                         </div>
                         <div>
-                          <h2 className="text-lg font-black text-foreground">Novo Funil</h2>
-                          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Crie um novo pipeline de vendas</p>
+                          <h2 className="text-lg font-black text-foreground">Novo Pipeline</h2>
+                          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Configure as etapas do seu funil</p>
                         </div>
                       </div>
-                      <button onClick={() => setShowNewFunnelModal(false)} className="p-2 hover:bg-muted rounded-xl text-muted-foreground transition-colors">
+                      <button onClick={() => setShowNewFunnelModal(false)} className="p-2 hover:bg-muted rounded-xl text-muted-foreground hover:text-foreground transition-colors">
                         <X size={20} />
                       </button>
                     </div>
                     
-                    <div className="p-8 space-y-6">
+                    <div className="p-8 space-y-8 overflow-y-auto max-h-[70vh] scrollbar-hide">
+                      {/* Name */}
                       <div>
                         <label className="block text-xs font-black text-foreground uppercase tracking-widest mb-2">Nome do Funil</label>
                         <input 
                           autoFocus
-                          placeholder="Ex: Vendas B2B, Expansão..."
+                          placeholder="Ex: Vendas B2B, Locação SP..."
                           value={newFunnelName}
                           onChange={(e) => setNewFunnelName(e.target.value)}
                           onKeyDown={(e) => {
@@ -553,7 +556,36 @@ export function KanbanBoard() {
                           }}
                           className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm font-bold outline-none focus:ring-2 focus:ring-primary/20 text-foreground transition-all"
                         />
-                        <p className="text-[10px] font-bold text-muted-foreground mt-2">Dê um nome claro para identificar esta operação.</p>
+                      </div>
+
+                      {/* Template picker */}
+                      <div>
+                        <label className="block text-xs font-black text-foreground uppercase tracking-widest mb-4">Modelo de Etapas</label>
+                        <div className="grid grid-cols-2 gap-3">
+                          {([
+                            { id: "vendas",      emoji: "💼", label: "Vendas",       desc: "Lead → Qualif. → Reunião → Proposta → Contrato" },
+                            { id: "locacao",     emoji: "🏠", label: "Locação",      desc: "Interesse → Visita → Análise → Contrato → Chaves" },
+                            { id: "recrutamento",emoji: "🧑‍💼",label: "Recrutamento",  desc: "Candidatura → Triagem → RH → Técnica → Contratado" },
+                            { id: "cs",          emoji: "🤝", label: "Suc. do Cliente",desc: "Onboarding → Adoção → Expansão → Renovação" },
+                            { id: "parceiro",    emoji: "🌐", label: "Parceiros",    desc: "Prospecção → Due Diligence → Parceria → Ativo" },
+                            { id: "blank",       emoji: "➕", label: "Em Branco",    desc: "Começa com uma única etapa vazia" },
+                          ] as const).map((t) => (
+                            <button
+                              key={t.id}
+                              onClick={() => setNewFunnelTemplate(t.id)}
+                              className={cn(
+                                "p-4 rounded-2xl border-2 text-left transition-all",
+                                newFunnelTemplate === t.id
+                                  ? "border-primary bg-primary/5 shadow-md shadow-primary/10"
+                                  : "border-border bg-muted/30 hover:border-primary/30 hover:bg-muted/50"
+                              )}
+                            >
+                              <span className="text-2xl block mb-2">{t.emoji}</span>
+                              <p className={cn("text-xs font-black uppercase tracking-widest", newFunnelTemplate === t.id ? "text-primary" : "text-foreground")}>{t.label}</p>
+                              <p className="text-[10px] text-muted-foreground font-bold mt-1 leading-tight">{t.desc}</p>
+                            </button>
+                          ))}
+                        </div>
                       </div>
                     </div>
                     
@@ -574,7 +606,7 @@ export function KanbanBoard() {
                         disabled={!newFunnelName.trim()}
                         className="bg-primary text-primary-foreground px-8 py-3 rounded-xl font-black text-sm hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-primary/20 flex items-center gap-2"
                       >
-                        <Check size={18} /> Criar Funil
+                        <Check size={18} /> Criar Pipeline
                       </button>
                     </div>
                   </motion.div>
@@ -636,7 +668,7 @@ export function KanbanBoard() {
                 setSelectedDeal(null);
               }
             }}
-            className="text-xs font-black text-gray-400 hover:text-gray-900 mb-6 flex items-center gap-2 uppercase tracking-widest px-2 group"
+            className="text-xs font-black text-muted-foreground hover:text-foreground mb-6 flex items-center gap-2 uppercase tracking-widest px-2 group"
           >
             <span className="group-hover:-translate-x-1 transition-transform">←</span> Voltar ao Funil
           </button>
@@ -702,7 +734,7 @@ export function KanbanBoard() {
             
             <button 
               onClick={addStage}
-              className="w-[320px] shrink-0 h-24 border-2 border-dashed border-gray-100 rounded-[2rem] flex items-center justify-center gap-3 text-gray-300 hover:border-gray-200 hover:text-gray-400 hover:bg-gray-50/50 transition-all group"
+              className="w-[320px] shrink-0 h-24 border-2 border-dashed border-border rounded-[2rem] flex items-center justify-center gap-3 text-muted-foreground hover:border-primary/40 hover:text-foreground hover:bg-muted/30 transition-all group"
             >
               <Columns size={24} className="group-hover:scale-110 transition-transform" />
               <span className="text-xs font-black uppercase tracking-widest">Adicionar mais uma coluna</span>
@@ -726,14 +758,14 @@ export function KanbanBoard() {
                   <h2 className="text-2xl font-black text-foreground">Novo Negócio</h2>
                   <p className="text-xs text-muted-foreground font-bold uppercase mt-1">Preencha os detalhes da oportunidade</p>
                 </div>
-                <button onClick={() => setShowNewDealModal(false)} className="p-2 hover:bg-gray-50 rounded-2xl text-gray-400 transition-colors">
+                <button onClick={() => setShowNewDealModal(false)} className="p-2 hover:bg-muted rounded-2xl text-muted-foreground hover:text-foreground transition-colors">
                   <X size={24} />
                 </button>
               </div>
 
               <div className="grid grid-cols-2 gap-6">
                 <div className="col-span-2">
-                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                  <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-3 flex items-center gap-2">
                     <User size={12} /> Nome do Negócio
                   </label>
                   <input 
@@ -746,7 +778,7 @@ export function KanbanBoard() {
                 </div>
                 
                 <div>
-                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                  <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-3 flex items-center gap-2">
                     <Settings2 size={12} /> Empresa
                   </label>
                   <input 
@@ -759,7 +791,7 @@ export function KanbanBoard() {
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                  <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-3 flex items-center gap-2">
                     <DollarSign size={12} /> Valor Estimado
                   </label>
                   <input 
@@ -767,12 +799,12 @@ export function KanbanBoard() {
                     value={form.value}
                     onChange={(e) => setForm({...form, value: maskCurrency(e.target.value)})}
                     placeholder="R$ 0,00"
-                    className="w-full p-4 rounded-2xl border border-gray-100 bg-gray-50 text-sm font-bold focus:ring-2 focus:ring-gray-900/5 transition-all outline-none" 
+                    className="w-full p-4 rounded-2xl border border-border bg-muted/50 text-sm font-bold text-foreground focus:ring-2 focus:ring-primary/5 transition-all outline-none" 
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                  <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-3 flex items-center gap-2">
                     <Zap size={12} /> Origem do Lead
                   </label>
                   <select 
@@ -789,13 +821,13 @@ export function KanbanBoard() {
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                  <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-3 flex items-center gap-2">
                     <Tag size={12} /> Etapa do Funil
                   </label>
                   <select 
                     value={form.stage}
                     onChange={(e) => setForm({...form, stage: e.target.value})}
-                    className="w-full p-4 rounded-2xl border border-gray-100 bg-gray-50 text-sm font-bold focus:ring-2 focus:ring-gray-900/5 transition-all outline-none appearance-none"
+                    className="w-full p-4 rounded-2xl border border-border bg-muted/50 text-sm font-bold text-foreground focus:ring-2 focus:ring-primary/5 transition-all outline-none appearance-none"
                   >
                      {activeStages.map((s: any) => (
                       <option key={s.id} value={s.id}>{s.title}</option>
@@ -804,7 +836,7 @@ export function KanbanBoard() {
                 </div>
 
                  <div className="col-span-2">
-                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                  <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-3 flex items-center gap-2">
                     <Tag size={12} /> Tags (separadas por vírgula)
                   </label>
                   <input 
@@ -822,11 +854,11 @@ export function KanbanBoard() {
                   </p>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-[9px] font-bold text-gray-400 uppercase mb-2">Setor</label>
+                      <label className="block text-[9px] font-bold text-muted-foreground uppercase mb-2">Setor</label>
                       <select 
                         value={form.industry}
                         onChange={(e) => setForm({...form, industry: e.target.value})}
-                        className="w-full p-3 rounded-xl border border-white bg-white text-xs font-bold outline-none"
+                        className="w-full p-3 rounded-xl border border-border bg-muted/50 text-foreground text-xs font-bold outline-none focus:ring-2 focus:ring-primary/5"
                       >
                         <option>Tecnologia & SaaS</option>
                         <option>Imobiliário</option>
@@ -836,13 +868,13 @@ export function KanbanBoard() {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-[9px] font-bold text-gray-400 uppercase mb-2">Website</label>
+                      <label className="block text-[9px] font-bold text-muted-foreground uppercase mb-2">Website</label>
                       <input 
                         type="text"
                         value={form.website}
                         onChange={(e) => setForm({...form, website: e.target.value})}
                         placeholder="www.empresa.com"
-                        className="w-full p-3 rounded-xl border border-white bg-white text-xs font-bold outline-none"
+                        className="w-full p-3 rounded-xl border border-border bg-muted/50 text-foreground text-xs font-bold outline-none focus:ring-2 focus:ring-primary/5"
                       />
                     </div>
                   </div>
@@ -892,28 +924,28 @@ export function KanbanBoard() {
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="bg-white rounded-[2rem] w-full max-w-md shadow-2xl overflow-hidden"
+            className="bg-card rounded-[2rem] w-full max-w-md shadow-2xl overflow-hidden border border-border"
           >
             <div className="p-8">
               <div className="flex justify-between items-start mb-6">
                 <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-red-50 text-red-500">
                   <AlertTriangle size={24} />
                 </div>
-                <button onClick={() => setShowConfirmDeleteStage(null)} className="p-2 hover:bg-gray-50 rounded-xl text-gray-300 transition-colors">
+                <button onClick={() => setShowConfirmDeleteStage(null)} className="p-2 hover:bg-muted rounded-xl text-muted-foreground hover:text-foreground transition-colors">
                   <X size={20} />
                 </button>
               </div>
               
-              <h3 className="text-xl font-black text-gray-900 mb-2">Excluir Etapa?</h3>
+              <h3 className="text-xl font-black text-foreground mb-2">Excluir Etapa?</h3>
               
               {deals.filter((d: any) => d.stage === showConfirmDeleteStage).length > 0 ? (
                 <>
-                  <p className="text-sm text-gray-500 font-medium leading-relaxed mb-4">
+                  <p className="text-sm text-muted-foreground font-medium leading-relaxed mb-4">
                     Existem {deals.filter((d: any) => d.stage === showConfirmDeleteStage).length} negócios nesta etapa. Para onde você deseja movê-los?
                   </p>
                   <select 
                     id="targetStageSelect"
-                    className="w-full p-4 rounded-2xl border border-gray-100 bg-gray-50 text-sm font-bold focus:ring-2 focus:ring-gray-900/5 transition-all outline-none appearance-none mb-4"
+                    className="w-full p-4 rounded-2xl border border-border bg-muted/50 text-sm font-bold text-foreground focus:ring-2 focus:ring-primary/5 transition-all outline-none appearance-none mb-4"
                   >
                     <option value="">Selecione uma etapa...</option>
                     {activeStages.filter((s: any) => s.id !== showConfirmDeleteStage).map((s: any) => (
@@ -922,7 +954,7 @@ export function KanbanBoard() {
                   </select>
                 </>
               ) : (
-                <p className="text-sm text-gray-500 font-medium leading-relaxed mb-4">
+                <p className="text-sm text-muted-foreground font-medium leading-relaxed mb-4">
                   Tem certeza que deseja remover esta etapa do seu funil de vendas?
                 </p>
               )}
@@ -930,7 +962,7 @@ export function KanbanBoard() {
               <div className="flex gap-3 mt-8">
                 <button 
                   onClick={() => setShowConfirmDeleteStage(null)}
-                  className="flex-1 px-6 py-3 rounded-xl text-sm font-bold text-gray-500 hover:bg-gray-50 transition-all"
+                  className="flex-1 px-6 py-3 rounded-xl text-sm font-bold text-muted-foreground hover:bg-muted hover:text-foreground transition-all"
                 >
                   Cancelar
                 </button>

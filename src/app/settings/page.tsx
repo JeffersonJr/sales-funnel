@@ -240,7 +240,7 @@ export default function SettingsPage() {
 
               <div className="grid gap-4">
                 {users.map((u: any) => (
-                  <div key={u.id} className="bg-white dark:bg-card p-6 rounded-[2rem] border border-gray-100 dark:border-border shadow-sm flex items-center justify-between group transition-colors">
+                  <div key={u.id} className="bg-card p-6 rounded-[2rem] border border-border shadow-sm flex items-center justify-between group transition-colors">
                     <div className="flex items-center gap-4">
                       <Avatar name={u.name} size="md" />
                       <div>
@@ -254,7 +254,7 @@ export default function SettingsPage() {
                         <span className="text-[10px] font-black uppercase tracking-widest">{u.role}</span>
                       </div>
                       <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button className="p-2 text-gray-300 hover:text-blue-500"><Edit2 size={16} /></button>
+                        <button className="p-2 text-muted-foreground hover:text-blue-500"><Edit2 size={16} /></button>
                       </div>
                     </div>
                   </div>
@@ -269,18 +269,18 @@ export default function SettingsPage() {
                 <h2 className="text-xl font-black text-gray-900 dark:text-white">Grupos & Equipes</h2>
               </div>
 
-              <div className="bg-gray-50 dark:bg-muted/50 p-8 rounded-[2.5rem] border border-gray-100 dark:border-border mb-8">
-                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Criar Novo Grupo</p>
+              <div className="bg-muted/50 p-8 rounded-[2.5rem] border border-border mb-8">
+                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-4">Criar Novo Grupo</p>
                 <div className="flex gap-4">
                   <input 
                     value={newGroupName}
                     onChange={(e) => setNewGroupName(e.target.value)}
                     placeholder="Nome do grupo (ex: Vendas Sul)"
-                    className="flex-1 bg-white dark:bg-muted border border-gray-100 dark:border-border rounded-2xl px-6 py-4 text-sm font-bold focus:ring-2 focus:ring-gray-900/5 outline-none dark:text-white"
+                    className="flex-1 bg-background border border-border rounded-2xl px-6 py-4 text-sm font-bold focus:ring-2 focus:ring-primary/10 outline-none text-foreground"
                   />
                   <button 
                     onClick={handleAddGroup}
-                    className="bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-8 py-4 rounded-2xl font-black text-sm hover:bg-gray-800 transition-all"
+                    className="bg-foreground text-background px-8 py-4 rounded-2xl font-black text-sm hover:opacity-90 transition-all"
                   >
                     Criar Grupo
                   </button>
@@ -289,15 +289,15 @@ export default function SettingsPage() {
 
               <div className="grid gap-4">
                 {groups.map((g: any) => (
-                  <div key={g.id} className="bg-white dark:bg-card p-8 rounded-[2.5rem] border border-gray-100 dark:border-border shadow-sm flex items-center justify-between transition-colors">
+                  <div key={g.id} className="bg-card p-8 rounded-[2.5rem] border border-border shadow-sm flex items-center justify-between transition-colors">
                     <div>
-                      <h3 className="text-lg font-black text-gray-900 dark:text-white">{g.name}</h3>
-                      <p className="text-xs font-bold text-gray-400 mt-1">{g.members?.length || 0} Membros</p>
+                      <h3 className="text-lg font-black text-foreground">{g.name}</h3>
+                      <p className="text-xs font-bold text-muted-foreground mt-1">{g.members?.length || 0} Membros</p>
                     </div>
                     <div className="flex -space-x-3">
                       {g.members?.slice(0, 4).map((mId: string) => {
                         const member = users.find((u: any) => u.id === mId);
-                        return <Avatar key={mId} name={member?.name || "U"} size="sm" className="border-2 border-white dark:border-card" />;
+                        return <Avatar key={mId} name={member?.name || "U"} size="sm" className="border-2 border-background" />;
                       })}
                     </div>
                   </div>
@@ -308,22 +308,22 @@ export default function SettingsPage() {
 
           {activeTab === "tags" && (
             <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-8">
-              <h2 className="text-xl font-black text-gray-900 dark:text-white">Gerenciar Tags</h2>
+              <h2 className="text-xl font-black text-foreground">Gerenciar Tags</h2>
               
-              <div className="bg-gray-50 dark:bg-muted/50 p-8 rounded-[2.5rem] border border-gray-100 dark:border-border">
+              <div className="bg-muted/50 p-8 rounded-[2.5rem] border border-border">
                 <div className="space-y-6">
                   <div className="grid grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 ml-1">Nome da Tag</label>
+                      <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-3 ml-1">Nome da Tag</label>
                       <input 
                         value={newTagName}
                         onChange={(e) => setNewTagName(e.target.value)}
                         placeholder="Ex: Urgente"
-                        className="w-full bg-white dark:bg-muted border border-gray-100 dark:border-border rounded-2xl px-6 py-4 text-sm font-bold focus:ring-2 focus:ring-gray-900/5 outline-none dark:text-white"
+                        className="w-full bg-background border border-border rounded-2xl px-6 py-4 text-sm font-bold focus:ring-2 focus:ring-primary/10 outline-none text-foreground"
                       />
                     </div>
                     <div>
-                      <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 ml-1">Cor</label>
+                      <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-3 ml-1">Cor</label>
                       <div className="flex flex-wrap gap-2">
                         {colors.map((c: string) => (
                           <button 
@@ -331,7 +331,7 @@ export default function SettingsPage() {
                             onClick={() => setNewTagColor(c)}
                             className={cn(
                               "w-8 h-8 rounded-full transition-all border-4",
-                              newTagColor === c ? "border-gray-900 dark:border-white scale-110" : "border-transparent"
+                              newTagColor === c ? "border-foreground scale-110" : "border-transparent"
                             )}
                             style={{ backgroundColor: c }}
                           />
@@ -341,7 +341,7 @@ export default function SettingsPage() {
                   </div>
                   <button 
                     onClick={handleAddTag}
-                    className="w-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 py-4 rounded-2xl font-black text-sm hover:bg-gray-800 transition-all"
+                    className="w-full bg-foreground text-background py-4 rounded-2xl font-black text-sm hover:opacity-90 transition-all"
                   >
                     Adicionar Tag
                   </button>
@@ -350,14 +350,14 @@ export default function SettingsPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 {availableTags.map((tag: any) => (
-                  <div key={tag.id} className="bg-white dark:bg-card p-6 rounded-3xl border border-gray-100 dark:border-border shadow-sm flex items-center justify-between group transition-colors">
+                  <div key={tag.id} className="bg-card p-6 rounded-3xl border border-border shadow-sm flex items-center justify-between group transition-colors">
                     <div className="flex items-center gap-4">
                       <div className="w-4 h-4 rounded-full shadow-sm" style={{ backgroundColor: tag.color }} />
-                      <span className="text-sm font-black text-gray-900 dark:text-white">{tag.name}</span>
+                      <span className="text-sm font-black text-foreground">{tag.name}</span>
                     </div>
                     <button 
                       onClick={() => handleDeleteTag(tag.id)}
-                      className="p-2 text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"
+                      className="p-2 text-muted-foreground hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"
                     >
                       <Trash2 size={16} />
                     </button>
@@ -370,10 +370,10 @@ export default function SettingsPage() {
           {activeTab === "funnel" && (
             <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-8">
               {/* Funnel Selector and Management */}
-              <div className="bg-gray-50 dark:bg-muted/50 p-8 rounded-[2.5rem] border border-gray-100 dark:border-border">
+              <div className="bg-muted/30 p-8 rounded-[2.5rem] border border-border">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                   <div>
-                    <h2 className="text-xl font-black text-gray-900 dark:text-white mb-2 tracking-tight">Gerenciar Pipelines</h2>
+                    <h2 className="text-xl font-black text-foreground mb-2 tracking-tight">Gerenciar Pipelines</h2>
                     <p className="text-sm text-muted-foreground font-medium">Crie e configure múltiplos fluxos de vendas para o seu negócio.</p>
                   </div>
                   <button 
@@ -392,14 +392,14 @@ export default function SettingsPage() {
                         "group relative p-5 rounded-[1.8rem] border-2 transition-all cursor-pointer",
                         settingsActiveFunnelId === f.id 
                           ? "border-primary bg-primary/5 dark:bg-primary/10" 
-                          : "border-gray-100 dark:border-border bg-white dark:bg-card hover:border-gray-200 dark:hover:border-muted-foreground/30"
+                          : "border-border bg-card hover:border-primary/30"
                       )}
                       onClick={() => setSettingsActiveFunnelId(f.id)}
                     >
                       <div className="flex justify-between items-start mb-3">
                         <div className={cn(
                           "w-10 h-10 rounded-xl flex items-center justify-center transition-colors",
-                          settingsActiveFunnelId === f.id ? "bg-primary text-white" : "bg-gray-50 dark:bg-muted text-muted-foreground"
+                          settingsActiveFunnelId === f.id ? "bg-primary text-white" : "bg-muted text-muted-foreground"
                         )}>
                           <Layout size={18} />
                         </div>
@@ -473,14 +473,14 @@ export default function SettingsPage() {
               <div className="space-y-6">
                 <div className="flex justify-between items-center">
                   <div>
-                    <h2 className="text-xl font-black text-gray-900 dark:text-white tracking-tight">
+                    <h2 className="text-xl font-black text-foreground tracking-tight">
                       Etapas de: {activeSettingsFunnel?.name}
                     </h2>
                     <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest mt-1">Personalize as colunas deste pipeline</p>
                   </div>
                   <button 
                     onClick={() => setIsAddingStage(true)}
-                    className="bg-gray-100 dark:bg-muted text-gray-900 dark:text-white px-6 py-3 rounded-xl font-bold text-xs flex items-center gap-2 hover:bg-gray-200 dark:hover:bg-accent transition-all"
+                    className="bg-muted text-foreground px-6 py-3 rounded-xl font-bold text-xs flex items-center gap-2 hover:bg-accent transition-all border border-border"
                   >
                     <Plus size={16} /> Adicionar Etapa
                   </button>
@@ -494,7 +494,7 @@ export default function SettingsPage() {
                       exit={{ height: 0, opacity: 0 }}
                       className="overflow-hidden"
                     >
-                      <div className="bg-gray-50 dark:bg-muted/30 p-8 rounded-[2.5rem] border border-gray-100 dark:border-border flex gap-4">
+                      <div className="bg-muted/30 p-8 rounded-[2.5rem] border border-border flex gap-4">
                         <input 
                           autoFocus
                           value={newStageTitle}
@@ -504,7 +504,7 @@ export default function SettingsPage() {
                             reset: (setNewStageTitle(""), setIsAddingStage(false))
                           }}
                           placeholder="Nome da nova etapa..."
-                          className="flex-1 bg-white dark:bg-muted border border-border rounded-2xl px-6 py-4 text-sm font-bold outline-none dark:text-white"
+                          className="flex-1 bg-background border border-border rounded-2xl px-6 py-4 text-sm font-bold outline-none text-foreground"
                         />
                         <button 
                           onClick={() => {
@@ -525,8 +525,8 @@ export default function SettingsPage() {
 
                 <div className="grid grid-cols-1 gap-3">
                   {activeSettingsStages.map((s: any, idx: number) => (
-                    <div key={s.id} className="bg-white dark:bg-card p-6 rounded-[2.2rem] border border-gray-100 dark:border-border flex items-center gap-6 shadow-sm group transition-all hover:shadow-md">
-                      <div className="w-12 h-12 bg-gray-50 dark:bg-muted rounded-2xl flex items-center justify-center text-xs font-black text-muted-foreground">
+                    <div key={s.id} className="bg-card p-6 rounded-[2.2rem] border border-border flex items-center gap-6 shadow-sm group transition-all hover:shadow-md">
+                      <div className="w-12 h-12 bg-muted rounded-2xl flex items-center justify-center text-xs font-black text-muted-foreground">
                         {idx + 1}
                       </div>
                       <div className="flex-1 flex items-center gap-4">
@@ -537,7 +537,7 @@ export default function SettingsPage() {
                                  autoFocus
                                  value={editingStageTitle}
                                  onChange={(e) => setEditingStageTitle(e.target.value)}
-                                 className="flex-1 bg-gray-50 dark:bg-muted border border-primary/20 rounded-xl px-4 py-2 text-sm font-bold outline-none dark:text-white"
+                                 className="flex-1 bg-muted border border-primary/20 rounded-xl px-4 py-2 text-sm font-bold outline-none text-foreground"
                                />
                                <button 
                                  onClick={() => {
@@ -602,7 +602,7 @@ export default function SettingsPage() {
                       initial={{ opacity: 0, scale: 0.95, y: 20 }}
                       animate={{ opacity: 1, scale: 1, y: 0 }}
                       exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                      className="bg-white dark:bg-card rounded-[3rem] w-full max-w-md shadow-2xl overflow-hidden"
+                      className="bg-card rounded-[3rem] w-full max-w-md shadow-2xl overflow-hidden border border-border"
                     >
                       <div className="p-10">
                         <div className="w-16 h-16 bg-red-50 dark:bg-red-900/20 text-red-500 rounded-2xl flex items-center justify-center mb-6">
@@ -614,7 +614,7 @@ export default function SettingsPage() {
                         </p>
                         
                         <div className="space-y-4">
-                          <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Etapa de Destino</label>
+                          <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Etapa de Destino</label>
                           <select 
                             id="moveDealsToStage"
                             className="w-full bg-gray-50 dark:bg-muted border border-gray-100 dark:border-border rounded-2xl px-6 py-4 text-sm font-bold outline-none dark:text-white"
@@ -628,7 +628,7 @@ export default function SettingsPage() {
                         <div className="flex gap-4 mt-10">
                           <button 
                             onClick={() => setShowDeleteStageModal(null)}
-                            className="flex-1 py-4 bg-gray-50 dark:bg-muted text-gray-500 dark:text-gray-400 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-gray-100 transition-all"
+                            className="flex-1 py-4 bg-muted text-muted-foreground rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-accent transition-all"
                           >
                             Cancelar
                           </button>
@@ -734,17 +734,17 @@ export default function SettingsPage() {
 
           {activeTab === "security" && (
             <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-8">
-              <h2 className="text-xl font-black text-gray-900 dark:text-white">Segurança da Conta</h2>
+              <h2 className="text-xl font-black text-foreground">Segurança da Conta</h2>
               
               <div className="grid gap-6">
-                <div className="bg-white dark:bg-card p-8 rounded-[2.5rem] border border-gray-100 dark:border-border shadow-sm flex items-center justify-between transition-colors">
+                <div className="bg-card p-8 rounded-[2.5rem] border border-border shadow-sm flex items-center justify-between transition-colors">
                   <div className="flex items-center gap-6">
                     <div className="w-14 h-14 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-2xl flex items-center justify-center">
                       <Smartphone size={24} />
                     </div>
                     <div>
-                      <p className="text-sm font-black text-gray-900 dark:text-white">Autenticação de Dois Fatores (2FA)</p>
-                      <p className="text-xs font-bold text-gray-400 mt-1">Proteja sua conta com uma camada extra de segurança</p>
+                      <p className="text-sm font-black text-foreground">Autenticação de Dois Fatores (2FA)</p>
+                      <p className="text-xs font-bold text-muted-foreground mt-1">Proteja sua conta com uma camada extra de segurança</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-6">
@@ -755,7 +755,7 @@ export default function SettingsPage() {
                       onClick={() => !is2FAEnabled ? setShow2FAModal(true) : setIs2FAEnabled(false)}
                       className={cn(
                         "w-14 h-7 rounded-full relative transition-all p-1",
-                        is2FAEnabled ? "bg-green-500" : "bg-gray-200 dark:bg-muted"
+                        is2FAEnabled ? "bg-green-500" : "bg-muted"
                       )}
                     >
                       <div className={cn("w-5 h-5 bg-white rounded-full shadow-md transition-all", is2FAEnabled ? "translate-x-7" : "translate-x-0")} />
@@ -763,17 +763,17 @@ export default function SettingsPage() {
                   </div>
                 </div>
 
-                <div className="bg-white dark:bg-card p-8 rounded-[2.5rem] border border-gray-100 dark:border-border shadow-sm flex items-center justify-between transition-colors">
+                <div className="bg-card p-8 rounded-[2.5rem] border border-border shadow-sm flex items-center justify-between transition-colors">
                   <div className="flex items-center gap-6">
                     <div className="w-14 h-14 bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-2xl flex items-center justify-center">
                       <Lock size={24} />
                     </div>
                     <div>
-                      <p className="text-sm font-black text-gray-900 dark:text-white">Senha de Acesso</p>
-                      <p className="text-xs font-bold text-gray-400 mt-1">Última alteração há 3 meses</p>
+                      <p className="text-sm font-black text-foreground">Senha de Acesso</p>
+                      <p className="text-xs font-bold text-muted-foreground mt-1">Última alteração há 3 meses</p>
                     </div>
                   </div>
-                  <button className="px-6 py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl text-xs font-bold hover:opacity-90 transition-all">
+                  <button className="px-6 py-3 bg-foreground text-background rounded-xl text-xs font-bold hover:opacity-90 transition-all">
                     Alterar Senha
                   </button>
                 </div>
@@ -783,11 +783,11 @@ export default function SettingsPage() {
 
           {activeTab === "appearance" && (
             <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-8">
-              <h2 className="text-xl font-black text-gray-900 dark:text-white">Personalização de Interface</h2>
+              <h2 className="text-xl font-black text-foreground">Personalização de Interface</h2>
               
               <div className="space-y-12">
                 <section>
-                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-6 ml-1">Tema do Sistema</p>
+                  <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-6 ml-1">Tema do Sistema</p>
                   <div className="grid grid-cols-3 gap-6">
                     {[
                       { id: 'light', label: 'Claro', icon: Sun },
@@ -821,7 +821,7 @@ export default function SettingsPage() {
                     <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Tamanho da Fonte</p>
                     <span className="text-xs font-black text-blue-600 dark:text-blue-400 px-3 py-1 bg-blue-50 dark:bg-blue-900/30 rounded-lg">{previewFontSize}px</span>
                   </div>
-                  <div className="bg-gray-50 dark:bg-muted/30 p-10 rounded-[2.5rem] border border-gray-100 dark:border-border">
+                  <div className="bg-muted/30 p-10 rounded-[2.5rem] border border-border">
                     <div className="flex flex-col gap-8 max-w-xl mx-auto">
                       <div className="flex justify-between text-[10px] font-black text-gray-400 uppercase tracking-widest px-2">
                         <span>Pequeno</span>
