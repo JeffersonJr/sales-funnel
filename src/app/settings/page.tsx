@@ -566,7 +566,7 @@ export default function SettingsPage() {
                         ) : (
                           <div className="flex items-center gap-4">
                             <div className="w-4 h-4 rounded-full shadow-sm" style={{ backgroundColor: s.color || "#3b82f6" }} />
-                            <p className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-widest">{s.title}</p>
+                            <p className="text-sm font-black text-foreground uppercase tracking-widest">{s.title}</p>
                           </div>
                         )}
                       </div>

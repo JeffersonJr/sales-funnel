@@ -57,7 +57,7 @@ export default function WhatsAppIntegrationPage() {
           <div className="flex items-center gap-3 text-xs font-black text-green-500 uppercase tracking-widest mb-1">
              Integração Oficial Meta
           </div>
-          <h1 className="text-4xl font-black text-gray-900 dark:text-white tracking-tight">WhatsApp Business API</h1>
+          <h1 className="text-4xl font-black text-foreground tracking-tight">WhatsApp Business API</h1>
         </div>
       </div>
 
@@ -79,9 +79,9 @@ export default function WhatsAppIntegrationPage() {
                 <div className="text-center space-y-2 mb-10">
                    <div className="flex items-center justify-center gap-2">
                      <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                     <span className="text-sm font-black text-gray-900 dark:text-white">Conectado</span>
+                     <span className="text-sm font-black text-foreground">Conectado</span>
                    </div>
-                   <p className="text-xs font-bold text-gray-400">+55 11 99999-8888</p>
+                   <p className="text-xs font-bold text-muted-foreground">+55 11 99999-8888</p>
                 </div>
 
                 <button 
@@ -125,8 +125,8 @@ export default function WhatsAppIntegrationPage() {
                        <SmartphoneIcon size={40} />
                     </div>
                     <div>
-                       <h2 className="text-4xl font-black text-gray-900 dark:text-white tracking-tight leading-tight">Conecte seu WhatsApp para automatizar seu funil</h2>
-                       <p className="text-lg text-gray-400 font-medium mt-4 max-w-md">Envie mensagens automáticas, sincronize conversas e gerencie seus leads diretamente pela plataforma.</p>
+                       <h2 className="text-4xl font-black text-foreground tracking-tight leading-tight">Conecte seu WhatsApp para automatizar seu funil</h2>
+                       <p className="text-lg text-muted-foreground font-medium mt-4 max-w-md">Envie mensagens automáticas, sincronize conversas e gerencie seus leads diretamente pela plataforma.</p>
                     </div>
 
                     <div className="space-y-4">
@@ -186,8 +186,8 @@ export default function WhatsAppIntegrationPage() {
               <div className="space-y-6">
                  <div className="flex items-center justify-between p-6 bg-gray-50 dark:bg-muted/30 rounded-3xl border border-gray-100 dark:border-border">
                     <div>
-                      <h4 className="text-sm font-black text-gray-900 dark:text-white">Envio Automático</h4>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">Disparar mensagem ao entrar no funil</p>
+                      <h4 className="text-sm font-black text-foreground">Envio Automático</h4>
+                      <p className="text-xs text-muted-foreground font-medium">Disparar mensagem ao entrar no funil</p>
                     </div>
                     <div className="w-12 h-6 bg-green-500 rounded-full relative cursor-pointer shadow-inner">
                       <div className="absolute right-1 top-1 w-4 h-4 bg-white rounded-full shadow-md" />
@@ -196,8 +196,8 @@ export default function WhatsAppIntegrationPage() {
 
                  <div className="flex items-center justify-between p-6 bg-gray-50 dark:bg-muted/30 rounded-3xl border border-gray-100 dark:border-border">
                     <div>
-                      <h4 className="text-sm font-black text-gray-900 dark:text-white">Sincronizar Histórico</h4>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">Importar conversas antigas automaticamente</p>
+                      <h4 className="text-sm font-black text-foreground">Sincronizar Histórico</h4>
+                      <p className="text-xs text-muted-foreground font-medium">Importar conversas antigas automaticamente</p>
                     </div>
                     <div className="w-12 h-6 bg-gray-200 dark:bg-border rounded-full relative cursor-pointer shadow-inner">
                       <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow-md" />

@@ -35,7 +35,8 @@ import {
   Library,
   Settings,
   Search,
-  Filter
+  Filter,
+  DollarSign
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -54,6 +55,7 @@ interface Action {
 interface Automation {
   id: string;
   name: string;
+  funnelId?: string; // undefined = all funnels
   triggerType?: string;
   triggerStageId?: string;
   triggerTagId?: string;
@@ -69,8 +71,10 @@ export default function AutomationsPage() {
   const { 
     automations, setAutomations, 
     stages, 
+    funnels,
     availableTags, setAvailableTags,
-    automationTemplates, setAutomationTemplates 
+    automationTemplates, setAutomationTemplates,
+    users
   } = useFunnel();
   const [mounted, setMounted] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -91,6 +95,7 @@ export default function AutomationsPage() {
   const [isEditingTemplate, setIsEditingTemplate] = useState(false);
   const [newRule, setNewRule] = useState<Partial<Automation>>({
     name: "",
+    funnelId: funnels[0]?.id || undefined,
     triggerType: "stage_change",
     triggerStageId: stages[0]?.id || "",
     actions: [],
@@ -120,6 +125,12 @@ export default function AutomationsPage() {
     { id: "move_stage", label: "Mover Coluna", icon: ArrowRight, color: "text-indigo-500", bg: "bg-indigo-50", description: "Move o card para outra etapa do funil" },
     { id: "add_tag", label: "Adicionar Tag", icon: Tag, color: "text-pink-500", bg: "bg-pink-50", description: "Aplica uma tag automaticamente" },
     { id: "remove_tag", label: "Remover Tag", icon: Tag, color: "text-red-500", bg: "bg-red-50", description: "Remove uma tag do card" },
+    { id: "checklist", label: "Adicionar Checklist", icon: ListChecks, color: "text-emerald-500", bg: "bg-emerald-50", description: "Insere uma lista de tarefas no card" },
+    { id: "change_owner", label: "Mudar Responsável", icon: UserPlus, color: "text-amber-500", bg: "bg-amber-50", description: "Altera o dono do negócio" },
+    { id: "adjust_value", label: "Ajustar Valor", icon: DollarSign, color: "text-green-600", bg: "bg-green-50", description: "Aumenta ou diminui o valor do card" },
+    { id: "cross_funnel", label: "Mover para Outro Funil", icon: Copy, color: "text-blue-600", bg: "bg-blue-50", description: "Cria uma cópia em outro pipeline" },
+    { id: "add_note", label: "Adicionar Nota", icon: FileText, color: "text-slate-500", bg: "bg-slate-50", description: "Registra uma nota interna no histórico" },
+    { id: "delay", label: "Aguardar Tempo", icon: Clock, color: "text-cyan-600", bg: "bg-cyan-50", description: "Pausa a sequência por um período" },
     { id: "webhook", label: "Disparar Webhook", icon: Globe, color: "text-cyan-500", bg: "bg-cyan-50", description: "Envia dados para n8n, Zapier ou API" },
   ];
 
@@ -129,37 +140,36 @@ export default function AutomationsPage() {
       return;
     }
 
+    const automationData = {
+      ...newRule,
+      status: newRule.status || "active"
+    } as Automation;
+
     if (editingId) {
       if (isEditingTemplate) {
         setAutomationTemplates(automationTemplates.map((t: any) => 
-          t.id === editingId ? { ...newRule, id: editingId, isTemplate: true } as Automation : t
+          t.id === editingId ? { ...automationData, id: editingId, isTemplate: true } : t
         ));
         toast.success("Template atualizado!");
       } else {
         setAutomations(automations.map((a: any) => 
-          a.id === editingId ? { ...newRule, id: editingId } as Automation : a
+          a.id === editingId ? { ...automationData, id: editingId } : a
         ));
         toast.success("Automação atualizada!");
       }
     } else {
       if (isEditingTemplate) {
         const newTmpl: Automation = {
+          ...automationData,
           id: `tmpl-${Date.now()}`,
-          name: newRule.name!,
-          triggerStageId: newRule.triggerStageId!,
-          actions: newRule.actions!,
-          status: "active",
           isTemplate: true
         };
         setAutomationTemplates([...automationTemplates, newTmpl]);
         toast.success("Template criado e salvo!");
       } else {
         const finalAutomation: Automation = {
+          ...automationData,
           id: Date.now().toString(),
-          name: newRule.name!,
-          triggerStageId: newRule.triggerStageId!,
-          actions: newRule.actions!,
-          status: "active"
         };
         setAutomations([...automations, finalAutomation]);
         toast.success("Automação ativada!");
@@ -205,6 +215,7 @@ export default function AutomationsPage() {
     setIsEditingTemplate(false);
     setNewRule({
       name: "",
+      funnelId: funnels[0]?.id || undefined,
       triggerType: "stage_change",
       triggerStageId: stages[0]?.id || "",
       triggerTagId: undefined,
@@ -216,11 +227,17 @@ export default function AutomationsPage() {
 
   const addAction = (type: string) => {
     let defaultConfig: any = {};
-    if (type === 'activity') defaultConfig = { title: "Nova Atividade" };
+    if (type === 'activity') defaultConfig = { title: "Nova Atividade", type: "call", priority: "medium", dueInDays: 1, description: "" };
     else if (type === 'whatsapp' || type === 'email' || type === 'notification') defaultConfig = { message: "" };
     else if (type === 'move_stage') defaultConfig = { stageId: stages[0]?.id || "" };
     else if (type === 'add_tag' || type === 'remove_tag') defaultConfig = { tagId: availableTags[0]?.id || "" };
     else if (type === 'webhook') defaultConfig = { url: "https://" };
+    else if (type === 'checklist') defaultConfig = { title: "Checklist de Processo", items: ["Primeiro item"] };
+    else if (type === 'change_owner') defaultConfig = { userId: users[0]?.id || "" };
+    else if (type === 'add_note') defaultConfig = { content: "" };
+    else if (type === 'adjust_value') defaultConfig = { operation: "add", value: 0 };
+    else if (type === 'cross_funnel') defaultConfig = { funnelId: funnels[0]?.id || "", stageId: stages[0]?.id || "" };
+    else if (type === 'delay') defaultConfig = { amount: 1, unit: "hours" };
 
     const newAction: Action = {
       id: Math.random().toString(36).substr(2, 9),
@@ -613,49 +630,57 @@ export default function AutomationsPage() {
                       </div>
                     </div>
 
-                    <div className="space-y-6">
-                      <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 text-blue-600 flex items-center gap-2">
-                        <MousePointer2 size={12} /> Evento Gatilho
+                    {/* ── Funil Scope ── */}
+                    <div className="space-y-3">
+                      <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1 flex items-center gap-2">
+                        <Layout size={11} /> Aplicar ao Funil
                       </label>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {triggerTypes.map((t) => (
-                          <button
-                            key={t.id}
-                            onClick={() => setNewRule({...newRule, triggerType: t.id})}
-                            className={cn(
-                              "p-4 rounded-2xl border-2 text-left transition-all flex items-center gap-4",
-                              newRule.triggerType === t.id 
-                                ? "border-primary bg-primary/10 shadow-md shadow-primary/10" 
-                                : "border-muted bg-muted hover:border-border"
-                            )}
-                          >
-                            <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-colors", newRule.triggerType === t.id ? "bg-primary text-white" : "bg-card text-muted-foreground shadow-sm border border-border")}>
-                              <t.icon size={20} />
-                            </div>
-                            <span className={cn("text-sm font-black tracking-tight", newRule.triggerType === t.id ? "text-foreground" : "text-muted-foreground")}>{t.label}</span>
-                          </button>
+                      <select
+                        value={newRule.funnelId}
+                        onChange={(e) => setNewRule({ ...newRule, funnelId: e.target.value })}
+                        className="w-full bg-muted/50 border border-border rounded-2xl py-3.5 px-5 text-sm font-bold text-foreground outline-none focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer"
+                      >
+                        {funnels.map((f: any) => (
+                          <option key={f.id} value={f.id}>{f.name}</option>
                         ))}
-                      </div>
+                      </select>
+                    </div>
+
+                    {/* ── Trigger ── */}
+                    <div className="space-y-3">
+                      <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1 flex items-center gap-2">
+                        <MousePointer2 size={11} /> Evento Gatilho
+                      </label>
+                      <select
+                        value={newRule.triggerType}
+                        onChange={(e) => setNewRule({ ...newRule, triggerType: e.target.value, triggerStageId: stages[0]?.id, triggerTagId: undefined })}
+                        className="w-full bg-muted/50 border border-border rounded-2xl py-3.5 px-5 text-sm font-bold text-foreground outline-none focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer"
+                      >
+                        {triggerTypes.map((t) => (
+                          <option key={t.id} value={t.id}>{t.label}</option>
+                        ))}
+                      </select>
 
                       {newRule.triggerType === "stage_change" && (
-                        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="mt-6 pt-6 border-t border-border">
-                          <p className="text-sm font-bold text-foreground mb-4">Qual coluna vai disparar o gatilho?</p>
-                          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                            {stages.map((s: any) => (
+                        <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} className="pt-1">
+                          <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2 ml-1">Qual coluna?</p>
+                          <div className="flex flex-wrap gap-2">
+                            {(newRule.funnelId
+                              ? stages.filter((s: any) => s.funnelId === newRule.funnelId)
+                              : stages
+                            ).map((s: any) => (
                               <button
                                 key={s.id}
-                                onClick={() => setNewRule({...newRule, triggerStageId: s.id})}
+                                onClick={() => setNewRule({ ...newRule, triggerStageId: s.id })}
                                 className={cn(
-                                  "p-6 rounded-3xl border-2 text-left transition-all",
-                                  newRule.triggerStageId === s.id 
-                                    ? "border-primary bg-primary/10 shadow-xl shadow-primary/10" 
-                                    : "border-muted bg-muted hover:border-border"
+                                  "flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-[11px] font-black uppercase tracking-wide transition-all",
+                                  newRule.triggerStageId === s.id
+                                    ? "border-primary bg-primary text-white shadow-sm"
+                                    : "border-border bg-muted text-muted-foreground hover:border-primary/40 hover:text-foreground"
                                 )}
                               >
-                                <div className={cn("w-8 h-8 rounded-full mb-3 flex items-center justify-center font-black text-xs", newRule.triggerStageId === s.id ? "bg-primary text-white" : "bg-card text-muted-foreground")}>
-                                  {stages.indexOf(s) + 1}
-                                </div>
-                                <span className={cn("text-xs font-black uppercase tracking-widest", newRule.triggerStageId === s.id ? "text-foreground" : "text-muted-foreground")}>{s.title}</span>
+                                <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: s.color || "#6366f1" }} />
+                                {s.title}
                               </button>
                             ))}
                           </div>
@@ -663,30 +688,30 @@ export default function AutomationsPage() {
                       )}
 
                       {(newRule.triggerType === "tag_added" || newRule.triggerType === "tag_removed") && (
-                        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="mt-6 pt-6 border-t border-border">
-                          <div className="flex items-center justify-between mb-4">
-                            <p className="text-sm font-bold text-foreground">Qual tag deve disparar a automação?</p>
-                            <button 
+                        <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} className="pt-1">
+                          <div className="flex items-center justify-between mb-2">
+                            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Qual tag?</p>
+                            <button
                               onClick={() => setShowTagModal(true)}
-                              className="text-[10px] font-black uppercase tracking-widest text-primary hover:text-primary/80 bg-primary/10 px-3 py-1.5 rounded-lg flex items-center gap-1 transition-all"
+                              className="text-[10px] font-black uppercase tracking-widest text-primary bg-primary/10 px-3 py-1 rounded-lg flex items-center gap-1 hover:bg-primary/20 transition-all"
                             >
-                              <Settings size={12} /> Gerenciar Tags
+                              <Settings size={11} /> Gerenciar
                             </button>
                           </div>
-                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                          <div className="flex flex-wrap gap-2">
                             {availableTags.map((tag: any) => (
                               <button
                                 key={tag.id}
-                                onClick={() => setNewRule({...newRule, triggerTagId: tag.id})}
+                                onClick={() => setNewRule({ ...newRule, triggerTagId: tag.id })}
                                 className={cn(
-                                  "p-4 rounded-2xl border-2 text-left transition-all flex items-center gap-3",
-                                  newRule.triggerTagId === tag.id 
-                                    ? "border-primary bg-primary/10 shadow-md" 
-                                    : "border-muted bg-muted hover:border-border"
+                                  "flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-[11px] font-black uppercase tracking-wide transition-all",
+                                  newRule.triggerTagId === tag.id
+                                    ? "border-primary bg-primary text-white shadow-sm"
+                                    : "border-border bg-muted text-muted-foreground hover:border-primary/40 hover:text-foreground"
                                 )}
                               >
-                                <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: tag.color }} />
-                                <span className={cn("text-[10px] font-black tracking-widest uppercase truncate", newRule.triggerTagId === tag.id ? "text-foreground" : "text-muted-foreground")}>{tag.name}</span>
+                                <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: tag.color }} />
+                                {tag.name}
                               </button>
                             ))}
                           </div>
@@ -694,15 +719,15 @@ export default function AutomationsPage() {
                       )}
 
                       {newRule.triggerType === "deal_stale" && (
-                        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="mt-6 pt-6 border-t border-border">
-                          <p className="text-sm font-bold text-foreground mb-4">Quantos dias sem interação?</p>
-                          <input 
+                        <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} className="pt-1 flex items-center gap-4">
+                          <input
                             type="number"
                             min="1"
                             value={newRule.triggerDays || 3}
-                            onChange={(e) => setNewRule({...newRule, triggerDays: parseInt(e.target.value) || 3})}
-                            className="w-full md:w-1/3 bg-muted border border-border rounded-xl py-4 px-6 text-xl font-black text-foreground outline-none focus:ring-4 focus:ring-primary/10 transition-all"
+                            onChange={(e) => setNewRule({ ...newRule, triggerDays: parseInt(e.target.value) || 3 })}
+                            className="w-28 bg-muted border border-border rounded-xl py-3 px-5 text-xl font-black text-foreground outline-none focus:ring-2 focus:ring-primary/10 transition-all text-center"
                           />
+                          <span className="text-sm font-bold text-muted-foreground">dias sem interação</span>
                         </motion.div>
                       )}
                     </div>
@@ -738,23 +763,72 @@ export default function AutomationsPage() {
                             </div>
 
                             {action.type === 'activity' ? (
-                              <div className="space-y-3">
-                                <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Nome da Atividade</label>
-                                <input 
-                                  value={action.config.title}
-                                  onChange={(e) => updateActionConfig(action.id, { ...action.config, title: e.target.value })}
-                                  className="w-full bg-background border border-border rounded-xl py-3 px-5 text-sm font-bold outline-none focus:ring-2 focus:ring-primary/10 transition-all text-foreground"
-                                />
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                  <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest ml-1">Título da Atividade</label>
+                                  <input 
+                                    value={action.config.title}
+                                    onChange={(e) => updateActionConfig(action.id, { ...action.config, title: e.target.value })}
+                                    className="w-full bg-background border border-border rounded-xl py-3 px-5 text-sm font-bold outline-none focus:ring-2 focus:ring-primary/10 transition-all text-foreground"
+                                  />
+                                </div>
+                                <div className="space-y-2">
+                                  <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest ml-1">Tipo</label>
+                                  <select 
+                                    value={action.config.type}
+                                    onChange={(e) => updateActionConfig(action.id, { ...action.config, type: e.target.value })}
+                                    className="w-full bg-background border border-border rounded-xl py-3 px-5 text-sm font-bold outline-none focus:ring-2 focus:ring-primary/10 transition-all text-foreground"
+                                  >
+                                    <option value="call">Ligação</option>
+                                    <option value="meeting">Reunião</option>
+                                    <option value="email">E-mail</option>
+                                    <option value="task">Tarefa</option>
+                                    <option value="whatsapp">WhatsApp</option>
+                                  </select>
+                                </div>
+                                <div className="space-y-2">
+                                  <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest ml-1">Prioridade</label>
+                                  <select 
+                                    value={action.config.priority}
+                                    onChange={(e) => updateActionConfig(action.id, { ...action.config, priority: e.target.value })}
+                                    className="w-full bg-background border border-border rounded-xl py-3 px-5 text-sm font-bold outline-none focus:ring-2 focus:ring-primary/10 transition-all text-foreground"
+                                  >
+                                    <option value="low">Baixa</option>
+                                    <option value="medium">Média</option>
+                                    <option value="high">Alta</option>
+                                  </select>
+                                </div>
+                                <div className="space-y-2">
+                                  <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest ml-1">Vence em quantos dias?</label>
+                                  <input 
+                                    type="number"
+                                    min="0"
+                                    value={action.config.dueInDays}
+                                    onChange={(e) => updateActionConfig(action.id, { ...action.config, dueInDays: parseInt(e.target.value) || 0 })}
+                                    className="w-full bg-background border border-border rounded-xl py-3 px-5 text-sm font-bold outline-none focus:ring-2 focus:ring-primary/10 transition-all text-foreground"
+                                  />
+                                </div>
+                                <div className="md:col-span-2 space-y-2">
+                                  <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest ml-1">Descrição / Notas</label>
+                                  <textarea 
+                                    value={action.config.description}
+                                    onChange={(e) => updateActionConfig(action.id, { ...action.config, description: e.target.value })}
+                                    className="w-full bg-background border border-border rounded-xl py-3 px-5 text-sm font-bold outline-none focus:ring-2 focus:ring-primary/10 transition-all text-foreground min-h-[80px]"
+                                  />
+                                </div>
                               </div>
                             ) : action.type === 'move_stage' ? (
                               <div className="space-y-3">
-                                <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Para qual coluna mover?</label>
+                                <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest ml-1">Para qual coluna mover?</label>
                                 <select 
                                   value={action.config.stageId}
                                   onChange={(e) => updateActionConfig(action.id, { ...action.config, stageId: e.target.value })}
                                   className="w-full bg-background border border-border rounded-xl py-3 px-5 text-sm font-bold outline-none focus:ring-2 focus:ring-primary/10 transition-all cursor-pointer text-foreground"
                                 >
-                                  {stages.map((s: any) => (
+                                  {(newRule.funnelId 
+                                    ? stages.filter((s: any) => s.funnelId === newRule.funnelId)
+                                    : stages
+                                  ).map((s: any) => (
                                     <option key={s.id} value={s.id}>{s.title}</option>
                                   ))}
                                 </select>
@@ -774,13 +848,163 @@ export default function AutomationsPage() {
                               </div>
                             ) : action.type === 'webhook' ? (
                               <div className="space-y-3">
-                                <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">URL do Webhook (POST)</label>
+                                <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest ml-1">URL do Webhook (POST)</label>
                                 <input 
                                   value={action.config.url}
                                   onChange={(e) => updateActionConfig(action.id, { ...action.config, url: e.target.value })}
                                   className="w-full bg-background border border-border rounded-xl py-3 px-5 text-sm font-bold outline-none focus:ring-2 focus:ring-primary/10 transition-all font-mono text-foreground"
                                   placeholder="https://..."
                                 />
+                              </div>
+                            ) : action.type === 'checklist' ? (
+                              <div className="space-y-4">
+                                <div className="space-y-2">
+                                  <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest ml-1">Título do Checklist</label>
+                                  <input 
+                                    value={action.config.title}
+                                    onChange={(e) => updateActionConfig(action.id, { ...action.config, title: e.target.value })}
+                                    className="w-full bg-background border border-border rounded-xl py-3 px-5 text-sm font-bold outline-none focus:ring-2 focus:ring-primary/10 transition-all text-foreground"
+                                    placeholder="Ex: Documentação Necessária"
+                                  />
+                                </div>
+                                <div className="space-y-3">
+                                  <div className="flex items-center justify-between">
+                                    <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest ml-1">Itens do Checklist</label>
+                                    <button 
+                                      onClick={() => {
+                                        const items = [...(action.config.items || []), ""];
+                                        updateActionConfig(action.id, { ...action.config, items });
+                                      }}
+                                      className="text-[9px] font-black uppercase text-primary hover:underline"
+                                    >
+                                      + Adicionar Item
+                                    </button>
+                                  </div>
+                                  <div className="space-y-2">
+                                    {(action.config.items || []).map((item: string, i: number) => (
+                                      <div key={i} className="flex gap-2">
+                                        <input 
+                                          value={item}
+                                          onChange={(e) => {
+                                            const newItems = [...action.config.items];
+                                            newItems[i] = e.target.value;
+                                            updateActionConfig(action.id, { ...action.config, items: newItems });
+                                          }}
+                                          className="flex-1 bg-background border border-border rounded-xl py-2 px-4 text-xs font-bold outline-none focus:ring-2 focus:ring-primary/10 transition-all text-foreground"
+                                          placeholder={`Item ${i + 1}`}
+                                        />
+                                        <button 
+                                          onClick={() => {
+                                            const newItems = action.config.items.filter((_: any, idx: number) => idx !== i);
+                                            updateActionConfig(action.id, { ...action.config, items: newItems });
+                                          }}
+                                          className="p-2 text-muted-foreground hover:text-red-500 transition-colors"
+                                        >
+                                          <X size={14} />
+                                        </button>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              </div>
+                            ) : action.type === 'change_owner' ? (
+                              <div className="space-y-3">
+                                <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest ml-1">Novo Responsável</label>
+                                <select 
+                                  value={action.config.userId}
+                                  onChange={(e) => updateActionConfig(action.id, { ...action.config, userId: e.target.value })}
+                                  className="w-full bg-background border border-border rounded-xl py-3 px-5 text-sm font-bold outline-none focus:ring-2 focus:ring-primary/10 transition-all cursor-pointer text-foreground"
+                                >
+                                  {users.map((u: any) => (
+                                    <option key={u.id} value={u.id}>{u.name}</option>
+                                  ))}
+                                </select>
+                              </div>
+                            ) : action.type === 'add_note' ? (
+                              <div className="space-y-3">
+                                <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest ml-1">Conteúdo da Nota</label>
+                                <textarea 
+                                  value={action.config.content}
+                                  onChange={(e) => updateActionConfig(action.id, { ...action.config, content: e.target.value })}
+                                  className="w-full bg-background border border-border rounded-xl py-4 px-6 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/10 transition-all min-h-[100px] text-foreground"
+                                  placeholder="Digite a nota que será adicionada ao card..."
+                                />
+                              </div>
+                            ) : action.type === 'adjust_value' ? (
+                              <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                  <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest ml-1">Operação</label>
+                                  <select 
+                                    value={action.config.operation}
+                                    onChange={(e) => updateActionConfig(action.id, { ...action.config, operation: e.target.value })}
+                                    className="w-full bg-background border border-border rounded-xl py-3 px-5 text-sm font-bold outline-none focus:ring-2 focus:ring-primary/10 transition-all cursor-pointer text-foreground"
+                                  >
+                                    <option value="add">Somar ao valor atual</option>
+                                    <option value="subtract">Subtrair do valor atual</option>
+                                    <option value="set">Definir valor fixo</option>
+                                  </select>
+                                </div>
+                                <div className="space-y-2">
+                                  <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest ml-1">Valor (R$)</label>
+                                  <input 
+                                    type="number"
+                                    value={action.config.value}
+                                    onChange={(e) => updateActionConfig(action.id, { ...action.config, value: parseFloat(e.target.value) || 0 })}
+                                    className="w-full bg-background border border-border rounded-xl py-3 px-5 text-sm font-bold outline-none focus:ring-2 focus:ring-primary/10 transition-all text-foreground"
+                                  />
+                                </div>
+                              </div>
+                            ) : action.type === 'cross_funnel' ? (
+                              <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                  <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest ml-1">Funil de Destino</label>
+                                  <select 
+                                    value={action.config.funnelId}
+                                    onChange={(e) => updateActionConfig(action.id, { ...action.config, funnelId: e.target.value })}
+                                    className="w-full bg-background border border-border rounded-xl py-3 px-5 text-sm font-bold outline-none focus:ring-2 focus:ring-primary/10 transition-all cursor-pointer text-foreground"
+                                  >
+                                    {funnels.map((f: any) => (
+                                      <option key={f.id} value={f.id}>{f.name}</option>
+                                    ))}
+                                  </select>
+                                </div>
+                                <div className="space-y-2">
+                                  <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest ml-1">Coluna de Destino</label>
+                                  <select 
+                                    value={action.config.stageId}
+                                    onChange={(e) => updateActionConfig(action.id, { ...action.config, stageId: e.target.value })}
+                                    className="w-full bg-background border border-border rounded-xl py-3 px-5 text-sm font-bold outline-none focus:ring-2 focus:ring-primary/10 transition-all cursor-pointer text-foreground"
+                                  >
+                                    {stages.filter((s: any) => s.funnelId === action.config.funnelId).map((s: any) => (
+                                      <option key={s.id} value={s.id}>{s.title}</option>
+                                    ))}
+                                  </select>
+                                </div>
+                              </div>
+                            ) : action.type === 'delay' ? (
+                              <div className="flex items-center gap-4">
+                                <div className="space-y-2 flex-1">
+                                  <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest ml-1">Tempo de Espera</label>
+                                  <input 
+                                    type="number"
+                                    min="1"
+                                    value={action.config.amount}
+                                    onChange={(e) => updateActionConfig(action.id, { ...action.config, amount: parseInt(e.target.value) || 1 })}
+                                    className="w-full bg-background border border-border rounded-xl py-3 px-5 text-sm font-bold outline-none focus:ring-2 focus:ring-primary/10 transition-all text-foreground"
+                                  />
+                                </div>
+                                <div className="space-y-2 w-32">
+                                  <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest ml-1">Unidade</label>
+                                  <select 
+                                    value={action.config.unit}
+                                    onChange={(e) => updateActionConfig(action.id, { ...action.config, unit: e.target.value })}
+                                    className="w-full bg-background border border-border rounded-xl py-3 px-5 text-sm font-bold outline-none focus:ring-2 focus:ring-primary/10 transition-all cursor-pointer text-foreground"
+                                  >
+                                    <option value="minutes">Minutos</option>
+                                    <option value="hours">Horas</option>
+                                    <option value="days">Dias</option>
+                                  </select>
+                                </div>
                               </div>
                             ) : (
                               <div className="space-y-3">

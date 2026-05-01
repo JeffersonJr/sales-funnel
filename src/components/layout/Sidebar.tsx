@@ -99,7 +99,7 @@ export function Sidebar() {
       <nav className="flex-1 px-4 py-4 space-y-8 w-full overflow-y-auto scrollbar-hide">
         <div className="space-y-1">
            {!isCollapsed && (
-             <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] px-3 mb-4">
+             <p className="text-[10px] font-black text-foreground/80 dark:text-muted-foreground uppercase tracking-[0.2em] px-3 mb-4">
                Menu Principal
              </p>
            )}
@@ -139,7 +139,7 @@ export function Sidebar() {
 
         <div className="space-y-1">
            {!isCollapsed && (
-             <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] px-3 mb-4">
+             <p className="text-[10px] font-black text-foreground/80 dark:text-muted-foreground uppercase tracking-[0.2em] px-3 mb-4">
                Canais Ativos
              </p>
            )}

@@ -100,8 +100,8 @@ export default function IntegrationsPage() {
   return (
     <div className="p-6 md:p-10 max-w-7xl mx-auto transition-colors duration-300">
       <div className="mb-12">
-        <h1 className="text-4xl font-black text-gray-900 dark:text-white tracking-tight">Canais & Integrações</h1>
-        <p className="text-gray-400 dark:text-gray-500 font-medium mt-2">Centralize sua comunicação e conecte suas ferramentas favoritas</p>
+        <h1 className="text-4xl font-black text-foreground tracking-tight">Canais & Integrações</h1>
+        <p className="text-muted-foreground font-medium mt-2">Centralize sua comunicação e conecte suas ferramentas favoritas</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -127,11 +127,11 @@ export default function IntegrationsPage() {
                     {item.status}
                   </span>
                 </div>
-                <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-4 tracking-tight">{item.name}</h3>
-                <p className="text-gray-500 dark:text-gray-400 font-medium leading-relaxed">{item.description}</p>
+                <h3 className="text-2xl font-black text-foreground mb-4 tracking-tight">{item.name}</h3>
+                <p className="text-muted-foreground font-medium leading-relaxed">{item.description}</p>
               </div>
 
-              <div className="mt-10 flex items-center gap-2 text-sm font-black text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors uppercase tracking-widest">
+              <div className="mt-10 flex items-center gap-2 text-sm font-black text-foreground group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors uppercase tracking-widest">
                 Gerenciar Conexão <ArrowRight size={18} />
               </div>
             </motion.div>
